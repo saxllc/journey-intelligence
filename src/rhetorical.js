@@ -1,4 +1,4 @@
-require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
+try { require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') }); } catch(e) {}
 // src/rhetorical.js
 // Rhetorical Layer Generator
 
