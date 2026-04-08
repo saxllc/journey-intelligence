@@ -1,4 +1,4 @@
-﻿const { classify } = require('../src/classify');
+const { classify } = require('../src/classify');
 
 module.exports = (req, res) => {
   if (req.method !== 'POST') {

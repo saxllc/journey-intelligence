@@ -1,4 +1,4 @@
-﻿const { generateConfidenceArtefact } = require('../src/confidence-artefact');
+const { generateConfidenceArtefact } = require('../src/confidence-artefact');
 
 module.exports = (req, res) => {
   if (req.method !== 'POST') {

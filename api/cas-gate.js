@@ -1,4 +1,4 @@
-﻿const { generateCASGate } = require('../src/cas-gate');
+const { generateCASGate } = require('../src/cas-gate');
 
 module.exports = (req, res) => {
   if (req.method !== 'POST') {

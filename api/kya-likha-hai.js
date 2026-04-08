@@ -1,4 +1,4 @@
-﻿const { generateAudio, toAudioDataURI } = require('../src/kya-likha-hai');
+const { generateAudio, toAudioDataURI } = require('../src/kya-likha-hai');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {

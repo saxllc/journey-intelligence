@@ -1,4 +1,4 @@
-﻿const { generateRhetoricalLayer } = require('../src/rhetorical');
+const { generateRhetoricalLayer } = require('../src/rhetorical');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
