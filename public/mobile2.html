@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journey Intelligence — Aadhaar eKYC Demo v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Base (DESIGN.md: Inter, calt, near-black) ─────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-feature-settings: "calt";
+  background: #F7F8FA;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  color: #0e0f0c;
+}
+
+/* ── Page Header ───────────────────────────────────────────────── */
+.page-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.page-header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0e0f0c;
+  letter-spacing: -0.4px;
+}
+.page-header p {
+  font-size: 12px;
+  color: #868685;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* ── Phone Frame (DESIGN.md: 393x852, 52px radius) ─────────────── */
+.phone-frame {
+  width: 393px;
+  height: 852px;
+  background: #0A0A0A;
+  border-radius: 52px;
+  padding: 14px;
+  box-shadow:
+    0 40px 100px rgba(0,0,0,0.15),
+    0 8px 32px rgba(0,0,0,0.08);
+  position: relative;
+}
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 40px;
+  overflow: hidden;
+  background: #FFFFFF;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Status Bar ────────────────────────────────────────────────── */
+.status-bar {
+  height: 54px;
+  background: #FFFFFF;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 28px 8px;
+  flex-shrink: 0;
+}
+.status-bar .time {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0e0f0c;
+}
+.status-bar .icons {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.status-bar .icons svg { width: 16px; height: 16px; }
+
+/* ── Top App Bar (DESIGN.md: 16px/600 title) ───────────────────── */
+.app-bar {
+  height: 52px;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border-bottom: 1px solid #e8ebe6;
+  flex-shrink: 0;
+}
+.app-bar .back-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 8px;
+  color: #0e0f0c;
+  transition: background 0.15s;
+}
+.app-bar .back-btn:hover { background: #e8ebe6; }
+.app-bar .back-btn svg { width: 20px; height: 20px; }
+.app-bar .title-area { flex: 1; margin-left: 8px; }
+.app-bar .step-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0e0f0c;
+  line-height: 1.2;
+}
+.app-bar .step-counter {
+  font-size: 11px;
+  color: #868685;
+  font-weight: 500;
+}
+
+/* ── Language Pills (DESIGN.md: pill style) ────────────────────── */
+.lang-pills {
+  display: flex;
+  background: #e8ebe6;
+  border-radius: 9999px;
+  padding: 3px;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.lang-pill {
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border: none;
+  background: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  color: #868685;
+  transition: all 0.2s;
+  font-family: inherit;
+  font-feature-settings: "calt";
+}
+.lang-pill.active {
+  background: #FFFFFF;
+  color: #0e0f0c;
+  box-shadow: rgba(14,15,12,0.12) 0px 0px 0px 1px;
+}
+
+/* ── Progress Track (DESIGN.md: green done, blue active) ───────── */
+.progress-track {
+  display: flex;
+  gap: 4px;
+  padding: 8px 16px;
+  background: #FFFFFF;
+  flex-shrink: 0;
+}
+.progress-segment {
+  flex: 1;
+  height: 3px;
+  background: #E5E7EB;
+  border-radius: 2px;
+  transition: background 0.3s;
+}
+.progress-segment.done { background: #9fe870; }
+.progress-segment.active { background: #2563EB; }
+
+/* ── Main Scrollable Content ───────────────────────────────────── */
+.phone-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px;
+  background: #F7F8FA;
+  scrollbar-width: none;
+}
+.phone-content::-webkit-scrollbar { display: none; }
+
+/* ── Step Card (DESIGN.md: 16px radius, minimal shadow) ────────── */
+.step-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: rgba(14,15,12,0.12) 0px 0px 0px 1px;
+  margin-bottom: 12px;
+  border-left: 4px solid transparent;
+  transition: background 0.2s, border-color 0.2s;
+}
+.step-card.mat-ACTION_REQUIRED {
+  border-left-color: #FF6B00;
+  background: #FFFAF5;
+}
+.step-card.mat-IRREVERSIBLE {
+  border-left-color: #DC2626;
+  background: #FFF8F8;
+}
+.step-card .materiality-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  font-feature-settings: "calt";
+}
+.tag-INFO { background: #E8F5E9; color: #2E7D32; }
+.tag-REVIEW { background: #E3F2FD; color: #1565C0; }
+.tag-ACTION_REQUIRED { background: #FFF3E0; color: #E65100; }
+.tag-IRREVERSIBLE { background: #FFEBEE; color: #C62828; }
+
+.step-card h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0e0f0c;
+  margin-bottom: 8px;
+  line-height: 1.25;
+  letter-spacing: -0.3px;
+}
+.step-card .desc {
+  font-size: 14px;
+  color: #454745;
+  line-height: 1.5;
+}
+
+/* ── Form Elements ──────────────────────────────────────────────── */
+.form-area {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e8ebe6;
+}
+.form-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #868685;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 10px;
+}
+/* Aadhaar 3-group input */
+.aadhaar-inputs {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.aadhaar-group {
+  flex: 1;
+  height: 48px;
+  border: 1.5px solid #e8ebe6;
+  border-radius: 12px;
+  font-size: 20px;
+  font-weight: 600;
+  font-family: 'Inter', monospace;
+  font-feature-settings: "calt";
+  text-align: center;
+  letter-spacing: 4px;
+  color: #0e0f0c;
+  background: #FFFFFF;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.aadhaar-group:focus { border-color: #2563EB; }
+.aadhaar-group::placeholder { color: #D1D5DB; letter-spacing: 4px; }
+.aadhaar-sep {
+  font-size: 18px;
+  color: #D1D5DB;
+  font-weight: 300;
+}
+/* OTP 6-digit input */
+.otp-inputs {
+  display: flex;
+  gap: 6px;
+}
+.otp-digit {
+  width: 44px;
+  height: 52px;
+  border: 1.5px solid #e8ebe6;
+  border-radius: 12px;
+  font-size: 22px;
+  font-weight: 700;
+  font-family: 'Inter', monospace;
+  font-feature-settings: "calt";
+  text-align: center;
+  color: #0e0f0c;
+  background: #FFFFFF;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.otp-digit:focus { border-color: #2563EB; background: #F8FAFF; }
+.otp-digit.filled { border-color: #9fe870; background: #F7FDF4; }
+/* Consent checkbox */
+.consent-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 8px;
+}
+.consent-checkbox {
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid #e8ebe6;
+  border-radius: 6px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  cursor: pointer;
+  accent-color: #2563EB;
+}
+.consent-label {
+  font-size: 13px;
+  color: #454745;
+  line-height: 1.45;
+  cursor: pointer;
+}
+
+/* ── JI Panel (DESIGN.md: distinct from step card) ─────────────── */
+.ji-panel {
+  background: #F8FAFF;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: rgba(14,15,12,0.12) 0px 0px 0px 1px;
+  margin-bottom: 12px;
+  display: none;
+  border-left: 4px solid #2563EB;
+}
+.ji-panel .ji-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: #868685;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ji-panel .ji-label svg { width: 14px; height: 14px; }
+.ji-headline {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0e0f0c;
+  margin-bottom: 8px;
+  line-height: 1.3;
+  letter-spacing: -0.2px;
+}
+.ji-explanation {
+  font-size: 13px;
+  color: #454745;
+  line-height: 1.55;
+  margin-bottom: 12px;
+}
+.ji-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ji-field-row {
+  display: flex;
+  gap: 6px;
+}
+.ji-field-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 12px;
+  margin-top: 1px;
+  color: #868685;
+}
+.ji-field-content { flex: 1; }
+.ji-field-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #868685;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 2px;
+}
+.ji-field-value {
+  font-size: 13px;
+  color: #454745;
+  line-height: 1.4;
+}
+.risk-signal {
+  background: #FEF3CD;
+  color: #856404;
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-top: 8px;
+  line-height: 1.4;
+}
+.raw-toggle {
+  margin-top: 12px;
+  font-size: 11px;
+  color: #868685;
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  text-decoration: underline;
+  font-feature-settings: "calt";
+}
+.raw-json {
+  display: none;
+  margin-top: 8px;
+  font-size: 10px;
+  font-family: 'SF Mono', 'Consolas', monospace;
+  background: #F7F8FA;
+  border-radius: 8px;
+  padding: 10px;
+  max-height: 200px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  color: #868685;
+}
+.raw-json.visible { display: block; }
+
+/* ── Loading ───────────────────────────────────────────────────── */
+.loading-indicator {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px;
+  color: #868685;
+  font-size: 13px;
+  font-weight: 500;
+}
+.loading-indicator.visible { display: flex; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #e8ebe6;
+  border-top-color: #2563EB;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* ── Error Bar ─────────────────────────────────────────────────── */
+.error-bar {
+  display: none;
+  background: #FFEBEE;
+  color: #C62828;
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+.error-bar.visible { display: block; }
+
+/* ── Confidence Artefact (DESIGN.md: green success header) ─────── */
+.conf-artefact {
+  display: none;
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: rgba(14,15,12,0.12) 0px 0px 0px 1px;
+  margin-bottom: 12px;
+}
+.ca-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.ca-tick {
+  width: 32px;
+  height: 32px;
+  background: #e2f6d5;
+  color: #163300;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.ca-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0e0f0c;
+  line-height: 1.3;
+}
+.ca-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.ca-field-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #868685;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 3px;
+}
+.ca-field-value {
+  font-size: 13px;
+  color: #454745;
+  line-height: 1.3;
+}
+.ca-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.ca-action-btn {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  background: rgba(22, 51, 0, 0.08);
+  border-radius: 9999px;
+  cursor: pointer;
+  color: #163300;
+  font-family: inherit;
+  font-feature-settings: "calt";
+  transition: transform 0.15s;
+}
+.ca-action-btn:hover { transform: scale(1.03); }
+.ca-action-btn:active { transform: scale(0.97); }
+
+/* ── Bottom Nav (DESIGN.md: blue primary, scale animation) ─────── */
+.bottom-nav {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  padding-bottom: max(12px, env(safe-area-inset-bottom, 12px));
+  background: #FFFFFF;
+  border-top: 1px solid #e8ebe6;
+  flex-shrink: 0;
+}
+.nav-btn {
+  flex: 1;
+  height: 44px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-family: inherit;
+  font-feature-settings: "calt";
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.nav-prev {
+  background: rgba(22, 51, 0, 0.08);
+  color: #454745;
+}
+.nav-prev:hover:not(:disabled) { transform: scale(1.03); }
+.nav-prev:active:not(:disabled) { transform: scale(0.97); }
+.nav-next {
+  background: #2563EB;
+  color: #FFFFFF;
+}
+.nav-next:hover:not(:disabled) { transform: scale(1.03); background: #1D4ED8; }
+.nav-next:active:not(:disabled) { transform: scale(0.97); }
+
+/* ── KLH Floating Button — DRAGGABLE (DESIGN.md: orange, 52px) ── */
+.klh-fab {
+  display: none;
+  position: absolute;
+  bottom: 76px;
+  right: 16px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #FF6B00;
+  color: #FFF;
+  border: none;
+  cursor: grab;
+  box-shadow: 0 4px 14px rgba(255,107,0,0.35);
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: transform 0.15s, box-shadow 0.15s;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.klh-fab:hover { transform: scale(1.08); box-shadow: 0 6px 18px rgba(255,107,0,0.4); }
+.klh-fab:active { cursor: grabbing; }
+.klh-fab.visible { display: flex; }
+.klh-fab:disabled { opacity: 0.6; cursor: wait; }
+.klh-fab svg { width: 24px; height: 24px; pointer-events: none; }
+.klh-fab.dragging { transition: none; transform: scale(1.12); box-shadow: 0 8px 24px rgba(255,107,0,0.5); }
+
+/* ── Bottom Sheet Overlay ──────────────────────────────────────── */
+.sheet-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 20;
+  border-radius: 40px;
+}
+.sheet-overlay.visible { display: block; }
+
+/* ── Bottom Sheet (DESIGN.md: 20px radius, cubic-bezier) ───────── */
+.bottom-sheet {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #FFFFFF;
+  border-radius: 20px 20px 0 0;
+  z-index: 30;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  max-height: 85%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.bottom-sheet.open { transform: translateY(0); }
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: #D1D5DB;
+  border-radius: 2px;
+  margin: 10px auto 0;
+  flex-shrink: 0;
+}
+.sheet-header {
+  padding: 14px 20px 0;
+  flex-shrink: 0;
+}
+.sheet-header h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0e0f0c;
+  letter-spacing: -0.2px;
+}
+.sheet-body {
+  padding: 16px 20px 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* ── CAS Gate Sheet ────────────────────────────────────────────── */
+.cas-icon {
+  width: 48px;
+  height: 48px;
+  background: #FFEBEE;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+.cas-icon svg { width: 24px; height: 24px; color: #C62828; }
+.cas-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0e0f0c;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.cas-desc {
+  font-size: 13px;
+  color: #454745;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+.cas-risk-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 8px 0;
+  border-bottom: 1px solid #e8ebe6;
+  font-size: 13px;
+  color: #454745;
+  line-height: 1.4;
+}
+.cas-risk-item:last-child { border-bottom: none; }
+.cas-risk-bullet {
+  color: #C62828;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.cas-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+}
+.cas-confirm {
+  height: 48px;
+  background: #DC2626;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  font-feature-settings: "calt";
+  transition: transform 0.15s, background 0.15s;
+}
+.cas-confirm:hover { background: #B91C1C; transform: scale(1.03); }
+.cas-confirm:active { transform: scale(0.97); }
+.cas-back {
+  height: 44px;
+  background: none;
+  color: #454745;
+  border: 1px solid #e8ebe6;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  font-feature-settings: "calt";
+  transition: transform 0.15s;
+}
+.cas-back:hover { transform: scale(1.03); }
+
+/* ── KLH Audio Sheet ───────────────────────────────────────────── */
+.klh-sheet-content { text-align: center; }
+.klh-speaker {
+  width: 64px;
+  height: 64px;
+  background: #FFF7ED;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+.klh-speaker svg { width: 28px; height: 28px; color: #FF6B00; }
+.klh-status {
+  font-size: 13px;
+  color: #868685;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.klh-script {
+  font-size: 14px;
+  color: #454745;
+  line-height: 1.6;
+  text-align: left;
+  background: #F7F8FA;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+.klh-audio-el {
+  width: 100%;
+  margin-top: 8px;
+  display: none;
+}
+.klh-audio-el.visible { display: block; }
+.klh-close-btn {
+  width: 100%;
+  height: 44px;
+  background: rgba(22, 51, 0, 0.08);
+  color: #454745;
+  border: none;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  font-feature-settings: "calt";
+  margin-top: 12px;
+  transition: transform 0.15s;
+}
+.klh-close-btn:hover { transform: scale(1.03); }
+
+/* ── Info Bar ──────────────────────────────────────────────────── */
+.info-bar {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 12px;
+  color: #868685;
+  font-weight: 500;
+}
+.info-bar span {
+  background: #FFFFFF;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-weight: 600;
+  margin-left: 4px;
+  box-shadow: rgba(14,15,12,0.12) 0px 0px 0px 1px;
+}
+
+/* ── Responsive ────────────────────────────────────────────────── */
+@media (max-width: 430px) {
+  body { padding: 0; background: #FFFFFF; }
+  .page-header { display: none; }
+  .phone-frame {
+    width: 100%;
+    height: 100vh;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+  .phone-screen { border-radius: 0; }
+  .status-bar { display: none; }
+  .info-bar { display: none; }
+  .bottom-sheet { border-radius: 20px 20px 0 0; }
+  .sheet-overlay { border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Journey Intelligence</h1>
+  <p>Aadhaar eKYC Demo — Rhetorical Comprehension Layer</p>
+</div>
+
+<div class="phone-frame">
+  <div class="phone-screen" id="phone-screen">
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <div class="time" id="status-time">9:41</div>
+      <div class="icons">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+      </div>
+    </div>
+
+    <!-- App Bar -->
+    <div class="app-bar">
+      <button class="back-btn" id="back-btn" onclick="navigate(-1)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="title-area">
+        <div class="step-title" id="app-title">Aadhaar eKYC</div>
+        <div class="step-counter" id="app-counter">Step 1 of 4</div>
+      </div>
+      <div class="lang-pills" id="lang-pills">
+        <button class="lang-pill active" data-lang="en">EN</button>
+        <button class="lang-pill" data-lang="hi">HI</button>
+        <button class="lang-pill" data-lang="kn">KN</button>
+        <button class="lang-pill" data-lang="ta">TA</button>
+      </div>
+    </div>
+
+    <!-- Progress Track -->
+    <div class="progress-track" id="progress-track"></div>
+
+    <!-- Scrollable Content -->
+    <div class="phone-content" id="phone-content">
+      <div class="error-bar" id="error-bar"></div>
+      <div class="loading-indicator" id="loading"><div class="spinner"></div> Generating rhetorical layer...</div>
+
+      <div class="step-card" id="step-card">
+        <div class="materiality-tag" id="materiality-tag"></div>
+        <h2 id="step-title"></h2>
+        <div class="desc" id="step-desc"></div>
+        <div id="form-area"></div>
+      </div>
+
+      <div class="ji-panel" id="ji-panel">
+        <div class="ji-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          JOURNEY INTELLIGENCE
+        </div>
+        <div class="ji-headline" id="ji-headline"></div>
+        <div class="ji-explanation" id="ji-explanation"></div>
+        <div class="ji-fields">
+          <div class="ji-field-row">
+            <div class="ji-field-icon">&rarr;</div>
+            <div class="ji-field-content">
+              <div class="ji-field-label">What happens next</div>
+              <div class="ji-field-value" id="ji-next"></div>
+            </div>
+          </div>
+          <div class="ji-field-row">
+            <div class="ji-field-icon">?</div>
+            <div class="ji-field-content">
+              <div class="ji-field-label">Help nudge</div>
+              <div class="ji-field-value" id="ji-nudge"></div>
+            </div>
+          </div>
+        </div>
+        <div id="ji-risk"></div>
+        <button class="raw-toggle" onclick="toggleRaw('ji-raw')">Show raw JSON</button>
+        <pre class="raw-json" id="ji-raw"></pre>
+      </div>
+
+      <div class="conf-artefact" id="conf-artefact">
+        <div class="ca-header">
+          <div class="ca-tick">&#10003;</div>
+          <div class="ca-title" id="ca-title"></div>
+        </div>
+        <div class="ca-grid">
+          <div><div class="ca-field-label">What happened</div><div class="ca-field-value" id="ca-happened"></div></div>
+          <div><div class="ca-field-label">Sent to</div><div class="ca-field-value" id="ca-recipient"></div></div>
+          <div><div class="ca-field-label">Reference</div><div class="ca-field-value" id="ca-ref"></div></div>
+          <div><div class="ca-field-label">Timestamp</div><div class="ca-field-value" id="ca-time"></div></div>
+        </div>
+        <div class="ca-actions" id="ca-actions"></div>
+      </div>
+    </div>
+
+    <!-- KLH Floating Button — Speaker SVG, Draggable -->
+    <button class="klh-fab" id="klh-fab">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+    </button>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+      <button class="nav-btn nav-prev" id="btn-prev" onclick="navigate(-1)" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        Previous
+      </button>
+      <button class="nav-btn nav-next" id="btn-next" onclick="navigate(1)">
+        Next
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+
+    <!-- Sheet Overlay -->
+    <div class="sheet-overlay" id="sheet-overlay" onclick="closeAllSheets()"></div>
+
+    <!-- CAS Gate Bottom Sheet -->
+    <div class="bottom-sheet" id="cas-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header"><h3>Comprehension Gate</h3></div>
+      <div class="sheet-body">
+        <div class="cas-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="cas-title" id="cas-title"></div>
+        <div class="cas-desc" id="cas-desc"></div>
+        <div id="cas-risks"></div>
+        <div class="cas-actions">
+          <button class="cas-confirm" id="cas-confirm-btn" onclick="passCASGate()">I understand, proceed</button>
+          <button class="cas-back" onclick="closeAllSheets()">Go back</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- KLH Audio Bottom Sheet -->
+    <div class="bottom-sheet" id="klh-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header"><h3>Kya Likha Hai &#8212; Listen</h3></div>
+      <div class="sheet-body">
+        <div class="klh-sheet-content">
+          <div class="klh-speaker" id="klh-speaker-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          </div>
+          <div class="klh-status" id="klh-status">Generating audio...</div>
+          <div class="klh-script" id="klh-script"></div>
+          <audio class="klh-audio-el" id="klh-audio" controls></audio>
+          <button class="klh-close-btn" onclick="closeAllSheets()">Close</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="info-bar">
+  iPhone 15 <span>393 &times; 852</span>
+</div>
+
+<script>
+// ── FLOW DATA (identical) ─────────────────────────────────────────────────
+var FLOW = {
+  id: 'aadhaar-ekyc',
+  name: 'Aadhaar eKYC',
+  steps: [
+    { id: 'consent', name: 'Consent Screen', type: 'navigate', title: 'Share Aadhaar for Verification', description: 'The application requires your consent to use Aadhaar-based eKYC for identity verification.', tags: ['consent'], materiality: 'REVIEW', risks: [] },
+    { id: 'aadhaar-entry', name: 'Aadhaar Entry', type: 'form-complete', title: 'Enter Aadhaar Number', description: 'Enter your 12-digit Aadhaar number to initiate OTP-based verification.', tags: ['submit'], materiality: 'ACTION_REQUIRED', summary_fields: ['Aadhaar number (masked)'], risks: [] },
+    { id: 'otp-verify', name: 'OTP Verification', type: 'otp-verify', title: 'Enter OTP', description: 'A 6-digit OTP has been sent to the mobile number registered with your Aadhaar.', tags: ['otp', 'verify'], materiality: 'ACTION_REQUIRED', summary_fields: ['OTP validity: 10 minutes'], risks: [] },
+    { id: 'ekyc-confirm', name: 'eKYC Consent & Submit', type: 'submit', title: 'Authorise eKYC Data Share', description: 'By proceeding, you authorise UIDAI to share your identity data with the requesting entity. This action is recorded and cannot be reversed.', tags: ['ekyc', 'consent-permanent', 'biometric'], materiality: 'IRREVERSIBLE', irreversible: true, cas_title: 'Your data will be permanently shared', cas_body: 'By tapping proceed, you give irrevocable consent to share your Aadhaar-linked identity with the requesting entity. UIDAI will log this action permanently.', cas_confirm_label: 'I consent, share my data', risks: ['This consent is permanent and cannot be withdrawn', 'Your name, address, photo, and DOB will be shared', 'This action will be recorded in UIDAI logs'] }
+  ]
+};
+
+var currentStep = 0;
+var currentLang = 'en';
+var casGatePassed = false;
+var rhetoricalData = null;
+
+// Map display labels to API-expected values
+var MATERIALITY_API_MAP = {
+  'INFO': 'INFORMATIONAL',
+  'REVIEW': 'NAVIGATIONAL',
+  'ACTION_REQUIRED': 'TRANSACTIONAL',
+  'IRREVERSIBLE': 'CONSEQUENTIAL'
+};
+function apiMateriality(m) { return MATERIALITY_API_MAP[m] || m; }
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+function init() {
+  updateStatusBarTime();
+  setInterval(updateStatusBarTime, 60000);
+  buildProgressTrack();
+  initDraggableFAB();
+  loadStep(0);
+}
+
+function updateStatusBarTime() {
+  var now = new Date();
+  document.getElementById('status-time').textContent = now.getHours() + ':' + now.getMinutes().toString().padStart(2, '0');
+}
+
+function buildProgressTrack() {
+  var track = document.getElementById('progress-track');
+  track.innerHTML = FLOW.steps.map(function(_, i) {
+    return '<div class="progress-segment" id="prog-' + i + '"></div>';
+  }).join('');
+}
+
+function updateProgress() {
+  FLOW.steps.forEach(function(_, i) {
+    var seg = document.getElementById('prog-' + i);
+    seg.className = 'progress-segment' + (i < currentStep ? ' done' : '') + (i === currentStep ? ' active' : '');
+  });
+}
+
+// ── DRAGGABLE FAB ─────────────────────────────────────────────────────────
+function initDraggableFAB() {
+  var fab = document.getElementById('klh-fab');
+  var screen = document.getElementById('phone-screen');
+  var isDragging = false;
+  var wasDragged = false;
+  var startX, startY, fabStartX, fabStartY;
+
+  function getPointerPos(e) {
+    var touch = e.touches ? e.touches[0] : e;
+    return { x: touch.clientX, y: touch.clientY };
+  }
+
+  function onStart(e) {
+    if (fab.disabled) return;
+    var pos = getPointerPos(e);
+    var rect = fab.getBoundingClientRect();
+    startX = pos.x;
+    startY = pos.y;
+    fabStartX = rect.left;
+    fabStartY = rect.top;
+    isDragging = true;
+    wasDragged = false;
+    fab.classList.add('dragging');
+    e.preventDefault();
+  }
+
+  function onMove(e) {
+    if (!isDragging) return;
+    var pos = getPointerPos(e);
+    var dx = pos.x - startX;
+    var dy = pos.y - startY;
+
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) wasDragged = true;
+
+    var screenRect = screen.getBoundingClientRect();
+    var newLeft = fabStartX + dx - screenRect.left;
+    var newTop = fabStartY + dy - screenRect.top;
+
+    // Clamp within phone screen
+    var maxLeft = screenRect.width - fab.offsetWidth;
+    var maxTop = screenRect.height - fab.offsetHeight;
+    newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+    newTop = Math.max(0, Math.min(newTop, maxTop));
+
+    fab.style.left = newLeft + 'px';
+    fab.style.top = newTop + 'px';
+    fab.style.right = 'auto';
+    fab.style.bottom = 'auto';
+    e.preventDefault();
+  }
+
+  function onEnd() {
+    if (!isDragging) return;
+    isDragging = false;
+    fab.classList.remove('dragging');
+
+    if (!wasDragged) {
+      openKLHSheet();
+    }
+  }
+
+  fab.addEventListener('mousedown', onStart);
+  fab.addEventListener('touchstart', onStart, { passive: false });
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('touchmove', onMove, { passive: false });
+  document.addEventListener('mouseup', onEnd);
+  document.addEventListener('touchend', onEnd);
+}
+
+// ── LOAD STEP ─────────────────────────────────────────────────────────────
+function loadStep(index) {
+  currentStep = index;
+  casGatePassed = false;
+  rhetoricalData = null;
+  clearError();
+
+  var step = FLOW.steps[index];
+
+  document.getElementById('app-title').textContent = step.name;
+  document.getElementById('app-counter').textContent = 'Step ' + (index + 1) + ' of ' + FLOW.steps.length;
+  updateProgress();
+
+  document.getElementById('btn-prev').disabled = (index === 0);
+  document.getElementById('back-btn').style.visibility = (index === 0) ? 'hidden' : 'visible';
+
+  var nextBtn = document.getElementById('btn-next');
+  nextBtn.disabled = false;
+  nextBtn.innerHTML = (index === FLOW.steps.length - 1)
+    ? 'Complete Flow <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>'
+    : 'Next <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>';
+
+  var tag = document.getElementById('materiality-tag');
+  tag.textContent = step.materiality.replace('_', ' ');
+  tag.className = 'materiality-tag tag-' + step.materiality;
+  document.getElementById('step-title').textContent = step.title;
+  document.getElementById('step-desc').textContent = step.description;
+
+  // Materiality-aware card styling
+  var card = document.getElementById('step-card');
+  card.className = 'step-card';
+  if (step.materiality === 'ACTION_REQUIRED' || step.materiality === 'IRREVERSIBLE') {
+    card.classList.add('mat-' + step.materiality);
+  }
+
+  // Render form elements per step
+  renderFormArea(step);
+
+  document.getElementById('ji-panel').style.display = 'none';
+  document.getElementById('conf-artefact').style.display = 'none';
+
+  // Reset FAB position and hide
+  var fab = document.getElementById('klh-fab');
+  fab.classList.remove('visible');
+  fab.style.left = '';
+  fab.style.top = '';
+  fab.style.right = '16px';
+  fab.style.bottom = '76px';
+
+  document.getElementById('phone-content').scrollTop = 0;
+  fetchRhetoricalLayer(step);
+}
+
+// ── RHETORICAL LAYER ──────────────────────────────────────────────────────
+function fetchRhetoricalLayer(step) {
+  setLoading(true);
+  fetch('/api/rhetorical', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ step: step, context: { language: currentLang, userProfile: 'first-time', materiality: apiMateriality(step.materiality), appName: 'Aadhaar eKYC' } })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.error) throw new Error(data.error);
+    rhetoricalData = data;
+    renderRhetoricalLayer(data, step);
+    if (step.materiality === 'IRREVERSIBLE' || step.materiality === 'ACTION_REQUIRED') {
+      renderCASGate(step);
+    }
+  })
+  .catch(function(e) { showError('Rhetorical layer: ' + e.message); })
+  .finally(function() { setLoading(false); });
+}
+
+function renderRhetoricalLayer(data, step) {
+  document.getElementById('ji-headline').textContent = data.headline || '';
+  document.getElementById('ji-explanation').textContent = data.plain_explanation || '';
+  document.getElementById('ji-next').textContent = data.what_happens_next || '\u2014';
+  document.getElementById('ji-nudge').textContent = data.help_nudge || '\u2014';
+
+  var riskEl = document.getElementById('ji-risk');
+  riskEl.innerHTML = data.risk_signal ? '<div class="risk-signal">\u26A0\uFE0F ' + data.risk_signal + '</div>' : '';
+
+  document.getElementById('ji-raw').textContent = JSON.stringify(data, null, 2);
+
+  if (step.materiality === 'IRREVERSIBLE' || step.materiality === 'ACTION_REQUIRED') {
+    document.getElementById('klh-fab').classList.add('visible');
+  }
+
+  document.getElementById('ji-panel').style.display = 'block';
+}
+
+function renderCASGate(step) {
+  if (casGatePassed) return;
+  document.getElementById('cas-title').textContent = step.cas_title || 'Confirm before proceeding';
+  document.getElementById('cas-desc').textContent = step.cas_body || '';
+  document.getElementById('cas-risks').innerHTML = (step.risks || []).map(function(r) {
+    return '<div class="cas-risk-item"><span class="cas-risk-bullet">\u25B8</span><span>' + r + '</span></div>';
+  }).join('');
+  document.getElementById('cas-confirm-btn').textContent = step.cas_confirm_label || 'I understand, proceed';
+  openSheet('cas-sheet');
+}
+
+// ── CAS GATE ──────────────────────────────────────────────────────────────
+function passCASGate() {
+  casGatePassed = true;
+  closeAllSheets();
+  if (currentStep === FLOW.steps.length - 1) renderConfidenceArtefact();
+}
+
+// ── KYA LIKHA HAI ─────────────────────────────────────────────────────────
+function openKLHSheet() {
+  if (!rhetoricalData || !rhetoricalData.kya_likha_hai_script) return;
+
+  openSheet('klh-sheet');
+  document.getElementById('klh-script').textContent = rhetoricalData.kya_likha_hai_script;
+  document.getElementById('klh-status').textContent = 'Generating audio...';
+  document.getElementById('klh-speaker-icon').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>';
+
+  var audioEl = document.getElementById('klh-audio');
+  audioEl.className = 'klh-audio-el';
+
+  var fab = document.getElementById('klh-fab');
+  fab.disabled = true;
+
+  fetch('/api/kya-likha-hai', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: rhetoricalData.kya_likha_hai_script, language: currentLang === 'en' ? 'hi' : currentLang })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.error) throw new Error(data.error);
+    audioEl.src = data.data_uri;
+    audioEl.className = 'klh-audio-el visible';
+    audioEl.play();
+    document.getElementById('klh-status').textContent = 'Playing audio...';
+    document.getElementById('klh-speaker-icon').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+  })
+  .catch(function(e) {
+    showError('Audio: ' + e.message);
+    document.getElementById('klh-status').textContent = 'Audio generation failed';
+    document.getElementById('klh-speaker-icon').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#C62828" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  })
+  .finally(function() { fab.disabled = false; });
+}
+
+// ── CONFIDENCE ARTEFACT ───────────────────────────────────────────────────
+function renderConfidenceArtefact() {
+  var txn = {
+    action: 'aadhaar-ekyc', timestamp: new Date().toISOString(), actor: '7845********', recipient: 'Bank of Baroda',
+    changed: ['Identity verified via Aadhaar OTP', 'KYC status: Approved', 'Consent logged'],
+    next_actions: [{ label: 'Download receipt', action_id: 'download-receipt' }, { label: 'Return to app', action_id: 'return-to-app' }],
+    reference_id: 'TXN' + Date.now(), materiality: 'IRREVERSIBLE'
+  };
+
+  fetch('/api/confidence-artefact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ transaction: txn, options: { what_happened: 'Aadhaar eKYC complete. Identity verified and shared with consent.' } })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.error) throw new Error(data.error);
+    document.getElementById('ca-title').textContent = data.display.what_happened;
+    document.getElementById('ca-happened').textContent = data.display.what_changed.join(', ');
+    document.getElementById('ca-recipient').textContent = data.display.who_received || '\u2014';
+    document.getElementById('ca-ref').textContent = data.display.reference || '\u2014';
+    document.getElementById('ca-time').textContent = new Date(data.display.timestamp).toLocaleString('en-IN');
+    document.getElementById('ca-actions').innerHTML = data.next_actions.map(function(a) {
+      return '<button class="ca-action-btn">' + a.label + '</button>';
+    }).join('');
+    document.getElementById('conf-artefact').style.display = 'block';
+    document.getElementById('btn-next').disabled = true;
+  })
+  .catch(function(e) { showError('Confidence artefact: ' + e.message); });
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────
+function navigate(delta) {
+  var next = currentStep + delta;
+  if (next < 0 || next > FLOW.steps.length - 1) return;
+  if (delta > 0) {
+    var mat = FLOW.steps[currentStep].materiality;
+    if ((mat === 'ACTION_REQUIRED' || mat === 'IRREVERSIBLE') && !casGatePassed) {
+      showError('Complete the comprehension gate before proceeding.');
+      renderCASGate(FLOW.steps[currentStep]);
+      return;
+    }
+    // Form validation gate
+    if (!isFormValid()) {
+      showError('Complete the form before proceeding.');
+      return;
+    }
+  }
+  loadStep(next);
+}
+
+// ── SHEETS ────────────────────────────────────────────────────────────────
+function openSheet(sheetId) {
+  document.getElementById('sheet-overlay').classList.add('visible');
+  document.getElementById(sheetId).classList.add('open');
+}
+function closeAllSheets() {
+  document.getElementById('sheet-overlay').classList.remove('visible');
+  document.querySelectorAll('.bottom-sheet').forEach(function(s) { s.classList.remove('open'); });
+}
+
+// ── UTILITIES ─────────────────────────────────────────────────────────────
+function setLoading(on) { document.getElementById('loading').className = on ? 'loading-indicator visible' : 'loading-indicator'; }
+function showError(msg) { var el = document.getElementById('error-bar'); el.textContent = '\u26A0 ' + msg; el.className = 'error-bar visible'; }
+function clearError() { document.getElementById('error-bar').className = 'error-bar'; }
+function toggleRaw(id) { var el = document.getElementById(id); el.className = el.className.indexOf('visible') >= 0 ? 'raw-json' : 'raw-json visible'; }
+
+// ── FORM RENDERING & VALIDATION ───────────────────────────────────────────
+function renderFormArea(step) {
+  var area = document.getElementById('form-area');
+  area.innerHTML = '';
+
+  if (step.id === 'aadhaar-entry') {
+    area.innerHTML = '<div class="form-area">' +
+      '<div class="form-label">Aadhaar Number</div>' +
+      '<div class="aadhaar-inputs">' +
+        '<input type="text" class="aadhaar-group" id="aad1" maxlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="0000" />' +
+        '<span class="aadhaar-sep">&ndash;</span>' +
+        '<input type="text" class="aadhaar-group" id="aad2" maxlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="0000" />' +
+        '<span class="aadhaar-sep">&ndash;</span>' +
+        '<input type="text" class="aadhaar-group" id="aad3" maxlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="0000" />' +
+      '</div></div>';
+    initAadhaarInputs();
+  }
+  else if (step.id === 'otp-verify') {
+    var digits = '';
+    for (var i = 0; i < 6; i++) {
+      digits += '<input type="text" class="otp-digit" id="otp' + i + '" maxlength="1" inputmode="numeric" pattern="[0-9]*" />';
+    }
+    area.innerHTML = '<div class="form-area">' +
+      '<div class="form-label">6-Digit OTP</div>' +
+      '<div class="otp-inputs">' + digits + '</div></div>';
+    initOTPInputs();
+  }
+  else if (step.id === 'ekyc-confirm') {
+    area.innerHTML = '<div class="form-area">' +
+      '<div class="consent-row">' +
+        '<input type="checkbox" class="consent-checkbox" id="consent-check" />' +
+        '<label class="consent-label" for="consent-check">I consent to sharing my eKYC data with the requesting entity.</label>' +
+      '</div></div>';
+  }
+}
+
+function initAadhaarInputs() {
+  var groups = ['aad1', 'aad2', 'aad3'];
+  groups.forEach(function(id, idx) {
+    var el = document.getElementById(id);
+    el.addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9]/g, '');
+      if (this.value.length === 4 && idx < 2) {
+        document.getElementById(groups[idx + 1]).focus();
+      }
+      // Mask first two groups after all 12 digits entered
+      updateAadhaarMask();
+    });
+    el.addEventListener('keydown', function(e) {
+      if (e.key === 'Backspace' && this.value.length === 0 && idx > 0) {
+        document.getElementById(groups[idx - 1]).focus();
+      }
+    });
+  });
+}
+
+function updateAadhaarMask() {
+  var a1 = document.getElementById('aad1');
+  var a2 = document.getElementById('aad2');
+  var a3 = document.getElementById('aad3');
+  if (a1.value.length === 4 && a2.value.length === 4 && a3.value.length === 4) {
+    a1.type = 'password';
+    a2.type = 'password';
+  } else {
+    a1.type = 'text';
+    a2.type = 'text';
+  }
+}
+
+function initOTPInputs() {
+  for (var i = 0; i < 6; i++) {
+    (function(idx) {
+      var el = document.getElementById('otp' + idx);
+      el.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (this.value.length === 1) {
+          this.classList.add('filled');
+          if (idx < 5) document.getElementById('otp' + (idx + 1)).focus();
+        } else {
+          this.classList.remove('filled');
+        }
+      });
+      el.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && this.value.length === 0 && idx > 0) {
+          var prev = document.getElementById('otp' + (idx - 1));
+          prev.focus();
+          prev.value = '';
+          prev.classList.remove('filled');
+        }
+      });
+      el.addEventListener('focus', function() { this.select(); });
+    })(i);
+  }
+}
+
+function isFormValid() {
+  var step = FLOW.steps[currentStep];
+  if (step.id === 'aadhaar-entry') {
+    var a1 = document.getElementById('aad1');
+    var a2 = document.getElementById('aad2');
+    var a3 = document.getElementById('aad3');
+    return a1 && a2 && a3 && a1.value.length === 4 && a2.value.length === 4 && a3.value.length === 4;
+  }
+  if (step.id === 'otp-verify') {
+    for (var i = 0; i < 6; i++) {
+      var d = document.getElementById('otp' + i);
+      if (!d || d.value.length !== 1) return false;
+    }
+    return true;
+  }
+  if (step.id === 'ekyc-confirm') {
+    var cb = document.getElementById('consent-check');
+    return cb && cb.checked;
+  }
+  return true;
+}
+
+// ── LANGUAGE SWITCH ───────────────────────────────────────────────────────
+document.querySelectorAll('.lang-pill').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.lang-pill').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    currentLang = btn.dataset.lang;
+    loadStep(currentStep);
+  });
+});
+
+// ── START ─────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
