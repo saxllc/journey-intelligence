@@ -1,0 +1,75 @@
+flow:
+  name: "Aadhaar eKYC Consent"
+  domain: "identity"
+  version: "1.0.0"
+
+  steps:
+    - id: step_1
+      label: "Enter Aadhaar Number"
+      description: "User types their 12-digit Aadhaar number into an input field."
+      materiality: 1
+      action: "input"
+      data_shared: false
+      reversible: true
+      # Materiality 1 — Navigational.
+      # User is choosing to proceed; they can clear the field and leave at any time.
+      # Rhetorical: light label guidance, masked input, no CAS gate required.
+
+    - id: step_2
+      label: "OTP Verification"
+      description: >
+        A one-time password is sent to the mobile number registered with Aadhaar.
+        User enters the 6-digit OTP to confirm they hold the registered device.
+      materiality: 2
+      action: "authenticate"
+      data_shared: false
+      reversible: true
+      # Materiality 2 — Transactional.
+      # OTP submission is a moderate-consequence action: it advances identity
+      # verification. User can request a new OTP or abandon the flow.
+      # Rhetorical: plain-language summary ("We sent a code to your Aadhaar-linked
+      # mobile. Enter it to continue."). Confidence artefact shown on success.
+
+    - id: step_3
+      label: "Review Data to Be Shared"
+      description: >
+        System displays the exact data fields that will be released to the
+        requesting entity if the user proceeds: name, address, photo,
+        date of birth, and gender.
+      materiality: 2
+      action: "select"
+      data_shared: false
+      reversible: true
+      # Materiality 2 — Transactional (review / pre-consent).
+      # This is an informational gate before the irreversible consent step.
+      # No data leaves UIDAI yet. User can go back.
+      # Rhetorical: itemised list of fields, plain-language labels, icon per field.
+      # Confidence artefact: none (action not yet taken). Undo path visible.
+
+    - id: step_4
+      label: "Consent to Share KYC Data"
+      description: >
+        User actively authorises release of their Aadhaar-linked KYC data
+        (name, address, photo, date of birth, gender) to the requesting entity.
+        This action is logged against the Aadhaar number and cannot be reversed.
+      materiality: 3
+      action: "consent"
+      data_shared: true
+      data_recipient: "Requesting Entity (as named on consent screen)"
+      data_fields:
+        - name
+        - address
+        - photo
+        - date_of_birth
+        - gender
+      reversible: false
+      # Materiality 3 — Consequential.
+      # Identity data leaves UIDAI infrastructure and reaches the requesting entity.
+      # CAS gate required. Kya Likha Hai activated. Audio explanation mandatory.
+      # Confidence artefact generated immediately post-consent.
+
+  user_context:
+    language: "hi"
+    first_time: true
+    device_tier: "low"
+    accessibility: []

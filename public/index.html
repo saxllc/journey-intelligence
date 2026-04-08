@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journey Intelligence — Aadhaar eKYC Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d1117;
+    --paper: #f5f0e8;
+    --accent: #c1440e;
+    --accent2: #1a5276;
+    --success: #1e8449;
+    --warn: #b7770d;
+    --muted: #6b7280;
+    --border: #d4c9b0;
+    --card: #faf7f2;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+    --serif: 'Playfair Display', serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--accent);
+  }
+
+  .header-title { display: flex; flex-direction: column; gap: 2px; }
+  .header-title h1 { font-family: var(--serif); font-size: 1.4rem; font-weight: 700; }
+  .header-title span { font-family: var(--mono); font-size: 0.7rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 2px; }
+
+  .lang-selector { display: flex; gap: 8px; }
+  .lang-btn { background: transparent; border: 1px solid #374151; color: #9ca3af; font-family: var(--mono); font-size: 0.72rem; padding: 5px 10px; cursor: pointer; border-radius: 2px; transition: all 0.15s; }
+  .lang-btn.active, .lang-btn:hover { background: var(--accent); border-color: var(--accent); color: white; }
+
+  .shell { display: grid; grid-template-columns: 280px 1fr; min-height: calc(100vh - 65px); }
+
+  .sidebar { background: var(--ink); color: var(--paper); padding: 32px 20px; border-right: 1px solid #1f2937; }
+  .sidebar-label { font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: #6b7280; margin-bottom: 16px; }
+
+  .flow-step { display: flex; align-items: flex-start; gap: 12px; padding: 12px 10px; border-radius: 4px; cursor: pointer; transition: background 0.15s; margin-bottom: 4px; }
+  .flow-step:hover { background: #1f2937; }
+  .flow-step.active { background: #1f2937; border-left: 3px solid var(--accent); }
+  .flow-step.done .step-num { background: var(--success); }
+
+  .step-num { width: 24px; height: 24px; border-radius: 50%; background: #374151; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 0.65rem; flex-shrink: 0; transition: background 0.2s; }
+  .flow-step.active .step-num { background: var(--accent); }
+
+  .step-meta { flex: 1; }
+  .step-name { font-size: 0.82rem; font-weight: 500; margin-bottom: 2px; }
+
+  .materiality-badge { font-family: var(--mono); font-size: 0.6rem; padding: 2px 6px; border-radius: 2px; text-transform: uppercase; letter-spacing: 1px; }
+  .badge-INFORMATIONAL { background: #1f2937; color: #9ca3af; }
+  .badge-NAVIGATIONAL { background: #1e3a5f; color: #60a5fa; }
+  .badge-TRANSACTIONAL { background: #3b1f00; color: #f59e0b; }
+  .badge-CONSEQUENTIAL { background: #3b0a0a; color: #f87171; }
+
+  .main { padding: 40px; max-width: 860px; }
+  .section-label { font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 8px; }
+
+  .canonical-card { background: white; border: 1px solid var(--border); border-radius: 6px; padding: 24px; margin-bottom: 24px; }
+  .canonical-card h2 { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+  .canonical-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+  .canonical-tag { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 0.65rem; color: var(--muted); border: 1px solid var(--border); padding: 3px 8px; border-radius: 2px; margin-top: 12px; margin-right: 6px; }
+
+  .ji-panel { background: var(--card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 24px; }
+  .ji-header { background: var(--accent2); color: white; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .ji-header-title { font-family: var(--mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; }
+  .ji-body { padding: 24px; }
+  .ji-headline { font-family: var(--serif); font-size: 1.3rem; color: var(--ink); margin-bottom: 10px; line-height: 1.3; }
+  .ji-explanation { font-size: 0.9rem; color: #374151; line-height: 1.7; margin-bottom: 16px; }
+
+  .ji-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  .ji-field { background: white; border: 1px solid var(--border); border-radius: 4px; padding: 14px; }
+  .ji-field-label { font-family: var(--mono); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 6px; }
+  .ji-field-value { font-size: 0.82rem; color: var(--ink); line-height: 1.5; }
+
+  .risk-signal { background: #fef3c7; border: 1px solid #f59e0b; border-left: 3px solid #f59e0b; border-radius: 4px; padding: 10px 14px; font-size: 0.82rem; color: #92400e; margin-top: 12px; }
+
+  .klh-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--ink); color: var(--paper); border: none; padding: 10px 18px; border-radius: 4px; font-family: var(--sans); font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+  .klh-btn:hover { background: var(--accent); }
+  .klh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .cas-gate { border: 2px solid var(--accent); border-radius: 6px; overflow: hidden; margin-bottom: 24px; }
+  .cas-gate-header { background: var(--accent); color: white; padding: 10px 20px; display: flex; align-items: center; gap: 8px; font-size: 0.82rem; font-weight: 600; }
+  .cas-body { padding: 20px; background: #fff8f5; }
+  .cas-title { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+  .cas-description { font-size: 0.85rem; color: #374151; margin-bottom: 16px; line-height: 1.6; }
+  .cas-risk-item { display: flex; align-items: flex-start; gap: 8px; font-size: 0.82rem; color: #7f1d1d; margin-bottom: 6px; }
+  .cas-actions { display: flex; gap: 10px; }
+
+  .btn-primary { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 4px; font-family: var(--sans); font-size: 0.85rem; font-weight: 500; cursor: pointer; }
+  .btn-primary:hover { background: #a83208; }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); padding: 10px 20px; border-radius: 4px; font-family: var(--sans); font-size: 0.85rem; cursor: pointer; }
+
+  .confidence-artefact { background: white; border: 1px solid var(--border); border-top: 3px solid var(--success); border-radius: 6px; padding: 24px; margin-bottom: 24px; }
+  .ca-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+  .ca-tick { width: 32px; height: 32px; background: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1rem; }
+  .ca-title { font-weight: 600; font-size: 1rem; }
+  .ca-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .ca-field { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 4px; padding: 12px; }
+  .ca-field-label { font-family: var(--mono); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 4px; }
+  .ca-field-value { font-size: 0.82rem; font-weight: 500; }
+  .ca-next-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .ca-action-btn { background: var(--paper); border: 1px solid var(--border); padding: 8px 14px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; font-family: var(--sans); }
+  .ca-action-btn:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  .step-nav { display: flex; gap: 10px; margin-top: 8px; }
+  .btn-nav { background: var(--ink); color: var(--paper); border: none; padding: 10px 22px; border-radius: 4px; font-size: 0.85rem; font-weight: 500; cursor: pointer; font-family: var(--sans); }
+  .btn-nav:hover { background: var(--accent2); }
+  .btn-nav:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .loading { display: none; align-items: center; gap: 10px; padding: 16px; font-size: 0.85rem; color: var(--muted); font-family: var(--mono); }
+  .loading.visible { display: flex; }
+  .spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-bar { display: none; background: #fef2f2; border: 1px solid #fca5a5; border-radius: 4px; padding: 10px 14px; font-size: 0.82rem; color: #991b1b; margin-bottom: 16px; }
+  .error-bar.visible { display: block; }
+
+  .raw-toggle { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); background: none; border: 1px solid var(--border); padding: 4px 10px; cursor: pointer; border-radius: 2px; }
+  .raw-json { display: none; background: #0d1117; color: #e5e7eb; border-radius: 4px; padding: 16px; font-family: var(--mono); font-size: 0.72rem; line-height: 1.6; overflow: auto; max-height: 280px; margin-top: 10px; white-space: pre; }
+  .raw-json.visible { display: block; }
+
+  audio { margin-top: 12px; width: 100%; display: none; }
+  audio.visible { display: block; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-title">
+    <h1>Journey Intelligence</h1>
+    <span>Skill Demo — Aadhaar eKYC Flow</span>
+  </div>
+  <div class="lang-selector">
+    <button class="lang-btn active" data-lang="en">EN</button>
+    <button class="lang-btn" data-lang="hi">हि</button>
+    <button class="lang-btn" data-lang="kn">ಕ</button>
+    <button class="lang-btn" data-lang="ta">த</button>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="sidebar-label">Canonical Flow</div>
+    <div id="step-list"></div>
+  </aside>
+
+  <main class="main">
+    <div id="error-bar" class="error-bar"></div>
+    <div id="loading" class="loading"><div class="spinner"></div><span>Generating rhetorical layer...</span></div>
+
+    <div class="section-label">Canonical Step</div>
+    <div class="canonical-card" id="canonical-display">
+      <h2 id="c-title">—</h2>
+      <p id="c-desc">—</p>
+      <div id="c-tags"></div>
+    </div>
+
+    <div class="ji-panel" id="ji-panel" style="display:none">
+      <div class="ji-header">
+        <span class="ji-header-title">⚡ Journey Intelligence Layer</span>
+        <button class="raw-toggle" onclick="toggleRaw('ji-raw')">JSON</button>
+      </div>
+      <div class="ji-body">
+        <div class="ji-headline" id="ji-headline"></div>
+        <div class="ji-explanation" id="ji-explanation"></div>
+        <div id="ji-risk"></div>
+        <button class="klh-btn" id="klh-btn" onclick="playKyaLikhaHai()">
+          <span>👂</span> Kya Likha Hai — सुनें
+        </button>
+        <audio id="klh-audio" controls></audio>
+        <div class="ji-grid">
+          <div class="ji-field">
+            <div class="ji-field-label">What happens next</div>
+            <div class="ji-field-value" id="ji-next"></div>
+          </div>
+          <div class="ji-field">
+            <div class="ji-field-label">Help nudge</div>
+            <div class="ji-field-value" id="ji-nudge"></div>
+          </div>
+        </div>
+      </div>
+      <pre class="raw-json" id="ji-raw"></pre>
+    </div>
+
+    <div class="cas-gate" id="cas-gate" style="display:none">
+      <div class="cas-gate-header"><span>⛔</span> Comprehension Gate — Action Required</div>
+      <div class="cas-body">
+        <div class="cas-title" id="cas-title"></div>
+        <div class="cas-description" id="cas-desc"></div>
+        <div id="cas-risks"></div>
+        <div class="cas-actions">
+          <button class="btn-primary" onclick="passCASGate()">I understand, proceed</button>
+          <button class="btn-ghost" onclick="goBack()">Go back</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="confidence-artefact" id="conf-artefact" style="display:none">
+      <div class="ca-header">
+        <div class="ca-tick">✓</div>
+        <div class="ca-title" id="ca-title"></div>
+      </div>
+      <div class="ca-grid">
+        <div class="ca-field"><div class="ca-field-label">What happened</div><div class="ca-field-value" id="ca-happened"></div></div>
+        <div class="ca-field"><div class="ca-field-label">Sent to</div><div class="ca-field-value" id="ca-recipient"></div></div>
+        <div class="ca-field"><div class="ca-field-label">Reference</div><div class="ca-field-value" id="ca-ref"></div></div>
+        <div class="ca-field"><div class="ca-field-label">Timestamp</div><div class="ca-field-value" id="ca-time"></div></div>
+      </div>
+      <div class="ca-next-actions" id="ca-actions"></div>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn-nav" id="btn-prev" onclick="navigate(-1)" disabled>← Previous</button>
+      <button class="btn-nav" id="btn-next" onclick="navigate(1)">Next →</button>
+    </div>
+  </main>
+</div>
+
+<script>
+const FLOW = {
+  id: 'aadhaar-ekyc',
+  name: 'Aadhaar eKYC',
+  steps: [
+    { id: 'consent', name: 'Consent Screen', type: 'navigate', title: 'Share Aadhaar for Verification', description: 'The application requires your consent to use Aadhaar-based eKYC for identity verification.', tags: ['consent'], materiality: 'NAVIGATIONAL', risks: [] },
+    { id: 'aadhaar-entry', name: 'Aadhaar Entry', type: 'form-complete', title: 'Enter Aadhaar Number', description: 'Enter your 12-digit Aadhaar number to initiate OTP-based verification.', tags: ['submit'], materiality: 'TRANSACTIONAL', summary_fields: ['Aadhaar number (masked)'], risks: [] },
+    { id: 'otp-verify', name: 'OTP Verification', type: 'otp-verify', title: 'Enter OTP', description: 'A 6-digit OTP has been sent to the mobile number registered with your Aadhaar.', tags: ['otp', 'verify'], materiality: 'TRANSACTIONAL', summary_fields: ['OTP validity: 10 minutes'], risks: [] },
+    { id: 'ekyc-confirm', name: 'eKYC Consent & Submit', type: 'submit', title: 'Authorise eKYC Data Share', description: 'By proceeding, you authorise UIDAI to share your identity data with the requesting entity. This action is recorded and cannot be reversed.', tags: ['ekyc', 'consent-permanent', 'biometric'], materiality: 'CONSEQUENTIAL', irreversible: true, cas_title: 'Your data will be permanently shared', cas_body: 'By tapping proceed, you give irrevocable consent to share your Aadhaar-linked identity with the requesting entity. UIDAI will log this action permanently.', cas_confirm_label: 'I consent, share my data', risks: ['This consent is permanent and cannot be withdrawn', 'Your name, address, photo, and DOB will be shared', 'This action will be recorded in UIDAI logs'] }
+  ]
+};
+
+let currentStep = 0;
+let currentLang = 'en';
+let casGatePassed = false;
+let rhetoricalData = null;
+
+function init() {
+  buildSidebar();
+  loadStep(0);
+}
+
+function buildSidebar() {
+  document.getElementById('step-list').innerHTML = FLOW.steps.map((step, i) => `
+    <div class="flow-step" id="sidebar-step-${i}" onclick="navigate(${i - currentStep})">
+      <div class="step-num">${i + 1}</div>
+      <div class="step-meta">
+        <div class="step-name">${step.name}</div>
+        <span class="materiality-badge badge-${step.materiality}">${step.materiality}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateSidebar() {
+  FLOW.steps.forEach((_, i) => {
+    const el = document.getElementById(`sidebar-step-${i}`);
+    el.className = 'flow-step' + (i === currentStep ? ' active' : '') + (i < currentStep ? ' done' : '');
+  });
+}
+
+async function loadStep(index) {
+  currentStep = index;
+  casGatePassed = false;
+  rhetoricalData = null;
+  updateSidebar();
+  hideAll();
+  clearError();
+  const step = FLOW.steps[currentStep];
+  document.getElementById('c-title').textContent = step.title;
+  document.getElementById('c-desc').textContent = step.description;
+  document.getElementById('c-tags').innerHTML = step.tags.map(t => `<span class="canonical-tag">${t}</span>`).join('');
+  document.getElementById('btn-prev').disabled = currentStep === 0;
+  document.getElementById('btn-next').textContent = currentStep === FLOW.steps.length - 1 ? 'Complete Flow' : 'Next →';
+  await fetchRhetoricalLayer(step);
+}
+
+async function fetchRhetoricalLayer(step) {
+  setLoading(true);
+  try {
+    const response = await fetch('/api/rhetorical', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ step, context: { language: currentLang, userProfile: 'first-time', materiality: step.materiality, appName: 'Aadhaar eKYC' } })
+    });
+    const data = await response.json();
+    if (data.error) throw new Error(data.error);
+    rhetoricalData = data;
+    renderRhetoricalLayer(data, step);
+    if (step.materiality === 'CONSEQUENTIAL' || step.materiality === 'TRANSACTIONAL') renderCASGate(step);
+  } catch (e) {
+    showError('Rhetorical layer: ' + e.message);
+  } finally {
+    setLoading(false);
+  }
+}
+
+function renderRhetoricalLayer(data, step) {
+  document.getElementById('ji-headline').textContent = data.headline || '';
+  document.getElementById('ji-explanation').textContent = data.plain_explanation || '';
+  document.getElementById('ji-next').textContent = data.what_happens_next || '—';
+  document.getElementById('ji-nudge').textContent = data.help_nudge || '—';
+  const riskEl = document.getElementById('ji-risk');
+  riskEl.innerHTML = data.risk_signal ? `<div class="risk-signal">⚠️ ${data.risk_signal}</div>` : '';
+  document.getElementById('ji-raw').textContent = JSON.stringify(data, null, 2);
+  document.getElementById('klh-btn').style.display = (step.materiality === 'CONSEQUENTIAL' || step.materiality === 'TRANSACTIONAL') ? 'inline-flex' : 'none';
+  document.getElementById('klh-audio').className = '';
+  document.getElementById('ji-panel').style.display = 'block';
+}
+
+function renderCASGate(step) {
+  if (casGatePassed) return;
+  document.getElementById('cas-title').textContent = step.cas_title || 'Confirm before proceeding';
+  document.getElementById('cas-desc').textContent = step.cas_body || '';
+  document.getElementById('cas-risks').innerHTML = (step.risks || []).map(r => `<div class="cas-risk-item"><span>▸</span><span>${r}</span></div>`).join('');
+  document.getElementById('cas-gate').style.display = 'block';
+}
+
+async function playKyaLikhaHai() {
+  if (!rhetoricalData?.kya_likha_hai_script) return;
+  const btn = document.getElementById('klh-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;display:inline-block"></span> Generating audio...';
+  try {
+    const response = await fetch('/api/kya-likha-hai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: rhetoricalData.kya_likha_hai_script, language: currentLang })
+    });
+    const data = await response.json();
+    if (data.error) throw new Error(data.error);
+    const audio = document.getElementById('klh-audio');
+    audio.src = data.data_uri;
+    audio.className = 'visible';
+    audio.play();
+  } catch (e) {
+    showError('Audio: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>👂</span> Kya Likha Hai — सुनें';
+  }
+}
+
+function passCASGate() {
+  casGatePassed = true;
+  document.getElementById('cas-gate').style.display = 'none';
+  if (currentStep === FLOW.steps.length - 1) renderConfidenceArtefact();
+}
+
+function goBack() { if (currentStep > 0) navigate(-1); }
+
+async function renderConfidenceArtefact() {
+  try {
+    const txn = { action: 'aadhaar-ekyc', timestamp: new Date().toISOString(), actor: '7845********', recipient: 'Bank of Baroda', changed: ['Identity verified via Aadhaar OTP', 'KYC status: Approved', 'Consent logged'], next_actions: [{ label: 'Download receipt', action_id: 'download-receipt' }, { label: 'Return to app', action_id: 'return-to-app' }], reference_id: `TXN${Date.now()}`, materiality: 'CONSEQUENTIAL' };
+    const response = await fetch('/api/confidence-artefact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ transaction: txn, options: { what_happened: 'Aadhaar eKYC complete. Identity verified and shared with consent.' } }) });
+    const data = await response.json();
+    if (data.error) throw new Error(data.error);
+    document.getElementById('ca-title').textContent = data.display.what_happened;
+    document.getElementById('ca-happened').textContent = data.display.what_changed.join(', ');
+    document.getElementById('ca-recipient').textContent = data.display.who_received || '—';
+    document.getElementById('ca-ref').textContent = data.display.reference || '—';
+    document.getElementById('ca-time').textContent = new Date(data.display.timestamp).toLocaleString('en-IN');
+    document.getElementById('ca-actions').innerHTML = data.next_actions.map(a => `<button class="ca-action-btn">${a.label}</button>`).join('');
+    document.getElementById('conf-artefact').style.display = 'block';
+    document.getElementById('btn-next').disabled = true;
+  } catch (e) {
+    showError('Confidence artefact: ' + e.message);
+  }
+}
+
+function navigate(delta) {
+  const next = currentStep + delta;
+  if (next < 0 || next > FLOW.steps.length - 1) return;
+  if (delta > 0 && ['TRANSACTIONAL','CONSEQUENTIAL'].includes(FLOW.steps[currentStep].materiality) && !casGatePassed) {
+    showError('Complete the comprehension gate before proceeding.');
+    return;
+  }
+  if (delta > 0 && currentStep === FLOW.steps.length - 1) { renderConfidenceArtefact(); return; }
+  loadStep(next);
+}
+
+function hideAll() {
+  document.getElementById('ji-panel').style.display = 'none';
+  document.getElementById('cas-gate').style.display = 'none';
+  document.getElementById('conf-artefact').style.display = 'none';
+}
+
+function setLoading(v) { document.getElementById('loading').className = v ? 'loading visible' : 'loading'; }
+function showError(msg) { const el = document.getElementById('error-bar'); el.textContent = '⚠ ' + msg; el.className = 'error-bar visible'; }
+function clearError() { document.getElementById('error-bar').className = 'error-bar'; }
+function toggleRaw(id) { const el = document.getElementById(id); el.className = el.className.includes('visible') ? 'raw-json' : 'raw-json visible'; }
+
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentLang = btn.dataset.lang;
+    loadStep(currentStep);
+  });
+});
+
+init();
+</script>
+</body>
+</html>
