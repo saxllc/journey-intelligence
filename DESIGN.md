@@ -100,8 +100,19 @@ The approach borrows Wise's confidence (bold weights, tight headings, pill butto
 ### Cards
 - Background: `#FFFFFF`
 - Radius: 16px
-- Shadow: `0 1px 3px rgba(0,0,0,0.04)` — minimal
+- Shadow: `rgba(14,15,12,0.12) 0px 0px 0px 1px` — ring shadow
 - Padding: 20px
+- ACTION REQUIRED cards: 4px left border `#FF6B00`, background `#FFFAF5`
+- IRREVERSIBLE cards: 4px left border `#DC2626`, background `#FFF8F8`
+
+### Form Inputs (responsive)
+- All inputs use `flex: 1; min-width: 0` — never fixed pixel widths
+- Aadhaar: 3 groups, `gap: 6px`, `height: 48px`, `font-size: 18px`, `letter-spacing: 2px`, `padding: 0 4px`
+- OTP: 6 single-digit boxes, `flex: 1; min-width: 0`, `height: 50px`, `font-size: 20px`, `gap: 6px`
+- Consent: checkbox 22px + label, `gap: 10px`
+- Focus: `border-color: #2563EB`
+- OTP filled: `border-color: #9fe870; background: #F7FDF4`
+- Radius: 10-12px matching card inner elements
 
 ### Bottom Sheets
 - Radius: 20px 20px 0 0
