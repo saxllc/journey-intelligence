@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Journey Intelligence — Aadhaar Address Update v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #FEF5EE; --navy: #1B365D; --white: #FFFFFF;
+  --text-1: #0e0f0c; --text-2: #454745; --text-3: #868685;
+  --green: #2E7D32; --green-lt: #E8F5E9; --green-dk: #1B5E20;
+  --blue: #2563EB; --blue-lt: #F0F4FF;
+  --orange: #FF6B00; --red: #DC2626; --red-lt: #FEF2F2;
+  --amber: #F59E0B; --amber-lt: #FFFBEB;
+  --border: #E5E7EB; --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --r: 12px; --rl: 16px; --pill: 9999px;
+  --font: 'Inter', -apple-system, sans-serif;
+}
+html, body { font-family: var(--font); background: #1a1a2e; color: var(--text-1); -webkit-font-smoothing: antialiased; overflow: hidden; height: 100%; }
+
+/* PHONE FRAME */
+.phone-wrap { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 393px; height: 852px; border-radius: 52px; background: #000; padding: 12px; box-shadow: 0 25px 60px rgba(0,0,0,0.5); }
+.phone-screen { width: 100%; height: 100%; border-radius: 42px; background: var(--bg); overflow: hidden; display: flex; flex-direction: column; position: relative; }
+@media (max-width:430px) { body { background: var(--bg); } .phone-wrap { position: fixed; top:0; left:0; transform: none; width:100%; height:100%; border-radius:0; padding:0; box-shadow:none; background: var(--bg); } .phone-screen { border-radius:0; } }
+
+/* STATUS BAR */
+.status-bar { display: flex; justify-content: space-between; align-items: center; padding: 8px 24px 4px; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+.status-bar-r { display: flex; gap: 4px; align-items: center; }
+.status-bar-r svg { width: 16px; height: 16px; }
+
+/* APP BAR */
+.app-bar { display: flex; align-items: center; gap: 8px; padding: 8px 16px 12px; flex-shrink: 0; }
+.app-bar-back { width: 36px; height: 36px; border: none; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+.app-bar-back:active { background: rgba(0,0,0,0.05); }
+.app-bar-back svg { width: 20px; height: 20px; }
+.app-bar-title { font-size: 17px; font-weight: 600; flex: 1; }
+.app-bar-lang { width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 50%; background: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: var(--navy); }
+
+/* PROGRESS */
+.progress-track { display: flex; gap: 4px; padding: 0 16px 12px; flex-shrink: 0; }
+.progress-seg { flex: 1; height: 4px; border-radius: 2px; background: var(--border); transition: background 0.3s; }
+.progress-seg.done { background: var(--green); }
+.progress-seg.active { background: var(--navy); }
+
+/* CONTENT */
+.content-area { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0 16px 16px; -webkit-overflow-scrolling: touch; }
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* === PERSONA SELECTION === */
+.persona-header { text-align: center; padding: 16px 0 8px; }
+.persona-header h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.persona-header p { font-size: 13px; color: var(--text-2); line-height: 1.4; }
+.persona-cards { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.persona-card { padding: 14px; background: var(--white); border-radius: var(--rl); border: 2px solid var(--border); cursor: pointer; transition: all 0.15s; }
+.persona-card:active { transform: scale(0.98); }
+.persona-card.selected { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,54,93,0.12); }
+.persona-card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.persona-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.persona-name { font-size: 15px; font-weight: 600; }
+.persona-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.persona-tag { font-size: 10px; padding: 2px 8px; border-radius: var(--pill); background: #f3f4f6; color: var(--text-3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.3px; }
+
+/* Persona-specific avatar colors */
+.persona-maya .persona-avatar { background: var(--green-lt); }
+.persona-arjun .persona-avatar { background: var(--blue-lt); }
+.persona-rajan .persona-avatar { background: var(--amber-lt); }
+.persona-priya .persona-avatar { background: #F3E8FF; }
+.persona-custom .persona-avatar { background: #f3f4f6; }
+
+/* === CONFIG CHIPS (for custom) === */
+.config-panel { display: none; margin-top: 12px; padding: 12px; background: var(--white); border-radius: var(--rl); border: 1px solid var(--border); }
+.config-panel.show { display: block; }
+.config-section { margin-bottom: 12px; }
+.config-label { font-size: 11px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.config-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.config-chip { padding: 7px 12px; border-radius: var(--r); border: 1.5px solid var(--border); background: var(--white); font-size: 13px; font-weight: 500; color: var(--text-2); cursor: pointer; transition: all 0.15s; }
+.config-chip:active { transform: scale(0.96); }
+.config-chip.sel { border-color: var(--navy); background: var(--navy); color: var(--white); }
+
+/* === SHARED COMPONENTS === */
+.card { background: var(--white); border-radius: var(--rl); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+.section-title { font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+.section-sub { font-size: 14px; color: var(--text-2); margin-bottom: 16px; line-height: 1.5; }
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 13px; font-weight: 500; margin-bottom: 5px; display: block; }
+.form-label .req { color: var(--red); }
+.form-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: var(--r); font-size: 15px; font-family: var(--font); background: var(--white); color: var(--text-1); transition: border-color 0.2s; -webkit-appearance: none; }
+.form-input:focus { outline: none; border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,54,93,0.1); }
+.form-input::placeholder { color: var(--text-3); }
+.form-select { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: var(--r); font-size: 15px; font-family: var(--font); background: var(--white); color: var(--text-1); cursor: pointer; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23868685' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+
+/* UPLOAD */
+.upload-option { display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--white); border: 1.5px solid var(--border); border-radius: var(--r); cursor: pointer; margin-bottom: 8px; transition: all 0.15s; }
+.upload-option:active { transform: scale(0.98); }
+.upload-opt-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--blue-lt); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 20px; }
+.upload-opt-text { flex: 1; }
+.upload-opt-title { font-size: 14px; font-weight: 600; }
+.upload-opt-sub { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.file-card { display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--white); border: 1.5px solid var(--border); border-radius: var(--r); margin-bottom: 8px; }
+.file-card-info { flex: 1; }
+.file-card-name { font-size: 13px; font-weight: 500; }
+.file-card-size { font-size: 11px; color: var(--text-3); }
+.file-card-del { font-size: 13px; color: var(--red); font-weight: 500; cursor: pointer; border: none; background: none; font-family: var(--font); }
+
+/* CHECKBOX */
+.chk-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; cursor: pointer; }
+.chk-box { width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 6px; flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.chk-row.checked .chk-box { background: var(--navy); border-color: var(--navy); }
+.chk-box svg { width: 14px; height: 14px; display: none; }
+.chk-row.checked .chk-box svg { display: block; }
+.chk-text { font-size: 13px; color: var(--text-2); line-height: 1.4; }
+
+/* PREVIEW */
+.preview-card { background: var(--white); border-radius: var(--r); padding: 14px; margin-bottom: 10px; border: 1px solid var(--border); }
+.preview-card-label { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.preview-card-text { font-size: 14px; color: var(--text-2); line-height: 1.5; }
+.preview-edit { display: block; text-align: right; font-size: 13px; color: var(--blue); font-weight: 500; margin-top: 6px; cursor: pointer; }
+.auto-tag { display: inline-block; font-size: 11px; padding: 2px 8px; background: var(--blue-lt); color: var(--blue); border-radius: var(--pill); font-weight: 500; margin-top: 4px; }
+
+/* FACE */
+.face-frame { width: 200px; height: 200px; margin: 20px auto; border-radius: 50%; border: 4px solid var(--green); display: flex; align-items: center; justify-content: center; background: #f0f0f0; cursor: pointer; }
+.face-inner { width: 160px; height: 160px; border-radius: 50%; border: 2px dashed var(--text-3); display: flex; align-items: center; justify-content: center; font-size: 60px; opacity: 0.3; }
+.face-inst { text-align: center; font-size: 16px; font-weight: 700; margin-top: 12px; }
+.face-sub { text-align: center; font-size: 13px; color: var(--text-2); margin-top: 4px; }
+.face-ok { display: none; text-align: center; padding: 20px; background: var(--green-lt); border-radius: var(--rl); margin-top: 16px; }
+.face-ok.show { display: block; }
+.face-ok-text { font-size: 16px; font-weight: 700; color: var(--green); }
+
+/* PAYMENT */
+.pay-amt { text-align: center; margin: 12px 0 20px; }
+.pay-amt-val { font-size: 32px; font-weight: 700; color: var(--navy); }
+.pay-note { padding: 14px; background: var(--amber-lt); border-radius: var(--r); margin-top: 12px; border-left: 3px solid var(--amber); }
+.pay-note-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.pay-note-text { font-size: 13px; color: var(--text-2); line-height: 1.4; }
+.pay-note-warn { font-size: 12px; color: var(--red); margin-top: 6px; }
+.pay-option { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--white); border: 2px solid var(--navy); border-radius: var(--r); margin-bottom: 12px; }
+.pay-radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--navy); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.pay-radio-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--navy); }
+
+/* CAS */
+.cas-box { margin-top: 12px; padding: 16px; background: var(--red-lt); border-radius: var(--rl); border: 1px solid #fca5a5; }
+.cas-title { font-size: 15px; font-weight: 700; color: var(--red); margin-bottom: 8px; }
+.cas-risk { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--text-2); margin-bottom: 6px; line-height: 1.4; }
+
+/* SUCCESS */
+.success-icon { width: 72px; height: 72px; margin: 16px auto; background: var(--navy); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.success-icon svg { width: 32px; height: 32px; }
+.success-title { text-align: center; font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.success-sub { text-align: center; font-size: 13px; color: var(--text-2); margin-bottom: 16px; line-height: 1.4; }
+.receipt-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.receipt-row:last-child { border-bottom: none; }
+.receipt-lbl { color: var(--text-3); }
+.receipt-val { font-weight: 500; text-align: right; }
+
+/* RESIDUAL */
+.residual { margin-top: 16px; background: var(--white); border-radius: var(--rl); overflow: hidden; border: 1px solid var(--border); touch-action: pan-y; }
+.residual-hdr { padding: 12px 16px; text-align: center; font-size: 13px; font-weight: 600; color: var(--text-2); }
+.residual-body { padding: 12px 16px; text-align: center; min-height: 64px; transition: background 0.2s; }
+.residual-prompt { font-size: 14px; font-weight: 500; }
+.residual-sub { font-size: 12px; color: var(--text-3); margin-top: 4px; }
+.residual-hint { display: flex; justify-content: space-between; padding: 8px 16px; font-size: 11px; color: var(--text-3); }
+.residual-result { display: none; text-align: center; padding: 16px; border-radius: var(--rl); }
+.residual-result.show { display: block; }
+.residual-result.relieved { background: var(--green-lt); border: 2px solid var(--green); }
+.residual-result.relieved .rr-text { color: var(--green); }
+.residual-result.anxious { background: var(--red-lt); border: 2px solid var(--red); }
+.residual-result.anxious .rr-text { color: var(--red); }
+.rr-icon { font-size: 28px; margin-bottom: 6px; }
+.rr-text { font-size: 15px; font-weight: 600; }
+.rr-sub { font-size: 12px; color: var(--text-3); margin-top: 4px; }
+
+/* BOTTOM NAV */
+.bottom-nav { display: flex; gap: 10px; padding: 12px 16px; background: var(--bg); border-top: 1px solid var(--border); flex-shrink: 0; }
+.btn { flex: 1; padding: 14px; border-radius: var(--pill); font-size: 15px; font-weight: 600; font-family: var(--font); cursor: pointer; border: none; transition: all 0.15s; text-align: center; }
+.btn:active { transform: scale(0.97); }
+.btn-1 { background: var(--navy); color: var(--white); }
+.btn-1:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.btn-2 { background: var(--white); color: var(--text-1); border: 1px solid var(--border); }
+.btn-red { background: var(--red); color: var(--white); }
+.btn-full { flex: none; width: 100%; }
+.btn-link { background: none; border: none; color: var(--blue); font-size: 14px; font-weight: 500; cursor: pointer; padding: 8px; text-align: center; width: 100%; font-family: var(--font); }
+.auto-saved { text-align: center; font-size: 11px; color: var(--text-3); padding: 4px 0; }
+
+/* === DRAWER === */
+.drawer-overlay { position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.3); z-index: 10; display: none; opacity: 0; transition: opacity 0.3s; }
+.drawer-overlay.show { display: block; opacity: 1; }
+.drawer { position: absolute; bottom: 0; left: 0; right: 0; background: var(--white); border-radius: 20px 20px 0 0; z-index: 20; transform: translateY(calc(100% - 52px)); transition: transform 0.35s cubic-bezier(0.32,0.72,0,1); max-height: 70%; display: flex; flex-direction: column; box-shadow: 0 -4px 20px rgba(0,0,0,0.1); }
+.drawer.peek { transform: translateY(calc(100% - 52px)); }
+.drawer.half { transform: translateY(40%); }
+.drawer.open { transform: translateY(0); }
+.drawer.hidden { transform: translateY(100%); }
+.drawer-hdr { padding: 8px 16px 6px; cursor: pointer; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; user-select: none; }
+.drawer-handle { width: 36px; height: 4px; border-radius: 2px; background: var(--border); margin-bottom: 6px; }
+.drawer-hdr-row { display: flex; align-items: center; width: 100%; gap: 8px; }
+.dpl-bar { width: 8px; height: 28px; border-radius: 4px; flex-shrink: 0; transition: background 0.3s; }
+.dpl-bar.high { background: var(--green); }
+.dpl-bar.medium { background: var(--amber); }
+.dpl-bar.low { background: var(--red); }
+.drawer-title { flex: 1; font-size: 13px; font-weight: 600; color: var(--text-2); }
+.drawer-dpl-label { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: var(--pill); margin-right: 4px; }
+.dpl-thick { background: var(--green-lt); color: var(--green); }
+.dpl-medium { background: var(--amber-lt); color: var(--amber); }
+.dpl-thin { background: var(--red-lt); color: var(--red); }
+.drawer-klh { width: 36px; height: 36px; border-radius: 50%; background: var(--orange); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+.drawer-klh:active { transform: scale(0.9); }
+.drawer-klh svg { width: 20px; height: 20px; }
+.drawer-toggle { width: 28px; height: 28px; border: none; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.3s; flex-shrink: 0; }
+.drawer-toggle.flip { transform: rotate(180deg); }
+.drawer-body { flex: 1; overflow-y: auto; padding: 0 16px 16px; -webkit-overflow-scrolling: touch; }
+.drawer-lang { display: flex; gap: 6px; margin-bottom: 12px; }
+.lang-pill { padding: 6px 14px; border-radius: var(--pill); font-size: 12px; font-weight: 600; border: 1.5px solid var(--border); background: var(--white); color: var(--text-2); cursor: pointer; }
+.lang-pill.on { background: var(--navy); color: var(--white); border-color: var(--navy); }
+.ji-sec { margin-bottom: 10px; }
+.ji-lbl { font-size: 11px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.ji-txt { font-size: 14px; color: var(--text-1); line-height: 1.5; }
+.ji-txt.risk { color: var(--red); font-weight: 500; }
+.ji-loading { display: flex; align-items: center; gap: 8px; padding: 16px 0; color: var(--text-3); font-size: 13px; }
+.ji-spin { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--navy); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* KLH SHEET */
+.klh-sheet { position: absolute; bottom: 0; left: 0; right: 0; background: var(--white); border-radius: 20px 20px 0 0; z-index: 30; padding: 16px; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.32,0.72,0,1); box-shadow: 0 -4px 20px rgba(0,0,0,0.15); }
+.klh-sheet.open { transform: translateY(0); }
+.klh-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.klh-title { font-size: 15px; font-weight: 600; }
+.klh-close { width: 28px; height: 28px; border-radius: 50%; border: none; background: #f0f0f0; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+.klh-status { font-size: 13px; color: var(--text-2); margin-bottom: 8px; }
+.klh-script { font-size: 13px; color: var(--text-3); line-height: 1.5; padding: 10px; background: #f9f9f9; border-radius: 8px; margin-bottom: 10px; max-height: 140px; overflow-y: auto; }
+.klh-audio { width: 100%; margin-top: 8px; }
+
+/* TOAST */
+.toast { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--green); color: var(--white); padding: 10px 20px; border-radius: var(--pill); font-size: 13px; font-weight: 500; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 50; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ===== PERSONA VARIANT: MAYA (Lite UI) ===== */
+.maya-addr { background: var(--green-lt); border-radius: var(--rl); padding: 16px; }
+.maya-addr .maya-voice-area { text-align: center; margin-bottom: 16px; }
+.maya-addr .maya-mic { width: 64px; height: 64px; border-radius: 50%; background: var(--green); margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; }
+.maya-addr .maya-mic:active { transform: scale(0.95); }
+.maya-addr .maya-voice-title { font-size: 16px; font-weight: 700; }
+.maya-addr .maya-voice-sub { font-size: 13px; color: var(--text-2); }
+.maya-addr .maya-wave { text-align: center; font-size: 24px; letter-spacing: 4px; color: var(--green-dk); margin: 8px 0; }
+.maya-addr .maya-input { display: flex; align-items: center; gap: 8px; padding: 12px; background: var(--white); border-radius: var(--r); border: 1.5px solid var(--border); margin-bottom: 12px; }
+.maya-addr .maya-input input { flex: 1; border: none; outline: none; font-size: 15px; font-family: var(--font); background: transparent; }
+.maya-addr .maya-input .mic-sm { font-size: 18px; cursor: pointer; }
+.maya-numpad { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
+.maya-numpad button { padding: 14px; border-radius: 50%; background: var(--green); color: var(--white); font-size: 20px; font-weight: 700; border: none; cursor: pointer; font-family: var(--font); }
+.maya-numpad button:active { transform: scale(0.95); opacity: 0.8; }
+.maya-helpline { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; background: var(--green); border-radius: var(--pill); color: var(--white); font-size: 14px; font-weight: 600; cursor: pointer; }
+
+/* ===== PERSONA VARIANT: ARJUN (Advanced) ===== */
+.arjun-addr .arjun-search { display: flex; align-items: center; gap: 8px; padding: 12px 14px; background: var(--white); border: 1.5px solid var(--border); border-radius: var(--r); margin-bottom: 12px; }
+.arjun-addr .arjun-search input { flex: 1; border: none; outline: none; font-size: 15px; font-family: var(--font); }
+.arjun-addr .arjun-search .search-icon { color: var(--text-3); }
+.arjun-map { width: 100%; height: 200px; border-radius: var(--r); background: #e8e8e8; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border: 1px solid var(--border); }
+.arjun-map-placeholder { color: var(--text-3); font-size: 13px; text-align: center; }
+.arjun-map-actions { display: flex; gap: 8px; margin-bottom: 12px; }
+.arjun-map-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; border: 1.5px solid var(--border); border-radius: var(--r); background: var(--white); cursor: pointer; font-size: 13px; font-weight: 500; font-family: var(--font); }
+.arjun-map-btn:active { background: #f9f9f9; }
+.arjun-time { font-size: 12px; color: var(--text-3); text-align: right; margin-bottom: 8px; }
+
+/* ===== PERSONA VARIANT: RAJAN (Senior/Guided) ===== */
+.rajan-addr .rajan-progress { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 16px; }
+.rajan-addr .rajan-step-num { width: 32px; height: 32px; border-radius: 50%; background: var(--border); color: var(--text-3); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+.rajan-addr .rajan-step-num.active { background: var(--navy); color: var(--white); }
+.rajan-addr .rajan-step-num.done { background: var(--green); color: var(--white); }
+.rajan-addr .rajan-line { width: 40px; height: 3px; background: var(--border); }
+.rajan-addr .rajan-line.done { background: var(--green); }
+.rajan-info { display: flex; gap: 10px; padding: 12px; background: var(--blue-lt); border-radius: var(--r); margin-bottom: 16px; align-items: flex-start; }
+.rajan-info-icon { font-size: 18px; flex-shrink: 0; }
+.rajan-info-text { font-size: 14px; color: var(--text-2); line-height: 1.5; }
+.rajan-form-group { margin-bottom: 16px; }
+.rajan-form-group .form-label { font-size: 15px; font-weight: 600; }
+.rajan-form-group .form-input { font-size: 17px; padding: 14px 16px; }
+.rajan-example { display: inline-block; font-size: 12px; color: var(--blue); cursor: pointer; margin-top: 4px; padding: 2px 8px; border: 1px solid var(--blue); border-radius: var(--pill); }
+.rajan-speak { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border: 1.5px solid var(--border); border-radius: var(--r); margin-top: 12px; cursor: pointer; font-size: 14px; color: var(--text-2); font-family: var(--font); background: var(--white); width: 100%; }
+
+/* ===== PERSONA VARIANT: PRIYA (Screen Reader) ===== */
+.priya-addr { background: #1a1a1a; color: #e0e0e0; border-radius: var(--rl); padding: 16px; }
+.priya-addr .priya-header { text-align: center; padding: 10px; border: 1px solid #444; border-radius: var(--r); margin-bottom: 12px; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; color: #ccc; }
+.priya-voice-card { padding: 12px; background: #1B5E20; border-radius: var(--r); margin-bottom: 12px; }
+.priya-voice-title { font-size: 14px; font-weight: 700; color: #66BB6A; margin-bottom: 4px; }
+.priya-voice-cmd { font-size: 13px; color: #A5D6A7; }
+.priya-current { margin-bottom: 12px; }
+.priya-current-label { font-size: 12px; font-weight: 700; color: #F44336; margin-bottom: 4px; letter-spacing: 0.5px; }
+.priya-current-addr { padding: 10px; border: 1px solid #F44336; border-radius: var(--r); font-size: 14px; color: #eee; line-height: 1.5; }
+.priya-commands { margin-top: 12px; }
+.priya-commands-label { font-size: 12px; font-weight: 700; color: #66BB6A; margin-bottom: 8px; letter-spacing: 0.5px; }
+.priya-cmd-item { font-size: 13px; color: #bbb; padding: 6px 0; border-bottom: 1px solid #333; }
+.priya-shortcuts { margin-top: 12px; text-align: center; font-size: 11px; color: #666; line-height: 1.6; }
+
+.hidden { display: none !important; }
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+</style>
+</head>
+<body>
+<div class="phone-wrap">
+<div class="phone-screen" id="phoneScreen">
+
+  <div class="status-bar">
+    <span id="clock">9:41</span>
+    <div class="status-bar-r">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+    </div>
+  </div>
+
+  <div class="app-bar" id="appBar" style="display:none">
+    <button class="app-bar-back" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <span class="app-bar-title" id="appBarTitle">Address Update</span>
+    <button class="app-bar-lang" onclick="toggleDrawer()">अ</button>
+  </div>
+
+  <div class="progress-track" id="progressTrack" style="display:none">
+    <div class="progress-seg" id="seg0"></div>
+    <div class="progress-seg" id="seg1"></div>
+    <div class="progress-seg" id="seg2"></div>
+    <div class="progress-seg" id="seg3"></div>
+  </div>
+
+  <div class="content-area" id="contentArea">
+
+    <!-- SCREEN: PERSONA SELECT -->
+    <div class="screen active" id="screen-config">
+      <div class="persona-header">
+        <div style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:1px">Journey Intelligence</div>
+        <h1>Aadhaar Address Update</h1>
+        <p>Select a persona to see how the same canonical flow adapts its form layout, density, and rhetorical layer.</p>
+      </div>
+
+      <div class="persona-cards">
+        <div class="persona-card persona-maya" data-persona="maya" onclick="selectPersona(this)">
+          <div class="persona-card-top"><div class="persona-avatar">👩</div><div class="persona-name">Maya</div></div>
+          <div class="persona-tags">
+            <span class="persona-tag">Lite UI</span><span class="persona-tag">Voice</span><span class="persona-tag">Regional</span><span class="persona-tag">Low literacy</span><span class="persona-tag">Poor network</span>
+          </div>
+        </div>
+        <div class="persona-card persona-arjun" data-persona="arjun" onclick="selectPersona(this)">
+          <div class="persona-card-top"><div class="persona-avatar">👨</div><div class="persona-name">Arjun</div></div>
+          <div class="persona-tags">
+            <span class="persona-tag">Advanced</span><span class="persona-tag">Auto-complete</span><span class="persona-tag">Map</span><span class="persona-tag">5G</span><span class="persona-tag">English</span>
+          </div>
+        </div>
+        <div class="persona-card persona-rajan" data-persona="rajan" onclick="selectPersona(this)">
+          <div class="persona-card-top"><div class="persona-avatar">👴</div><div class="persona-name">Rajan</div></div>
+          <div class="persona-tags">
+            <span class="persona-tag">Large text</span><span class="persona-tag">Step-by-step</span><span class="persona-tag">Guide</span><span class="persona-tag">Senior</span><span class="persona-tag">English</span>
+          </div>
+        </div>
+        <div class="persona-card persona-priya" data-persona="priya" onclick="selectPersona(this)">
+          <div class="persona-card-top"><div class="persona-avatar">👩‍🦯</div><div class="persona-name">Priya</div></div>
+          <div class="persona-tags">
+            <span class="persona-tag">Screen reader</span><span class="persona-tag">Voice</span><span class="persona-tag">High contrast</span><span class="persona-tag">Simple</span>
+          </div>
+        </div>
+        <div class="persona-card persona-custom" data-persona="custom" onclick="selectPersona(this)">
+          <div class="persona-card-top"><div class="persona-avatar">⚙</div><div class="persona-name">Custom</div></div>
+          <div class="persona-tags"><span class="persona-tag">Configure manually</span></div>
+        </div>
+      </div>
+
+      <div class="config-panel" id="customPanel">
+        <div class="config-section"><div class="config-label">Gender</div><div class="config-grid" data-group="gender"><div class="config-chip sel" data-value="female">Female</div><div class="config-chip" data-value="male">Male</div><div class="config-chip" data-value="other">Other</div></div></div>
+        <div class="config-section"><div class="config-label">Age</div><div class="config-grid" data-group="age"><div class="config-chip" data-value="young">18–30</div><div class="config-chip sel" data-value="adult">31–55</div><div class="config-chip" data-value="senior">56+</div></div></div>
+        <div class="config-section"><div class="config-label">Network</div><div class="config-grid" data-group="network"><div class="config-chip" data-value="poor">Poor</div><div class="config-chip" data-value="3g">3G</div><div class="config-chip sel" data-value="4g">4G</div><div class="config-chip" data-value="5g">5G</div></div></div>
+        <div class="config-section"><div class="config-label">Literacy</div><div class="config-grid" data-group="literacy"><div class="config-chip sel" data-value="read-write">Read+Write</div><div class="config-chip" data-value="listen-read">Prefer listening</div><div class="config-chip" data-value="listen-only">Listen only</div></div></div>
+        <div class="config-section"><div class="config-label">Language</div><div class="config-grid" data-group="language"><div class="config-chip sel" data-value="en">English</div><div class="config-chip" data-value="hi">हिन्दी</div><div class="config-chip" data-value="kn">ಕನ್ನಡ</div><div class="config-chip" data-value="ta">தமிழ்</div></div></div>
+      </div>
+
+      <div style="padding:14px 0 4px">
+        <button class="btn btn-1 btn-full" id="startBtn" onclick="startFlow()" disabled>Select a persona to start →</button>
+      </div>
+    </div>
+
+    <!-- SCREEN: OVERVIEW -->
+    <div class="screen" id="screen-overview">
+      <div class="section-title">Address Update</div>
+      <div style="display:flex;gap:12px;margin-bottom:16px">
+        <div style="flex:1;background:var(--white);border-radius:var(--r);padding:14px;text-align:center;border:1px solid var(--border)"><div style="font-size:20px">⏱</div><div style="font-size:16px;font-weight:700;color:var(--navy)">15 Days</div><div style="font-size:12px;color:var(--text-3)">Processing Time</div></div>
+        <div style="flex:1;background:var(--white);border-radius:var(--r);padding:14px;text-align:center;border:1px solid var(--border)"><div style="font-size:20px">₹</div><div style="font-size:16px;font-weight:700;color:var(--navy)">75.00</div><div style="font-size:12px;color:var(--text-3)">Processing Fee</div></div>
+      </div>
+      <div class="card"><div style="font-size:15px;font-weight:600;margin-bottom:4px">Required documents</div><div style="font-size:13px;color:var(--text-2)">1. Proof of address in your name</div></div>
+      <div class="card">
+        <div style="font-size:15px;font-weight:600;margin-bottom:10px">Steps</div>
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">This will take about 5 minutes</div>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0;position:relative"><div style="width:28px;height:28px;border-radius:50%;background:var(--navy);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0">1</div><div style="font-size:14px;padding-top:3px">Select & Upload proof of address</div></div>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0"><div style="width:28px;height:28px;border-radius:50%;background:var(--navy);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0">2</div><div style="font-size:14px;padding-top:3px">Verify new details</div></div>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0"><div style="width:28px;height:28px;border-radius:50%;background:var(--navy);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0">3</div><div style="font-size:14px;padding-top:3px">Face Authentication</div></div>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0"><div style="width:28px;height:28px;border-radius:50%;background:var(--navy);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0">4</div><div style="font-size:14px;padding-top:3px">Make payment</div></div>
+      </div>
+    </div>
+
+    <!-- SCREEN: UPLOAD -->
+    <div class="screen" id="screen-upload">
+      <div class="section-title">Upload Document</div>
+      <div class="form-group"><div class="form-label">Select preferred document</div>
+        <select class="form-select" id="docType" onchange="onDocChange()">
+          <option value="">Select</option>
+          <option value="electricity">Electricity bill (pre-paid/post-paid, not older than 3 months)</option>
+          <option value="ration">Ration / PDS Photograph Card / e-Ration Card</option>
+          <option value="tehsildar">Standard Certificate by Tehsildar / Gazetted Officer Group 'B'</option>
+          <option value="marriage">Marriage Certificate with or without photograph</option>
+          <option value="gas">Gas Connection Bill (not older than 3 months)</option>
+          <option value="bank">Scheduled Commercial Bank / Post Office Passbook</option>
+        </select>
+        <div style="font-size:13px;color:var(--blue);cursor:pointer;margin-top:6px">ⓘ See guidelines again</div>
+      </div>
+      <div id="uploadArea" class="hidden">
+        <div class="form-label">Upload File</div>
+        <div id="uploadOpts">
+          <div class="upload-option" onclick="simUpload()"><div class="upload-opt-icon">📷</div><div class="upload-opt-text"><div class="upload-opt-title">Scan documents directly</div><div class="upload-opt-sub">Opens camera to scan the document</div></div><div style="color:var(--text-3)">›</div></div>
+          <div class="upload-option" onclick="simUpload()"><div class="upload-opt-icon">📁</div><div class="upload-opt-text"><div class="upload-opt-title">Select files to upload</div><div class="upload-opt-sub">JPEG, PNG, PDF | Less than 2MB</div></div><div style="color:var(--text-3)">›</div></div>
+        </div>
+        <div id="uploadedFile" class="hidden">
+          <div class="file-card"><div style="font-size:24px">📄</div><div class="file-card-info"><div class="file-card-name">Document_2025.jpg</div><div class="file-card-size">200kb</div></div><button class="file-card-del" onclick="rmUpload()">🗑 Delete</button></div>
+          <div style="font-size:12px;color:var(--blue);cursor:pointer;margin-bottom:10px">👆 Tap to preview</div>
+          <div class="chk-row" id="docChk" onclick="togChk('docChk')"><div class="chk-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div><div class="chk-text">I have previewed the document and it complies with all guidelines</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN: ADDRESS — 4 VARIANTS -->
+    <div class="screen" id="screen-address">
+
+      <!-- DEFAULT / CUSTOM variant -->
+      <div id="addr-default" class="hidden">
+        <div class="section-title">Add New Address</div>
+        <div class="form-group"><div class="form-label">House/Building/Apartment</div><input class="form-input" id="f-house" placeholder="e.g. Flat 203, Sunrise Apartments" oninput="valAddr()"></div>
+        <div class="form-group"><div class="form-label">Street/Road/Lane</div><input class="form-input" id="f-street" placeholder="e.g. MG Road" oninput="valAddr()"></div>
+        <div class="form-group"><div class="form-label">Area/Locality/Sector</div><input class="form-input" id="f-area" placeholder="e.g. Sector 12, Rohini" oninput="valAddr()"></div>
+        <div class="form-group"><div class="form-label">Landmark</div><input class="form-input" id="f-landmark" placeholder="e.g. Near City Mall"></div>
+        <div class="form-group"><div class="form-label">Pincode <span class="req">*</span></div><input class="form-input" id="f-pin" placeholder="e.g. 560001" maxlength="6" inputmode="numeric" oninput="onPin()"></div>
+        <div class="form-group"><div class="form-label">Village/Town/City <span class="req">*</span></div><input class="form-input" id="f-city" placeholder="e.g. Bengaluru" oninput="valAddr()"></div>
+        <div class="form-group"><div class="form-label">District <span class="req">*</span></div><input class="form-input" id="f-dist" placeholder="e.g. Bengaluru Urban" oninput="valAddr()"></div>
+        <div class="form-group"><div class="form-label">State <span class="req">*</span></div><input class="form-input" id="f-state" placeholder="e.g. Karnataka" oninput="valAddr()"></div>
+        <div class="form-group"><div class="form-label">Post office <span class="req">*</span></div><select class="form-select" id="f-po" onchange="valAddr()"><option value="">Select</option></select></div>
+      </div>
+
+      <!-- MAYA variant: Lite / Voice / Regional -->
+      <div id="addr-maya" class="hidden">
+        <div class="maya-addr">
+          <div class="maya-voice-area">
+            <div class="maya-mic" onclick="showToast('🎤 Voice input simulated')">🎤</div>
+            <div class="maya-voice-title">अपना नया पता बोलें</div>
+            <div class="maya-voice-sub">Speak your new address</div>
+            <div class="maya-wave">||||||||</div>
+          </div>
+          <div class="maya-input"><span style="font-size:18px">🏠</span><input placeholder="घर का नंबर / House No." oninput="valAddr()"><span class="mic-sm">🎤</span></div>
+          <div class="maya-input"><span style="font-size:18px">🛤</span><input placeholder="गली / Street" oninput="valAddr()"><span class="mic-sm">🎤</span></div>
+          <div class="maya-input"><span style="font-size:18px">📍</span><input placeholder="पिनकोड / Pincode" maxlength="6" inputmode="numeric" oninput="valAddr()"><span class="mic-sm">🎤</span></div>
+          <div class="maya-numpad">
+            <button onclick="numPad(1)">1</button><button onclick="numPad(2)">2</button><button onclick="numPad(3)">3</button>
+            <button onclick="numPad(4)">4</button><button onclick="numPad(5)">5</button><button onclick="numPad(6)">6</button>
+            <button onclick="numPad(7)">7</button><button onclick="numPad(8)">8</button><button onclick="numPad(9)">9</button>
+            <button onclick="numPad('*')">*</button><button onclick="numPad(0)">0</button><button onclick="numPad('#')">#</button>
+          </div>
+          <div class="maya-helpline">📞 हेल्पलाइन 1947</div>
+        </div>
+      </div>
+
+      <!-- ARJUN variant: Advanced / Map / Auto-complete -->
+      <div id="addr-arjun" class="hidden">
+        <div class="arjun-addr">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div class="section-title" style="margin-bottom:0;font-size:18px">Update Address</div>
+            <div class="arjun-time">⏱ 2 min</div>
+          </div>
+          <div class="arjun-search"><span class="search-icon">🔍</span><input placeholder="Start typing your address..." oninput="valAddr()"></div>
+          <div class="arjun-map"><div class="arjun-map-placeholder">📍 Map View<br><span style="font-size:11px">(Tap to pin location)</span></div></div>
+          <div class="arjun-map-actions">
+            <button class="arjun-map-btn" onclick="showToast('📍 GPS location captured')">📍 Use GPS</button>
+            <button class="arjun-map-btn" onclick="showToast('📷 Scan mode activated')">📷 Scan Doc</button>
+          </div>
+          <div class="form-group"><div class="form-label">House/Flat Number <span class="req">*</span></div><input class="form-input" placeholder="e.g. C-123" oninput="valAddr()"></div>
+          <div class="form-group"><div class="form-label">Street/Area <span class="req">*</span></div><input class="form-input" placeholder="e.g. Sector 24, Dwarka" oninput="valAddr()"></div>
+        </div>
+      </div>
+
+      <!-- RAJAN variant: Senior / Guided / Large text -->
+      <div id="addr-rajan" class="hidden">
+        <div class="rajan-addr">
+          <div style="font-size:20px;font-weight:700;margin-bottom:4px">Step 2 of 3: New Address</div>
+          <div class="rajan-progress">
+            <div class="rajan-step-num done">1</div><div class="rajan-line done"></div>
+            <div class="rajan-step-num active">2</div><div class="rajan-line"></div>
+            <div class="rajan-step-num">3</div>
+          </div>
+          <div class="rajan-info"><div class="rajan-info-icon">ℹ️</div><div class="rajan-info-text">Enter your new residential address. All fields marked * are required.</div></div>
+          <div class="rajan-form-group"><div class="form-label" style="font-size:15px;font-weight:600">House/Flat Number <span class="req">*</span></div><input class="form-input" style="font-size:17px;padding:14px 16px" placeholder="C-123" oninput="valAddr()"></div>
+          <div class="rajan-form-group"><div class="form-label" style="font-size:15px;font-weight:600">Street/Area <span class="req">*</span></div><input class="form-input" style="font-size:17px;padding:14px 16px" placeholder="Sector 24, Dwarka" oninput="valAddr()"><div class="rajan-example" onclick="showToast('Example: MG Road, Indiranagar')">Example</div></div>
+          <div class="rajan-form-group"><div class="form-label" style="font-size:15px;font-weight:600">Pincode <span class="req">*</span></div><input class="form-input" style="font-size:17px;padding:14px 16px" placeholder="560001" maxlength="6" inputmode="numeric" oninput="valAddr()"></div>
+          <button class="rajan-speak" onclick="showToast('🎤 Voice input activated')">🎤 Speak instead of typing</button>
+        </div>
+      </div>
+
+      <!-- PRIYA variant: Screen Reader / Voice / High Contrast -->
+      <div id="addr-priya" class="hidden">
+        <div class="priya-addr">
+          <div class="priya-header">ADDRESS UPDATE (PAGE 2 OF 3)</div>
+          <div class="priya-voice-card">
+            <div class="priya-voice-title">Voice Mode Active</div>
+            <div class="priya-voice-cmd">Say "Read current address"</div>
+            <div class="priya-voice-cmd">Say "Start dictation"</div>
+          </div>
+          <div class="priya-current">
+            <div class="priya-current-label">CURRENT ADDRESS (READ ONLY):</div>
+            <div class="priya-current-addr">B-45, Sector 15, Vasant Kunj,<br>New Delhi - 110070</div>
+          </div>
+          <div style="margin-bottom:12px">
+            <div style="font-size:14px;font-weight:600;color:#eee;margin-bottom:6px">House/Flat Number *</div>
+            <input class="form-input" style="background:#2a2a2a;color:#eee;border-color:#555;font-size:17px" placeholder="Type or dictate..." oninput="valAddr()">
+          </div>
+          <div style="margin-bottom:12px">
+            <div style="font-size:14px;font-weight:600;color:#eee;margin-bottom:6px">Street/Area *</div>
+            <input class="form-input" style="background:#2a2a2a;color:#eee;border-color:#555;font-size:17px" placeholder="Type or dictate..." oninput="valAddr()">
+          </div>
+          <div class="priya-commands">
+            <div class="priya-commands-label">AVAILABLE COMMANDS:</div>
+            <div class="priya-cmd-item">• "New address is..."</div>
+            <div class="priya-cmd-item">• "Read back to me"</div>
+            <div class="priya-cmd-item">• "Correct" / "Change"</div>
+            <div class="priya-cmd-item">• "Help" / "Go back"</div>
+          </div>
+          <div class="priya-shortcuts">Tab: Next | Shift+Tab: Previous<br>Enter: Submit | Esc: Cancel</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN: PREVIEW -->
+    <div class="screen" id="screen-preview">
+      <div class="section-title">Preview New Address</div>
+      <div class="preview-card"><div class="preview-card-label">New Address (English)</div><div class="preview-card-text" id="prevEn">—</div><a class="preview-edit" onclick="goToStep(2)">✏️ Edit</a></div>
+      <div class="preview-card"><div class="preview-card-label" id="prevLocalLbl">नया पता (Local Language)</div><div class="preview-card-text" id="prevLocal">—</div><div class="auto-tag">Auto-translated</div><a class="preview-edit" onclick="goToStep(2)">✏️ Edit</a></div>
+      <div class="chk-row mt-12" id="transChk" onclick="togChk('transChk')"><div class="chk-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div><div class="chk-text">I have checked the local language translation and it is correct.</div></div>
+      <div class="card mt-12"><div style="font-size:14px;font-weight:600;margin-bottom:4px">Review Document</div><div style="font-size:13px;color:var(--text-2)" id="prevDoc">—</div><div class="file-card mt-8"><div style="font-size:24px">📄</div><div class="file-card-info"><div class="file-card-name">Document_2025.jpg</div><div class="file-card-size">200kb</div></div></div></div>
+    </div>
+
+    <!-- SCREEN: FACE -->
+    <div class="screen" id="screen-face">
+      <div class="section-title">Face Authentication</div>
+      <div style="font-size:13px;color:var(--text-2);margin-bottom:8px">Hold still and align your face within the frame</div>
+      <div class="face-frame" id="faceFrame"><div class="face-inner">👤</div></div>
+      <div class="face-inst" id="faceInst">PLEASE BLINK</div>
+      <div class="face-sub">Tap the frame to simulate</div>
+      <div class="face-ok" id="faceOk"><div style="font-size:36px;margin-bottom:8px">✅</div><div class="face-ok-text">Face Authenticated</div><div style="font-size:13px;color:var(--text-2);margin-top:4px">Your profile has been authenticated.</div></div>
+    </div>
+
+    <!-- SCREEN: PAYMENT -->
+    <div class="screen" id="screen-payment">
+      <div class="section-title">Make Payment</div>
+      <div style="font-size:14px;color:var(--text-2)">Please pay a processing <strong>fee of ₹75.00</strong> to submit this address update request.</div>
+      <div class="pay-amt"><div class="pay-amt-val">₹75</div></div>
+      <div style="font-size:14px;font-weight:500;margin-bottom:8px">Choose preferred payment option</div>
+      <div class="pay-option"><div class="pay-radio"><div class="pay-radio-dot"></div></div><div style="font-size:14px;font-weight:500">Payment Option 1</div></div>
+      <div class="pay-note"><div class="pay-note-title">Please Note</div><div class="pay-note-text">After payment, UIDAI will review the address update request and if approved, your address will be updated.</div><div class="pay-note-warn">If request is not approved, the update will not be processed and no refund will be provided.</div></div>
+      <div class="cas-box mt-16"><div class="cas-title">⚠️ Before you pay</div><div class="cas-risk"><span>•</span>This payment of ₹75 is non-refundable even if your request is rejected</div><div class="cas-risk"><span>•</span>Processing takes up to 15 working days</div><div class="cas-risk"><span>•</span>Ensure your document and address details are correct before proceeding</div></div>
+      <div class="chk-row mt-12" id="payChk" onclick="togChk('payChk')"><div class="chk-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div><div class="chk-text">I understand the payment is non-refundable and wish to proceed.</div></div>
+    </div>
+
+    <!-- SCREEN: SUCCESS -->
+    <div class="screen" id="screen-success">
+      <div class="success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>
+      <div class="success-title">Request Submitted Successfully</div>
+      <div class="success-sub">Check your request status anytime in 'Track My Requests' under Services.</div>
+      <div class="card">
+        <div class="receipt-row"><span class="receipt-lbl">Amount Paid</span><span class="receipt-val">₹75.00</span></div>
+        <div class="receipt-row"><span class="receipt-lbl">Date & Time</span><span class="receipt-val" id="rcptDate">—</span></div>
+        <div class="receipt-row"><span class="receipt-lbl">Transaction ID</span><span class="receipt-val">UPI/538291047</span></div>
+        <div class="receipt-row"><span class="receipt-lbl">SRN Number</span><span class="receipt-val" style="font-size:11px">20260.0001234882666</span></div>
+        <div style="font-size:12px;color:var(--blue);margin-top:6px;cursor:pointer">ⓘ What is SRN?</div>
+      </div>
+      <div class="residual" id="resCard">
+        <div class="residual-hdr">How did this transaction feel?</div>
+        <div class="residual-body" id="resBody"><div class="residual-prompt">← Swipe to record →</div><div class="residual-sub">Encode your emotional response to this transaction</div></div>
+        <div class="residual-hint" id="resHint"><span>✓ Relieved · राहत</span><span>✗ Anxious · चिंता</span></div>
+        <div class="residual-result" id="resResult"></div>
+      </div>
+      <div style="padding:16px 0 4px"><button class="btn btn-1 btn-full">Download Acknowledgement</button><button class="btn-link mt-8">Track Progress</button></div>
+    </div>
+
+  </div>
+
+  <div class="auto-saved" id="autoSaved" style="display:none">Auto-saved at <span id="autoTime">08:06 PM</span></div>
+  <div class="bottom-nav" id="bottomNav" style="display:none">
+    <button class="btn btn-2" id="btnPrev" onclick="prevStep()">← Back</button>
+    <button class="btn btn-1" id="btnNext" onclick="nextStep()">Continue →</button>
+  </div>
+
+  <!-- DRAWER -->
+  <div class="drawer-overlay" id="dOverlay" onclick="closeDrawer()"></div>
+  <div class="drawer hidden" id="drawer">
+    <div class="drawer-hdr" onclick="toggleDrawer()">
+      <div class="drawer-handle"></div>
+      <div class="drawer-hdr-row">
+        <div class="dpl-bar high" id="dplBar"></div>
+        <div class="drawer-title">Journey Intelligence</div>
+        <span class="drawer-dpl-label dpl-thick" id="dplLabel">THICK</span>
+        <button class="drawer-klh" id="klhBtn" onclick="event.stopPropagation();playKLH()"><svg viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg></button>
+        <button class="drawer-toggle" id="dToggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg></button>
+      </div>
+    </div>
+    <div class="drawer-body">
+      <div class="drawer-lang" id="dLang"></div>
+      <div id="jiContent">
+        <div class="ji-loading" id="jiLoad"><div class="ji-spin"></div> Generating rhetorical layer…</div>
+        <div id="jiData" class="hidden">
+          <div class="ji-sec"><div class="ji-lbl">Headline</div><div class="ji-txt" id="jiH"></div></div>
+          <div class="ji-sec"><div class="ji-lbl">Plain Explanation</div><div class="ji-txt" id="jiE"></div></div>
+          <div class="ji-sec"><div class="ji-lbl">What Happens Next</div><div class="ji-txt" id="jiN"></div></div>
+          <div class="ji-sec"><div class="ji-lbl">Help Nudge</div><div class="ji-txt" id="jiNu"></div></div>
+          <div class="ji-sec" id="jiRS"><div class="ji-lbl">Risk Signal</div><div class="ji-txt risk" id="jiR"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KLH SHEET -->
+  <div class="klh-sheet" id="klhSheet">
+    <div class="klh-hdr"><div class="klh-title">🔊 Kya Likha Hai</div><button class="klh-close" onclick="closeKLH()">✕</button></div>
+    <div class="klh-status" id="klhSt">Tap speaker to listen</div>
+    <div class="klh-script" id="klhSc"></div>
+    <audio class="klh-audio" id="klhAu" controls style="display:none"></audio>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+</div>
+
+<script>
+// ===== STATE =====
+const S = {
+  persona: null, // maya, arjun, rajan, priya, custom
+  personaCfg: { gender:'female', age:'adult', network:'4g', literacy:'read-write', language:'en' },
+  step: -1,
+  docType: '', fileUp: false, docChk: false, transChk: false, payChk: false, faceOk: false,
+  jiCache: {}, drawerState: 'hidden', klhPlaying: false, resDone: false,
+  currentKLH: ''
+};
+
+const PERSONAS = {
+  maya: { gender:'female', age:'adult', network:'poor', literacy:'listen-read', language:'hi', addrVariant:'maya',
+    description:'Female, school dropout, low literacy, poor network, rural area. Prefers voice input and regional language. Needs simplified UI with large touch targets.' },
+  arjun: { gender:'male', age:'young', network:'5g', literacy:'read-write', language:'en', addrVariant:'arjun',
+    description:'Male, 22, college student in Mumbai. iPhone user, 5G, fluent in English. Prefers gestures, map, auto-complete. Tech-savvy.' },
+  rajan: { gender:'male', age:'senior', network:'5g', literacy:'read-write', language:'en', addrVariant:'rajan',
+    description:'Male, 65, retired government employee. English literate but overwhelmed by busy forms. Needs step-by-step guidance, large text, clear progress.' },
+  priya: { gender:'female', age:'adult', network:'4g', literacy:'listen-only', language:'en', addrVariant:'priya',
+    description:'Female, 30, visually impaired. Relies on screen reader and voice commands. Needs high contrast, simple layout, keyboard navigation.' },
+  custom: { addrVariant:'default' }
+};
+
+const STEPS = ['overview','upload','address','preview','face','payment','success'];
+const SEG_MAP = { 1:0, 2:1, 3:1, 4:2, 5:3 };
+
+const DPL = {
+  overview:'MEDIUM', upload:'LOW', address:'HIGH', preview:'MEDIUM', face:'HIGH', payment:'LOW', success:'HIGH'
+};
+
+const MAT = {
+  overview:{ d:'INFO', a:'INFORMATIONAL' }, upload:{ d:'ACTION REQUIRED', a:'TRANSACTIONAL' },
+  address:{ d:'ACTION REQUIRED', a:'TRANSACTIONAL' }, preview:{ d:'REVIEW', a:'NAVIGATIONAL' },
+  face:{ d:'ACTION REQUIRED', a:'TRANSACTIONAL' }, payment:{ d:'IRREVERSIBLE', a:'CONSEQUENTIAL' },
+  success:{ d:'INFO', a:'INFORMATIONAL' }
+};
+
+// Enriched canonical details for thorough rhetorical generation
+const CANONICAL_DETAILS = {
+  overview: 'This screen shows the Aadhaar Address Update process overview. Key facts: (1) Processing time is 15 working days — the user must wait and cannot expedite. (2) Processing fee is ₹75 (non-refundable). (3) Required: one proof of address document in the applicant\'s name. (4) Four steps: upload document, verify details, face authentication, make payment. The user should understand ALL costs and timelines BEFORE starting.',
+  upload: 'This screen asks the user to select and upload a proof-of-address document. CRITICAL DETAILS the user must understand: The accepted documents are: (a) Electricity bill — pre-paid or post-paid, but MUST NOT be older than 3 months, (b) Ration/PDS Photograph Card or e-Ration Card, (c) Standard Certificate by Tehsildar or Gazetted Officer Group B — this is a government-issued certificate that many users may not know how to obtain, (d) Marriage Certificate, (e) Gas Connection Bill — also must not be older than 3 months, (f) Bank Passbook from a Scheduled Commercial Bank or Post Office. The terms "Tehsildar", "Gazetted Officer Group B", "PDS", "Scheduled Commercial Bank" are high DPL (Digital Procedural Lexicon) — most users below Grade 10 education will not understand these terms. File must be JPEG, PNG, or PDF, under 2MB. User must preview and confirm compliance.',
+  address: 'This screen collects the new residential address. Fields: House/Building/Apartment, Street/Road/Lane, Area/Locality/Sector, Landmark, Pincode (required, 6 digits — auto-fills city/district/state), Village/Town/City (required), District (required), State (required), Post Office (required, dropdown). The pincode is the key field — entering a valid 6-digit pincode auto-populates city, district, state, and post office. Users often confuse "Area/Locality/Sector" with "Street". Landmark is optional but helpful for verification. All required fields must be filled before proceeding.',
+  preview: 'This screen shows the entered address in English and auto-translated to the user\'s local language (Hindi, Kannada, Tamil etc). The user MUST verify the local language translation is correct — if the translation is wrong, the printed Aadhaar card will have wrong address in local script. The uploaded document type and file are also shown for review. User must check a box confirming translation accuracy before proceeding to face authentication.',
+  face: 'This screen performs face authentication (liveness detection). The user must hold their phone steady, align their face in the circular frame, and blink when prompted. This matches against the photo stored in UIDAI\'s database from original Aadhaar enrollment. If face does not match, the process fails and user may need to visit an Aadhaar center. Good lighting and steady hands are important.',
+  payment: 'This is the IRREVERSIBLE step. Fee: ₹75.00 (non-refundable). CRITICAL: Even if UIDAI rejects the address update request after review, the ₹75 will NOT be refunded. Processing takes up to 15 working days. The user should be absolutely certain their document and address are correct before paying. After payment, UIDAI reviews the request — approval is not guaranteed.'
+};
+
+// ===== INIT =====
+function updateClock() { document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:false}); }
+updateClock(); setInterval(updateClock, 30000);
+
+// ===== PERSONA SELECT =====
+function selectPersona(el) {
+  document.querySelectorAll('.persona-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  S.persona = el.dataset.persona;
+
+  const panel = document.getElementById('customPanel');
+  const btn = document.getElementById('startBtn');
+
+  if (S.persona === 'custom') {
+    panel.classList.add('show');
+    PERSONAS.custom = { ...S.personaCfg, addrVariant: 'default' };
+  } else {
+    panel.classList.remove('show');
+  }
+  btn.disabled = false;
+  btn.textContent = S.persona === 'custom' ? 'Start with Custom Config →' : `Start as ${el.querySelector('.persona-name').textContent} →`;
+}
+
+// Custom config chips
+document.querySelectorAll('.config-grid').forEach(g => {
+  g.addEventListener('click', e => {
+    const chip = e.target.closest('.config-chip');
+    if (!chip) return;
+    g.querySelectorAll('.config-chip').forEach(c => c.classList.remove('sel'));
+    chip.classList.add('sel');
+    S.personaCfg[g.dataset.group] = chip.dataset.value;
+    PERSONAS.custom = { ...S.personaCfg, addrVariant: 'default', description: `Custom: ${S.personaCfg.gender}, ${S.personaCfg.age}, ${S.personaCfg.network} network, ${S.personaCfg.literacy}, ${S.personaCfg.language} language.` };
+  });
+});
+
+function getPersona() { return PERSONAS[S.persona] || PERSONAS.custom; }
+function getLang() { return getPersona().language || 'en'; }
+
+function startFlow() {
+  if (!S.persona) return;
+  // Build language pills in drawer
+  buildLangPills();
+  goToStep(0);
+}
+
+function buildLangPills() {
+  const langs = [{c:'en',l:'EN'},{c:'hi',l:'HI'},{c:'kn',l:'KN'},{c:'ta',l:'TA'}];
+  const current = getLang();
+  document.getElementById('dLang').innerHTML = langs.map(l =>
+    `<div class="lang-pill${l.c===current?' on':''}" data-lang="${l.c}" onclick="setLang('${l.c}')">${l.l}</div>`
+  ).join('');
+}
+
+function setLang(lang) {
+  const p = getPersona();
+  if (S.persona === 'custom') { S.personaCfg.language = lang; PERSONAS.custom.language = lang; }
+  else { PERSONAS[S.persona].language = lang; }
+  buildLangPills();
+  // Force re-fetch rhetorical
+  if (S.step >= 1 && S.step <= 5) {
+    const sid = STEPS[S.step];
+    delete S.jiCache[sid + '_' + lang]; // clear cache
+    fetchRhetorical(sid, true);
+  }
+}
+
+// ===== NAVIGATION =====
+function goToStep(idx) {
+  S.step = idx;
+  const sid = STEPS[idx];
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + sid).classList.add('active');
+
+  // App bar
+  document.getElementById('appBar').style.display = idx >= 0 ? 'flex' : 'none';
+  const titles = ['Address Update','Upload Document','Add New Address','Preview New Address','Face Authentication','Make Payment',''];
+  document.getElementById('appBarTitle').textContent = titles[idx] || 'Address Update';
+
+  // Progress
+  const pt = document.getElementById('progressTrack');
+  pt.style.display = (idx >= 1 && idx <= 5) ? 'flex' : 'none';
+  if (idx >= 1 && idx <= 5) updateProgress(idx);
+
+  // Bottom nav
+  const bn = document.getElementById('bottomNav');
+  const as = document.getElementById('autoSaved');
+  if (idx === 6) { bn.style.display='none'; as.style.display='none'; }
+  else if (idx === 0) {
+    bn.style.display='flex'; as.style.display='none';
+    document.getElementById('btnPrev').style.display='none';
+    document.getElementById('btnNext').textContent='Continue to Update Address';
+    document.getElementById('btnNext').disabled=false;
+    document.getElementById('btnNext').className='btn btn-1';
+  } else {
+    bn.style.display='flex'; as.style.display='block';
+    document.getElementById('btnPrev').style.display='';
+    document.getElementById('autoTime').textContent = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+    updNext(idx);
+  }
+
+  // Address variant
+  if (sid === 'address') showAddrVariant();
+  if (sid === 'preview') buildPreview();
+  if (sid === 'success') setupSuccess();
+
+  // Drawer
+  if (idx >= 1 && idx <= 5) showDrawer(sid);
+  else hideDrawer();
+
+  document.getElementById('contentArea').scrollTop = 0;
+}
+
+function showAddrVariant() {
+  const v = getPersona().addrVariant || 'default';
+  ['default','maya','arjun','rajan','priya'].forEach(id => {
+    document.getElementById('addr-'+id).classList.toggle('hidden', id !== v);
+  });
+}
+
+function updateProgress(idx) {
+  for (let i=0;i<4;i++) {
+    const seg = document.getElementById('seg'+i);
+    seg.className = 'progress-seg';
+    const cur = SEG_MAP[idx];
+    if (cur !== undefined) {
+      if (i < cur) seg.classList.add('done');
+      else if (i === cur) seg.classList.add('active');
+    }
+  }
+}
+
+function updNext(idx) {
+  const btn = document.getElementById('btnNext');
+  const sid = STEPS[idx];
+  const labels = {
+    upload:'Continue to Add New Address', address:'Preview New Address',
+    preview:'Continue to Face Authentication', face:'Continue to Review Details',
+    payment:'Confirm and Pay ₹75'
+  };
+  btn.textContent = labels[sid] || 'Continue →';
+  btn.className = 'btn btn-1';
+
+  switch(sid) {
+    case 'upload': btn.disabled = !(S.docType && S.fileUp && S.docChk); break;
+    case 'address': btn.disabled = false; break; // simplified for persona variants
+    case 'preview': btn.disabled = !S.transChk; break;
+    case 'face': btn.disabled = !S.faceOk; break;
+    case 'payment': btn.disabled = !S.payChk; if(S.payChk) btn.className='btn btn-red'; break;
+    default: btn.disabled = false;
+  }
+}
+
+function nextStep() { if (S.step < STEPS.length-1) goToStep(S.step+1); }
+function prevStep() { if (S.step > 0) goToStep(S.step-1); }
+function goBack() {
+  if (S.step === 0) {
+    S.step = -1;
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-config').classList.add('active');
+    document.getElementById('appBar').style.display='none';
+    document.getElementById('progressTrack').style.display='none';
+    document.getElementById('bottomNav').style.display='none';
+    document.getElementById('autoSaved').style.display='none';
+    hideDrawer();
+  } else prevStep();
+}
+
+// ===== FORM LOGIC =====
+function togChk(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('checked');
+  const v = el.classList.contains('checked');
+  if(id==='docChk') S.docChk=v;
+  if(id==='transChk') S.transChk=v;
+  if(id==='payChk') S.payChk=v;
+  updNext(S.step);
+}
+
+function onDocChange() {
+  S.docType = document.getElementById('docType').value;
+  document.getElementById('uploadArea').classList.toggle('hidden', !S.docType);
+  if(!S.docType){ S.fileUp=false; S.docChk=false; }
+  updNext(S.step);
+}
+function simUpload() {
+  S.fileUp=true;
+  document.getElementById('uploadOpts').classList.add('hidden');
+  document.getElementById('uploadedFile').classList.remove('hidden');
+  showToast('Document uploaded successfully!');
+  updNext(S.step);
+}
+function rmUpload() {
+  S.fileUp=false; S.docChk=false;
+  document.getElementById('uploadOpts').classList.remove('hidden');
+  document.getElementById('uploadedFile').classList.add('hidden');
+  document.getElementById('docChk').classList.remove('checked');
+  updNext(S.step);
+}
+function valAddr() { updNext(S.step); }
+function onPin() { valAddr(); }
+function numPad(n) { showToast('Key: ' + n); }
+
+function buildPreview() {
+  // Gather from default form or show persona-specific
+  const h = document.getElementById('f-house');
+  if (h) {
+    const parts = ['f-house','f-street','f-area','f-landmark','f-city','f-state','f-pin'].map(id => {
+      const el = document.getElementById(id);
+      return el ? el.value : '';
+    }).filter(Boolean);
+    document.getElementById('prevEn').textContent = parts.join(', ') || 'Address entered via persona variant';
+  } else {
+    document.getElementById('prevEn').textContent = 'Address entered via persona variant';
+  }
+  const lang = getLang();
+  const localLabels = { hi:'नया पता (हिन्दी)', kn:'ಹೊಸ ವಿಳಾಸ (ಕನ್ನಡ)', ta:'புதிய முகவரி (தமிழ்)', en:'New Address (Local Language)' };
+  document.getElementById('prevLocalLbl').textContent = localLabels[lang] || localLabels.en;
+  document.getElementById('prevLocal').textContent = document.getElementById('prevEn').textContent;
+
+  const docEl = document.getElementById('docType');
+  document.getElementById('prevDoc').textContent = docEl.options[docEl.selectedIndex]?.text || '—';
+}
+
+// Face
+document.addEventListener('click', e => {
+  if (STEPS[S.step]==='face' && !S.faceOk && document.getElementById('faceFrame').contains(e.target)) {
+    S.faceOk=true;
+    document.getElementById('faceInst').textContent='';
+    document.getElementById('faceOk').classList.add('show');
+    updNext(S.step);
+  }
+});
+
+// Success
+function setupSuccess() {
+  document.getElementById('rcptDate').textContent = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})+', '+new Date().toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'});
+  setupResSwipe();
+}
+
+function setupResSwipe() {
+  const body = document.getElementById('resBody');
+  let sx=0, cx=0, sw=false;
+  function onS(e){if(S.resDone)return; sx=(e.touches?e.touches[0].clientX:e.clientX); sw=true;}
+  function onM(e){if(!sw)return; cx=(e.touches?e.touches[0].clientX:e.clientX)-sx; const cl=Math.max(-80,Math.min(80,cx)); body.style.transform=`translateX(${cl}px)`; body.style.background=cl<-20?'rgba(254,242,242,0.8)':cl>20?'rgba(232,245,233,0.8)':'';}
+  function onE(){if(!sw)return; sw=false; body.style.transform=''; body.style.background=''; if(cx<-40)doRes('anxious'); else if(cx>40)doRes('relieved'); cx=0;}
+  body.addEventListener('touchstart',onS,{passive:true}); body.addEventListener('touchmove',onM,{passive:true}); body.addEventListener('touchend',onE);
+  body.addEventListener('mousedown',onS); body.addEventListener('mousemove',onM); body.addEventListener('mouseup',onE); body.addEventListener('mouseleave',()=>{if(sw)onE();});
+}
+
+function doRes(type) {
+  S.resDone=true;
+  const r=document.getElementById('resResult'), h=document.getElementById('resHint');
+  document.getElementById('resBody').style.display='none'; h.style.display='none';
+  if(type==='relieved'){r.className='residual-result show relieved';r.innerHTML='<div class="rr-icon">☺</div><div class="rr-text">Relieved · राहत</div><div class="rr-sub">Transaction felt safe — no cause for concern</div>';showToast('✓ Marked as safe experience');}
+  else{r.className='residual-result show anxious';r.innerHTML='<div class="rr-icon">⚠</div><div class="rr-text">Anxious · चिंता</div><div class="rr-sub">Something about this transaction felt wrong</div>';showToast('✗ Marked as concerning experience');}
+}
+
+// ===== DRAWER =====
+function showDrawer(sid) {
+  const bar=document.getElementById('dplBar'), lbl=document.getElementById('dplLabel');
+  const agency = DPL[sid];
+  bar.className='dpl-bar '+agency.toLowerCase();
+  if(agency==='HIGH'){lbl.className='drawer-dpl-label dpl-thick';lbl.textContent='THICK AGENCY';}
+  else if(agency==='MEDIUM'){lbl.className='drawer-dpl-label dpl-medium';lbl.textContent='MEDIUM';}
+  else{lbl.className='drawer-dpl-label dpl-thin';lbl.textContent='THIN AGENCY';}
+
+  if(agency==='LOW') setDState('open');
+  else if(agency==='MEDIUM') setDState('half');
+  else setDState('peek');
+
+  fetchRhetorical(sid);
+}
+
+function hideDrawer(){ setDState('hidden'); }
+
+function setDState(s){
+  S.drawerState=s;
+  const d=document.getElementById('drawer'), t=document.getElementById('dToggle'), o=document.getElementById('dOverlay');
+  d.className='drawer '+s;
+  t.classList.toggle('flip', s==='peek');
+  o.classList.toggle('show', s==='open');
+}
+
+function toggleDrawer(){
+  if(S.drawerState==='peek'||S.drawerState==='half') setDState('open');
+  else if(S.drawerState==='open') setDState('peek');
+}
+function closeDrawer(){ setDState('peek'); }
+
+// ===== RHETORICAL API =====
+async function fetchRhetorical(sid, force=false) {
+  const lang = getLang();
+  const ck = sid+'_'+lang+'_'+S.persona;
+  if(!force && S.jiCache[ck]){ renderJI(S.jiCache[ck]); return; }
+
+  document.getElementById('jiLoad').style.display='flex';
+  document.getElementById('jiData').classList.add('hidden');
+
+  const p = getPersona();
+  const langNames = {en:'English',hi:'Hindi',kn:'Kannada',ta:'Tamil'};
+
+  try {
+    const resp = await fetch('/api/rhetorical', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        step: {
+          id: sid, name: STEPS[S.step] || sid, type: 'form-complete',
+          title: document.getElementById('appBarTitle').textContent,
+          irreversible: sid==='payment',
+          risks: sid==='payment' ? ['₹75 is non-refundable even if request is rejected','Processing takes up to 15 working days','No refund if address update is not approved'] : [],
+          // ENRICHED: canonical content for thorough explanation
+          canonical_content: CANONICAL_DETAILS[sid] || '',
+          document_options: sid==='upload' ? 'Electricity bill (must be less than 3 months old), Ration/PDS Card, Certificate by Tehsildar/Gazetted Officer Group B (a term many users won\'t understand — it means a government official of a certain rank), Marriage Certificate, Gas bill (less than 3 months), Bank Passbook' : ''
+        },
+        context: {
+          language: langNames[lang] || 'English',
+          userProfile: {
+            gender: p.gender || 'female',
+            ageGroup: p.age || 'adult',
+            network: p.network || '4g',
+            literacy: p.literacy || 'read-write',
+            personaDescription: p.description || 'General user',
+            preferredModality: p.literacy==='listen-only'?'audio':p.literacy==='listen-read'?'audio+visual':'visual'
+          },
+          materiality: MAT[sid]?.a || 'INFORMATIONAL',
+          appName: 'mAadhaar - Address Update',
+          instruction: 'Be thorough and verbose. Explain EVERY important detail from the canonical_content. For document selection, explain what each document type means in plain language, especially terms like Tehsildar, Gazetted Officer, PDS, Scheduled Commercial Bank. For time-bound documents, explicitly state the 3-month requirement. For payment, emphasize the non-refundable nature. Your explanation should help someone with Grade 4 education understand what is on their screen and what each option means. The kya_likha_hai_script should be a complete verbal walkthrough of the screen as if reading it aloud to someone who cannot see or read it.'
+        }
+      })
+    });
+    const data = await resp.json();
+    S.jiCache[ck] = data;
+    renderJI(data);
+  } catch(err) {
+    console.error('Rhetorical error:', err);
+    document.getElementById('jiLoad').style.display='none';
+    document.getElementById('jiData').classList.remove('hidden');
+    document.getElementById('jiH').textContent='Could not load — check API connection';
+  }
+}
+
+function renderJI(data) {
+  document.getElementById('jiLoad').style.display='none';
+  document.getElementById('jiData').classList.remove('hidden');
+  document.getElementById('jiH').textContent = data.headline||'';
+  document.getElementById('jiE').textContent = data.plain_explanation||'';
+  document.getElementById('jiN').textContent = data.what_happens_next||'';
+  document.getElementById('jiNu').textContent = data.help_nudge||'';
+  const rs = document.getElementById('jiRS');
+  if(data.risk_signal){rs.classList.remove('hidden');document.getElementById('jiR').textContent=data.risk_signal;}
+  else rs.classList.add('hidden');
+  S.currentKLH = data.kya_likha_hai_script || data.plain_explanation || '';
+}
+
+// ===== KYA LIKHA HAI =====
+async function playKLH() {
+  if(S.klhPlaying) return;
+  if(!S.currentKLH){showToast('No content');return;}
+  const sheet=document.getElementById('klhSheet'), st=document.getElementById('klhSt'), sc=document.getElementById('klhSc'), au=document.getElementById('klhAu');
+  sheet.classList.add('open'); sc.textContent=S.currentKLH; st.textContent='Generating audio…'; au.style.display='none'; S.klhPlaying=true;
+  const langMap={en:'en-IN',hi:'hi-IN',kn:'kn-IN',ta:'ta-IN'};
+  try {
+    const resp=await fetch('/api/kya-likha-hai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:S.currentKLH,language:langMap[getLang()]||'en-IN'})});
+    const data=await resp.json();
+    if(data.data_uri||data.audio_base64){au.src=data.data_uri||('data:audio/wav;base64,'+data.audio_base64);au.style.display='block';au.play().catch(()=>{});st.textContent='Playing…';}
+    else st.textContent='Audio unavailable';
+  } catch(err){console.error(err);st.textContent='Error generating audio';}
+  S.klhPlaying=false;
+}
+function closeKLH(){document.getElementById('klhSheet').classList.remove('open');document.getElementById('klhAu').pause();S.klhPlaying=false;}
+
+// ===== TOAST =====
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+</script>
+</body>
+</html>
