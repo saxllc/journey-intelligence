@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Journey Intelligence — Aadhaar Address Update</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-warm: #FEF5EE;
+  --navy: #1B365D;
+  --navy-light: #2A4A7F;
+  --white: #FFFFFF;
+  --text-primary: #0e0f0c;
+  --text-secondary: #454745;
+  --text-tertiary: #868685;
+  --green: #2E7D32;
+  --green-light: #E8F5E9;
+  --green-progress: #2E7D32;
+  --blue-action: #2563EB;
+  --blue-light: #F0F4FF;
+  --orange: #FF6B00;
+  --red: #DC2626;
+  --red-light: #FEF2F2;
+  --amber: #F59E0B;
+  --amber-light: #FFFBEB;
+  --border: #E5E7EB;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 9999px;
+  --font: 'Inter', -apple-system, sans-serif;
+}
+
+html, body { 
+  font-family: var(--font); 
+  background: #1a1a2e; 
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  height: 100%;
+}
+
+/* === PHONE FRAME (desktop) === */
+.phone-wrap {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 393px; height: 852px;
+  border-radius: 52px;
+  background: #000;
+  padding: 12px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+}
+.phone-screen {
+  width: 100%; height: 100%;
+  border-radius: 42px;
+  background: var(--bg-warm);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  position: relative;
+}
+
+@media (max-width: 430px) {
+  body { background: var(--bg-warm); }
+  .phone-wrap {
+    position: fixed; top: 0; left: 0;
+    transform: none;
+    width: 100%; height: 100%;
+    border-radius: 0; padding: 0;
+    box-shadow: none; background: var(--bg-warm);
+  }
+  .phone-screen { border-radius: 0; }
+}
+
+/* === STATUS BAR === */
+.status-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 24px 4px;
+  font-size: 12px; font-weight: 600;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+.status-bar-right { display: flex; gap: 4px; align-items: center; }
+.status-bar-right svg { width: 16px; height: 16px; }
+
+/* === TOP APP BAR === */
+.app-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 16px 12px;
+  flex-shrink: 0;
+}
+.app-bar-back {
+  width: 36px; height: 36px; border: none; background: none;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+}
+.app-bar-back:active { background: rgba(0,0,0,0.05); }
+.app-bar-back svg { width: 20px; height: 20px; }
+.app-bar-title { font-size: 17px; font-weight: 600; flex: 1; }
+.app-bar-lang {
+  width: 36px; height: 36px; border: 1px solid var(--border);
+  border-radius: 50%; background: var(--white); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 600; color: var(--navy);
+}
+
+/* === PROGRESS TRACK === */
+.progress-track {
+  display: flex; gap: 4px; padding: 0 16px 12px;
+  flex-shrink: 0;
+}
+.progress-seg {
+  flex: 1; height: 4px; border-radius: 2px;
+  background: var(--border);
+  transition: background 0.3s;
+}
+.progress-seg.done { background: var(--green-progress); }
+.progress-seg.active { background: var(--navy); }
+
+/* === MAIN CONTENT AREA === */
+.content-area {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 0 16px 16px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* === SCREEN CONTAINERS === */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* === PERSONA CONFIG === */
+.config-section { margin-bottom: 20px; }
+.config-label {
+  font-size: 13px; font-weight: 600; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+.config-grid {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.config-chip {
+  padding: 10px 16px; border-radius: var(--radius);
+  border: 1.5px solid var(--border); background: var(--white);
+  font-size: 14px; font-weight: 500; color: var(--text-secondary);
+  cursor: pointer; transition: all 0.15s;
+  flex-shrink: 0;
+}
+.config-chip:active { transform: scale(0.96); }
+.config-chip.selected {
+  border-color: var(--navy); background: var(--navy);
+  color: var(--white);
+}
+
+/* === CARDS === */
+.card {
+  background: var(--white); border-radius: var(--radius-lg);
+  padding: 16px; margin-bottom: 12px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border);
+}
+
+/* === OVERVIEW SCREEN === */
+.overview-stats {
+  display: flex; gap: 12px; margin-bottom: 16px;
+}
+.overview-stat {
+  flex: 1; background: var(--white); border-radius: var(--radius);
+  padding: 14px; text-align: center;
+  border: 1px solid var(--border);
+}
+.overview-stat-icon { font-size: 20px; margin-bottom: 4px; }
+.overview-stat-value { font-size: 16px; font-weight: 700; color: var(--navy); }
+.overview-stat-label { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+
+.steps-list { padding: 0; }
+.step-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 10px 0; position: relative;
+}
+.step-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--navy); color: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; flex-shrink: 0;
+}
+.step-item-text { font-size: 14px; color: var(--text-primary); padding-top: 3px; }
+.step-connector {
+  position: absolute; left: 13px; top: 38px;
+  width: 2px; height: calc(100% - 28px);
+  background: var(--border);
+}
+
+/* === FORM ELEMENTS === */
+.form-group { margin-bottom: 14px; }
+.form-label {
+  font-size: 13px; font-weight: 500; color: var(--text-primary);
+  margin-bottom: 5px; display: block;
+}
+.form-label .req { color: var(--red); }
+.form-input {
+  width: 100%; padding: 12px 14px;
+  border: 1.5px solid var(--border); border-radius: var(--radius);
+  font-size: 15px; font-family: var(--font);
+  background: var(--white); color: var(--text-primary);
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+}
+.form-input:focus {
+  outline: none; border-color: var(--navy);
+  box-shadow: 0 0 0 3px rgba(27,54,93,0.1);
+}
+.form-input::placeholder { color: var(--text-tertiary); }
+.form-select {
+  width: 100%; padding: 12px 14px;
+  border: 1.5px solid var(--border); border-radius: var(--radius);
+  font-size: 15px; font-family: var(--font);
+  background: var(--white); color: var(--text-primary);
+  cursor: pointer; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23868685' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+  padding-right: 36px;
+}
+
+/* === UPLOAD OPTIONS === */
+.upload-option {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px; background: var(--white);
+  border: 1.5px solid var(--border); border-radius: var(--radius);
+  cursor: pointer; margin-bottom: 8px; transition: all 0.15s;
+}
+.upload-option:active { transform: scale(0.98); background: #f9f9f9; }
+.upload-option-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: var(--blue-light); display: flex;
+  align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.upload-option-text { flex: 1; }
+.upload-option-title { font-size: 14px; font-weight: 600; }
+.upload-option-sub { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+.upload-option-arrow { color: var(--text-tertiary); font-size: 18px; }
+
+/* === FILE UPLOADED STATE === */
+.file-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px; background: var(--white);
+  border: 1.5px solid var(--border); border-radius: var(--radius);
+  margin-bottom: 8px;
+}
+.file-card-icon { font-size: 24px; flex-shrink: 0; }
+.file-card-info { flex: 1; }
+.file-card-name { font-size: 13px; font-weight: 500; }
+.file-card-size { font-size: 11px; color: var(--text-tertiary); }
+.file-card-delete {
+  font-size: 13px; color: var(--red); font-weight: 500;
+  cursor: pointer; border: none; background: none; font-family: var(--font);
+}
+
+/* === CHECKBOX === */
+.checkbox-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 0; cursor: pointer;
+}
+.checkbox-box {
+  width: 22px; height: 22px; border: 2px solid var(--border);
+  border-radius: 6px; flex-shrink: 0; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.checkbox-row.checked .checkbox-box {
+  background: var(--navy); border-color: var(--navy);
+}
+.checkbox-box svg { width: 14px; height: 14px; display: none; }
+.checkbox-row.checked .checkbox-box svg { display: block; }
+.checkbox-text { font-size: 13px; color: var(--text-secondary); line-height: 1.4; }
+
+/* === PREVIEW CARDS === */
+.preview-card {
+  background: var(--white); border-radius: var(--radius);
+  padding: 14px; margin-bottom: 10px;
+  border: 1px solid var(--border);
+}
+.preview-card-label {
+  font-size: 13px; font-weight: 600; color: var(--text-primary);
+  margin-bottom: 6px;
+}
+.preview-card-text { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+.preview-card-edit {
+  display: block; text-align: right; font-size: 13px;
+  color: var(--blue-action); font-weight: 500; margin-top: 6px;
+  cursor: pointer; text-decoration: none;
+}
+.auto-tag {
+  display: inline-block; font-size: 11px; padding: 2px 8px;
+  background: var(--blue-light); color: var(--blue-action);
+  border-radius: var(--radius-pill); font-weight: 500; margin-top: 4px;
+}
+
+/* === FACE AUTH === */
+.face-frame {
+  width: 200px; height: 200px; margin: 20px auto;
+  border-radius: 50%; border: 4px solid var(--green);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; background: #f0f0f0;
+}
+.face-frame-inner {
+  width: 160px; height: 160px; border-radius: 50%;
+  border: 2px dashed var(--text-tertiary);
+  display: flex; align-items: center; justify-content: center;
+}
+.face-icon { font-size: 60px; opacity: 0.3; }
+.face-instruction {
+  text-align: center; font-size: 16px; font-weight: 700;
+  color: var(--text-primary); margin-top: 12px;
+}
+.face-sub {
+  text-align: center; font-size: 13px; color: var(--text-secondary);
+  margin-top: 4px;
+}
+.face-success {
+  display: none; text-align: center; padding: 20px;
+  background: var(--green-light); border-radius: var(--radius-lg);
+  margin-top: 16px;
+}
+.face-success.show { display: block; }
+.face-success-icon { font-size: 36px; margin-bottom: 8px; }
+.face-success-text { font-size: 16px; font-weight: 700; color: var(--green); }
+.face-success-sub { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+
+/* === PAYMENT === */
+.payment-amount {
+  text-align: center; margin: 12px 0 20px;
+}
+.payment-amount-label { font-size: 14px; color: var(--text-secondary); }
+.payment-amount-value { font-size: 32px; font-weight: 700; color: var(--navy); }
+.payment-note {
+  padding: 14px; background: var(--amber-light);
+  border-radius: var(--radius); margin-top: 12px;
+  border-left: 3px solid var(--amber);
+}
+.payment-note-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.payment-note-text { font-size: 13px; color: var(--text-secondary); line-height: 1.4; }
+.payment-note-warn { font-size: 12px; color: var(--red); margin-top: 6px; }
+
+.payment-option {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px; background: var(--white);
+  border: 2px solid var(--navy); border-radius: var(--radius);
+  margin-bottom: 12px;
+}
+.payment-radio {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid var(--navy); display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+}
+.payment-radio-inner {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--navy);
+}
+.payment-option-text { font-size: 14px; font-weight: 500; }
+
+/* === SUCCESS === */
+.success-icon {
+  width: 72px; height: 72px; margin: 16px auto;
+  background: var(--navy); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.success-icon svg { width: 32px; height: 32px; }
+.success-title {
+  text-align: center; font-size: 20px; font-weight: 700;
+  color: var(--text-primary); margin-bottom: 6px;
+}
+.success-sub {
+  text-align: center; font-size: 13px; color: var(--text-secondary);
+  margin-bottom: 16px; line-height: 1.4;
+}
+.receipt-row {
+  display: flex; justify-content: space-between;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.receipt-row:last-child { border-bottom: none; }
+.receipt-label { color: var(--text-tertiary); }
+.receipt-value { font-weight: 500; color: var(--text-primary); text-align: right; }
+.receipt-link {
+  display: block; text-align: left; font-size: 12px;
+  color: var(--blue-action); margin-top: 6px; cursor: pointer;
+}
+
+/* === RESIDUAL ARTEFACT === */
+.residual-card {
+  margin-top: 16px; background: var(--white);
+  border-radius: var(--radius-lg); overflow: hidden;
+  border: 1px solid var(--border); position: relative;
+  touch-action: pan-y;
+}
+.residual-header {
+  padding: 12px 16px; text-align: center;
+  font-size: 13px; font-weight: 600; color: var(--text-secondary);
+}
+.residual-body {
+  padding: 12px 16px; text-align: center;
+  position: relative; min-height: 64px;
+  transition: background 0.2s;
+}
+.residual-prompt {
+  font-size: 14px; font-weight: 500; color: var(--text-primary);
+}
+.residual-sub {
+  font-size: 12px; color: var(--text-tertiary); margin-top: 4px;
+}
+.residual-hint {
+  display: flex; justify-content: space-between;
+  padding: 8px 16px; font-size: 11px; color: var(--text-tertiary);
+}
+.residual-result {
+  display: none; text-align: center; padding: 16px;
+}
+.residual-result.show { display: block; }
+.residual-result-icon { font-size: 28px; margin-bottom: 6px; }
+.residual-result-text { font-size: 15px; font-weight: 600; }
+.residual-result-sub { font-size: 12px; color: var(--text-tertiary); margin-top: 4px; }
+.residual-relieved {
+  background: var(--green-light);
+  border: 2px solid var(--green);
+  border-radius: var(--radius-lg);
+}
+.residual-relieved .residual-result-text { color: var(--green); }
+.residual-anxious {
+  background: var(--red-light);
+  border: 2px solid var(--red);
+  border-radius: var(--radius-lg);
+}
+.residual-anxious .residual-result-text { color: var(--red); }
+
+/* === BOTTOM NAV === */
+.bottom-nav {
+  display: flex; gap: 10px; padding: 12px 16px;
+  background: var(--bg-warm);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.btn {
+  flex: 1; padding: 14px; border-radius: var(--radius-pill);
+  font-size: 15px; font-weight: 600; font-family: var(--font);
+  cursor: pointer; border: none; transition: all 0.15s;
+  text-align: center;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--navy); color: var(--white); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.btn-secondary { background: var(--white); color: var(--text-primary); border: 1px solid var(--border); }
+.btn-danger { background: var(--red); color: var(--white); }
+.btn-full { flex: none; width: 100%; }
+.btn-save {
+  background: none; border: none; color: var(--blue-action);
+  font-size: 14px; font-weight: 500; cursor: pointer;
+  padding: 8px; text-align: center; width: 100%;
+  font-family: var(--font);
+}
+.auto-saved {
+  text-align: center; font-size: 11px; color: var(--text-tertiary);
+  padding: 4px 0;
+}
+
+/* === BOTTOM DRAWER (JI Layer) === */
+.drawer-overlay {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.3); z-index: 10;
+  display: none; opacity: 0; transition: opacity 0.3s;
+}
+.drawer-overlay.show { display: block; opacity: 1; }
+
+.drawer {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: var(--white);
+  border-radius: 20px 20px 0 0;
+  z-index: 20;
+  transform: translateY(calc(100% - 52px));
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  max-height: 70%;
+  display: flex; flex-direction: column;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+}
+.drawer.peek { transform: translateY(calc(100% - 52px)); }
+.drawer.half { transform: translateY(40%); }
+.drawer.open { transform: translateY(0); }
+.drawer.hidden { transform: translateY(100%); }
+
+.drawer-header {
+  padding: 8px 16px 6px;
+  cursor: pointer; flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: center;
+  user-select: none;
+}
+.drawer-handle {
+  width: 36px; height: 4px; border-radius: 2px;
+  background: var(--border); margin-bottom: 6px;
+}
+.drawer-header-row {
+  display: flex; align-items: center; width: 100%; gap: 8px;
+}
+.dpl-bar {
+  width: 8px; height: 28px; border-radius: 4px;
+  flex-shrink: 0; transition: background 0.3s;
+}
+.dpl-bar.high { background: var(--green); }
+.dpl-bar.medium { background: var(--amber); }
+.dpl-bar.low { background: var(--red); }
+.drawer-title {
+  flex: 1; font-size: 13px; font-weight: 600;
+  color: var(--text-secondary);
+}
+.drawer-klh-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--orange); border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; transition: transform 0.15s;
+}
+.drawer-klh-btn:active { transform: scale(0.9); }
+.drawer-klh-btn svg { width: 20px; height: 20px; }
+.drawer-toggle {
+  width: 28px; height: 28px; border: none; background: none;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: transform 0.3s; flex-shrink: 0;
+}
+.drawer-toggle.flipped { transform: rotate(180deg); }
+.drawer-toggle svg { width: 16px; height: 16px; color: var(--text-tertiary); }
+
+.drawer-body {
+  flex: 1; overflow-y: auto; padding: 0 16px 16px;
+  -webkit-overflow-scrolling: touch;
+}
+.drawer-lang {
+  display: flex; gap: 6px; margin-bottom: 12px;
+}
+.lang-pill {
+  padding: 6px 14px; border-radius: var(--radius-pill);
+  font-size: 12px; font-weight: 600; border: 1.5px solid var(--border);
+  background: var(--white); color: var(--text-secondary);
+  cursor: pointer; transition: all 0.15s;
+}
+.lang-pill.active { background: var(--navy); color: var(--white); border-color: var(--navy); }
+
+.ji-section { margin-bottom: 10px; }
+.ji-label {
+  font-size: 11px; font-weight: 600; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.ji-text { font-size: 14px; color: var(--text-primary); line-height: 1.5; }
+.ji-text.risk { color: var(--red); font-weight: 500; }
+.ji-loading {
+  display: flex; align-items: center; gap: 8px;
+  padding: 16px 0; color: var(--text-tertiary); font-size: 13px;
+}
+.ji-spinner {
+  width: 16px; height: 16px; border: 2px solid var(--border);
+  border-top-color: var(--navy); border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* === KLH AUDIO SHEET === */
+.klh-sheet {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: var(--white); border-radius: 20px 20px 0 0;
+  z-index: 30; padding: 16px;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+}
+.klh-sheet.open { transform: translateY(0); }
+.klh-sheet-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.klh-sheet-title { font-size: 15px; font-weight: 600; }
+.klh-close {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: none; background: #f0f0f0; cursor: pointer;
+  font-size: 16px; display: flex; align-items: center; justify-content: center;
+}
+.klh-status { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
+.klh-script {
+  font-size: 13px; color: var(--text-tertiary); line-height: 1.5;
+  padding: 10px; background: #f9f9f9; border-radius: 8px;
+  margin-bottom: 10px; max-height: 120px; overflow-y: auto;
+}
+.klh-audio { width: 100%; margin-top: 8px; }
+
+/* === CAS GATE (inline for consequential steps) === */
+.cas-inline {
+  margin-top: 12px; padding: 16px;
+  background: var(--red-light); border-radius: var(--radius-lg);
+  border: 1px solid #fca5a5;
+}
+.cas-inline-title {
+  font-size: 15px; font-weight: 700; color: var(--red);
+  margin-bottom: 8px;
+}
+.cas-risk-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 13px; color: var(--text-secondary);
+  margin-bottom: 6px; line-height: 1.4;
+}
+.cas-risk-icon { flex-shrink: 0; margin-top: 2px; }
+
+/* === SCREEN-SPECIFIC === */
+.section-title {
+  font-size: 22px; font-weight: 700; color: var(--text-primary);
+  margin-bottom: 12px;
+}
+.section-sub {
+  font-size: 14px; color: var(--text-secondary);
+  margin-bottom: 16px; line-height: 1.5;
+}
+.info-banner {
+  display: flex; gap: 10px; padding: 12px;
+  background: var(--blue-light); border-radius: var(--radius);
+  margin-bottom: 16px; align-items: flex-start;
+}
+.info-banner-icon { flex-shrink: 0; font-size: 18px; }
+.info-banner-text { font-size: 13px; color: var(--text-secondary); line-height: 1.4; }
+.see-guidelines {
+  font-size: 13px; color: var(--blue-action); cursor: pointer;
+  margin-top: 6px; display: inline-block;
+}
+
+/* === MATERIALITY TAG === */
+.mat-tag {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  padding: 3px 8px; border-radius: var(--radius-pill);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.mat-tag.info { background: #E0F2FE; color: #0369A1; }
+.mat-tag.review { background: #FEF9C3; color: #A16207; }
+.mat-tag.action { background: #FED7AA; color: #C2410C; }
+.mat-tag.irreversible { background: var(--red-light); color: var(--red); }
+
+/* === TOAST === */
+.toast {
+  position: absolute; bottom: 80px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--green); color: var(--white);
+  padding: 10px 20px; border-radius: var(--radius-pill);
+  font-size: 13px; font-weight: 500;
+  opacity: 0; transition: all 0.3s; pointer-events: none;
+  z-index: 50; white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* === UTILITIES === */
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.mb-8 { margin-bottom: 8px; }
+.text-center { text-align: center; }
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="phone-wrap">
+<div class="phone-screen" id="phoneScreen">
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <span id="clock">9:41</span>
+    <div class="status-bar-right">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+    </div>
+  </div>
+
+  <!-- APP BAR (hidden on config screen) -->
+  <div class="app-bar" id="appBar" style="display:none">
+    <button class="app-bar-back" onclick="goBack()" aria-label="Back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="app-bar-title" id="appBarTitle">Address Update</span>
+    <button class="app-bar-lang" id="appBarLang" onclick="toggleDrawer()" aria-label="Language">अ</button>
+  </div>
+
+  <!-- PROGRESS TRACK (hidden on config/overview/success) -->
+  <div class="progress-track" id="progressTrack" style="display:none">
+    <div class="progress-seg" id="seg0"></div>
+    <div class="progress-seg" id="seg1"></div>
+    <div class="progress-seg" id="seg2"></div>
+    <div class="progress-seg" id="seg3"></div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="content-area" id="contentArea">
+
+    <!-- SCREEN 0: PERSONA CONFIG -->
+    <div class="screen active" id="screen-config">
+      <div style="padding-top:8px">
+        <div style="font-size:11px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Journey Intelligence</div>
+        <div class="section-title" style="font-size:20px;margin-bottom:4px">Aadhaar Address Update</div>
+        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;line-height:1.4">Configure user persona to see how the rhetorical layer adapts the same canonical flow.</div>
+      </div>
+
+      <div class="config-section">
+        <div class="config-label">Gender</div>
+        <div class="config-grid" data-group="gender">
+          <div class="config-chip selected" data-value="female">Female</div>
+          <div class="config-chip" data-value="male">Male</div>
+          <div class="config-chip" data-value="other">Other</div>
+        </div>
+      </div>
+
+      <div class="config-section">
+        <div class="config-label">Age group</div>
+        <div class="config-grid" data-group="age">
+          <div class="config-chip" data-value="young">18–30</div>
+          <div class="config-chip selected" data-value="adult">31–55</div>
+          <div class="config-chip" data-value="senior">56+</div>
+        </div>
+      </div>
+
+      <div class="config-section">
+        <div class="config-label">Network</div>
+        <div class="config-grid" data-group="network">
+          <div class="config-chip" data-value="poor">Poor</div>
+          <div class="config-chip" data-value="3g">3G</div>
+          <div class="config-chip selected" data-value="4g">4G</div>
+          <div class="config-chip" data-value="5g">5G</div>
+        </div>
+      </div>
+
+      <div class="config-section">
+        <div class="config-label">Literacy / Modality</div>
+        <div class="config-grid" data-group="literacy">
+          <div class="config-chip selected" data-value="read-write">Read + Write</div>
+          <div class="config-chip" data-value="listen-read">Prefer listening</div>
+          <div class="config-chip" data-value="listen-only">Listen only</div>
+        </div>
+      </div>
+
+      <div class="config-section">
+        <div class="config-label">Language</div>
+        <div class="config-grid" data-group="language">
+          <div class="config-chip selected" data-value="en">English</div>
+          <div class="config-chip" data-value="hi">हिन्दी</div>
+          <div class="config-chip" data-value="kn">ಕನ್ನಡ</div>
+          <div class="config-chip" data-value="ta">தமிழ்</div>
+        </div>
+      </div>
+
+      <div style="padding:12px 0 4px">
+        <button class="btn btn-primary btn-full" onclick="startFlow()">Start Address Update →</button>
+      </div>
+    </div>
+
+    <!-- SCREEN 1: PROCESS OVERVIEW -->
+    <div class="screen" id="screen-overview">
+      <div class="section-title">Address Update</div>
+      <div class="overview-stats">
+        <div class="overview-stat">
+          <div class="overview-stat-icon">⏱</div>
+          <div class="overview-stat-value">15 Days</div>
+          <div class="overview-stat-label">Processing Time</div>
+        </div>
+        <div class="overview-stat">
+          <div class="overview-stat-icon">₹</div>
+          <div class="overview-stat-value">75.00</div>
+          <div class="overview-stat-label">Processing Fee</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-size:15px;font-weight:600;margin-bottom:4px">Required documents</div>
+        <div style="font-size:13px;color:var(--text-secondary)">1. Proof of address in your name</div>
+      </div>
+
+      <div class="card">
+        <div style="font-size:15px;font-weight:600;margin-bottom:10px">Steps</div>
+        <div style="font-size:12px;color:var(--text-tertiary);margin-bottom:12px">This will take about 5 minutes</div>
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-item-text">Select & Upload proof of address</div>
+          <div class="step-connector"></div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-item-text">Verify new details</div>
+          <div class="step-connector"></div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-item-text">Face Authentication</div>
+          <div class="step-connector"></div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-item-text">Make payment</div>
+        </div>
+      </div>
+
+      <div style="font-size:13px;color:var(--blue-action);cursor:pointer;margin-top:4px">ⓘ List of accepted documents</div>
+    </div>
+
+    <!-- SCREEN 2: UPLOAD DOCUMENT -->
+    <div class="screen" id="screen-upload">
+      <div class="section-title">Upload Document</div>
+      <div class="form-group">
+        <div class="form-label">Select preferred document</div>
+        <select class="form-select" id="docType" onchange="onDocTypeChange()">
+          <option value="">Select</option>
+          <option value="electricity">Electricity bill (pre-paid/post-paid bill, not older than 3 months)</option>
+          <option value="ration">Ration / PDS Photograph Card / e-Ration Card</option>
+          <option value="tehsildar">Standard Certificate by Tehsildar / Gazetted Officer Group 'B'</option>
+          <option value="marriage">Marriage Certificate with or without photograph</option>
+          <option value="gas">Gas Connection Bill (not older than 3 months)</option>
+          <option value="bank">Scheduled Commercial Bank or State Cooperative Bank Passbook / Post Office</option>
+        </select>
+        <div class="see-guidelines">ⓘ See guidelines again</div>
+      </div>
+
+      <div id="uploadArea" class="hidden">
+        <div class="form-label">Upload File</div>
+        <div id="uploadOptions">
+          <div class="upload-option" onclick="simulateUpload()">
+            <div class="upload-option-icon">📷</div>
+            <div class="upload-option-text">
+              <div class="upload-option-title">Scan documents directly</div>
+              <div class="upload-option-sub">Opens camera to scan the document</div>
+            </div>
+            <div class="upload-option-arrow">›</div>
+          </div>
+          <div class="upload-option" onclick="simulateUpload()">
+            <div class="upload-option-icon">📁</div>
+            <div class="upload-option-text">
+              <div class="upload-option-title">Select files to upload</div>
+              <div class="upload-option-sub">JPEG, PNG, PDF | Less than 2MB</div>
+            </div>
+            <div class="upload-option-arrow">›</div>
+          </div>
+        </div>
+        <div id="uploadedFile" class="hidden">
+          <div class="file-card">
+            <div class="file-card-icon">📄</div>
+            <div class="file-card-info">
+              <div class="file-card-name">Document_2025.jpg</div>
+              <div class="file-card-size">200kb</div>
+            </div>
+            <button class="file-card-delete" onclick="removeUpload()">🗑 Delete</button>
+          </div>
+          <div style="font-size:12px;color:var(--blue-action);cursor:pointer;margin-bottom:10px">👆 Tap to preview</div>
+          <div class="checkbox-row" id="docCheck" onclick="toggleCheck('docCheck')">
+            <div class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
+            <div class="checkbox-text">I have previewed the document and it complies with all guidelines</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: ADD NEW ADDRESS -->
+    <div class="screen" id="screen-address">
+      <div class="section-title">Add New Address</div>
+      <div class="form-group">
+        <div class="form-label">House/Building/Apartment</div>
+        <input class="form-input" id="addr-house" placeholder="e.g. Flat 203, Sunrise Apartments" oninput="validateAddress()">
+      </div>
+      <div class="form-group">
+        <div class="form-label">Street/Road/Lane</div>
+        <input class="form-input" id="addr-street" placeholder="e.g. MG Road" oninput="validateAddress()">
+      </div>
+      <div class="form-group">
+        <div class="form-label">Area/Locality/Sector</div>
+        <input class="form-input" id="addr-area" placeholder="e.g. Sector 12, Rohini" oninput="validateAddress()">
+      </div>
+      <div class="form-group">
+        <div class="form-label">Landmark</div>
+        <input class="form-input" id="addr-landmark" placeholder="e.g. Near City Mall">
+      </div>
+      <div class="form-group">
+        <div class="form-label">Pincode <span class="req">*</span></div>
+        <input class="form-input" id="addr-pincode" placeholder="e.g. 456 001" maxlength="6" inputmode="numeric" oninput="onPincodeInput()">
+      </div>
+      <div class="form-group">
+        <div class="form-label">Village/Town/City <span class="req">*</span></div>
+        <input class="form-input" id="addr-city" placeholder="e.g. Bengaluru Urban" oninput="validateAddress()">
+      </div>
+      <div class="form-group">
+        <div class="form-label">District <span class="req">*</span></div>
+        <input class="form-input" id="addr-district" placeholder="e.g. Bengaluru Urban" oninput="validateAddress()">
+      </div>
+      <div class="form-group">
+        <div class="form-label">State <span class="req">*</span></div>
+        <input class="form-input" id="addr-state" placeholder="e.g. Karnataka" oninput="validateAddress()">
+      </div>
+      <div class="form-group">
+        <div class="form-label">Post office <span class="req">*</span></div>
+        <select class="form-select" id="addr-po" onchange="validateAddress()">
+          <option value="">Select</option>
+          <option value="local">Local Post Office</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- SCREEN 4: PREVIEW ADDRESS -->
+    <div class="screen" id="screen-preview">
+      <div class="section-title">Preview New Address</div>
+      <div class="preview-card">
+        <div class="preview-card-label">New Address (English)</div>
+        <div class="preview-card-text" id="previewAddrEn">—</div>
+        <a class="preview-card-edit" onclick="goToStep(2)">✏️ Edit</a>
+      </div>
+      <div class="preview-card">
+        <div class="preview-card-label" id="previewLocalLabel">नया पता (Local Language)</div>
+        <div class="preview-card-text" id="previewAddrLocal">—</div>
+        <div class="auto-tag">Auto-translated</div>
+        <a class="preview-card-edit" onclick="goToStep(2)">✏️ Edit</a>
+      </div>
+      <div class="checkbox-row mt-12" id="transCheck" onclick="toggleCheck('transCheck')">
+        <div class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
+        <div class="checkbox-text">I have checked the local language translation and it is correct.</div>
+      </div>
+      <div class="card mt-12">
+        <div style="font-size:14px;font-weight:600;margin-bottom:4px">Review Document</div>
+        <div style="font-size:13px;color:var(--text-secondary)" id="previewDocType">—</div>
+        <div class="file-card mt-8">
+          <div class="file-card-icon">📄</div>
+          <div class="file-card-info">
+            <div class="file-card-name">Document_2025.jpg</div>
+            <div class="file-card-size">200kb</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 5: FACE AUTH -->
+    <div class="screen" id="screen-face">
+      <div class="section-title">Face Authentication</div>
+      <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px">Hold still and align your face within the frame</div>
+      <div class="face-frame" id="faceFrame">
+        <div class="face-frame-inner">
+          <div class="face-icon">👤</div>
+        </div>
+      </div>
+      <div class="face-instruction" id="faceInstruction">PLEASE BLINK</div>
+      <div class="face-sub">Tap the frame to simulate</div>
+      <div class="face-success" id="faceSuccess">
+        <div class="face-success-icon">✅</div>
+        <div class="face-success-text">Face Authenticated</div>
+        <div class="face-success-sub">Your profile has been authenticated.</div>
+      </div>
+    </div>
+
+    <!-- SCREEN 6: PAYMENT -->
+    <div class="screen" id="screen-payment">
+      <div class="section-title">Make Payment</div>
+      <div style="font-size:14px;color:var(--text-secondary);margin-bottom:4px">Please pay a processing <strong>fee of ₹75.00</strong> to submit this address update request.</div>
+      <div class="payment-amount">
+        <div class="payment-amount-value">₹75</div>
+      </div>
+      <div style="font-size:14px;font-weight:500;margin-bottom:8px">Choose preferred payment option</div>
+      <div class="payment-option">
+        <div class="payment-radio"><div class="payment-radio-inner"></div></div>
+        <div class="payment-option-text">Payment Option 1</div>
+      </div>
+      <div class="payment-note">
+        <div class="payment-note-title">Please Note</div>
+        <div class="payment-note-text">After payment, UIDAI will review the address update request and if approved, your address will be updated.</div>
+        <div class="payment-note-warn">If request is not approved, the update will not be processed and no refund will be provided.</div>
+      </div>
+      <div class="cas-inline mt-16">
+        <div class="cas-inline-title">⚠️ Before you pay</div>
+        <div class="cas-risk-item"><span class="cas-risk-icon">•</span>This payment of ₹75 is non-refundable even if your request is rejected</div>
+        <div class="cas-risk-item"><span class="cas-risk-icon">•</span>Processing takes up to 15 working days</div>
+        <div class="cas-risk-item"><span class="cas-risk-icon">•</span>Ensure your document and address details are correct before proceeding</div>
+      </div>
+      <div class="checkbox-row mt-12" id="payCheck" onclick="toggleCheck('payCheck')">
+        <div class="checkbox-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
+        <div class="checkbox-text">I understand the payment is non-refundable and wish to proceed.</div>
+      </div>
+    </div>
+
+    <!-- SCREEN 7: SUCCESS + RESIDUAL ARTEFACT -->
+    <div class="screen" id="screen-success">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+      </div>
+      <div class="success-title">Request Submitted Successfully</div>
+      <div class="success-sub">Check your request status anytime in 'Track My Requests' under Services.</div>
+      <div class="card">
+        <div class="receipt-row"><span class="receipt-label">Amount Paid</span><span class="receipt-value">₹75.00</span></div>
+        <div class="receipt-row"><span class="receipt-label">Date & Time</span><span class="receipt-value" id="receiptDate">—</span></div>
+        <div class="receipt-row"><span class="receipt-label">Transaction ID</span><span class="receipt-value">UPI/538291047</span></div>
+        <div class="receipt-row"><span class="receipt-label">SRN Number</span><span class="receipt-value" style="font-size:11px">20260.0001234882666</span></div>
+        <div class="receipt-link">ⓘ What is SRN?</div>
+      </div>
+
+      <!-- RESIDUAL ARTEFACT -->
+      <div class="residual-card" id="residualCard">
+        <div class="residual-header">How did this transaction feel?</div>
+        <div class="residual-body" id="residualBody">
+          <div class="residual-prompt" id="residualPrompt">← Swipe to record →</div>
+          <div class="residual-sub">Encode your emotional response to this transaction</div>
+        </div>
+        <div class="residual-hint" id="residualHint">
+          <span>✓ Relieved · राहत</span>
+          <span>✗ Anxious · चिंता</span>
+        </div>
+        <div class="residual-result" id="residualResult"></div>
+      </div>
+
+      <div style="padding:16px 0 4px">
+        <button class="btn btn-primary btn-full">Download Acknowledgement</button>
+        <button class="btn-save mt-8">Track Progress</button>
+      </div>
+    </div>
+
+  </div><!-- /content-area -->
+
+  <!-- BOTTOM NAV -->
+  <div class="auto-saved" id="autoSaved" style="display:none">Auto-saved at <span id="autoSavedTime">08:06 PM</span></div>
+  <div class="bottom-nav" id="bottomNav" style="display:none">
+    <button class="btn btn-secondary" id="btnPrev" onclick="prevStep()">← Back</button>
+    <button class="btn btn-primary" id="btnNext" onclick="nextStep()">Continue →</button>
+  </div>
+
+  <!-- JOURNEY INTELLIGENCE DRAWER -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+  <div class="drawer peek" id="drawer">
+    <div class="drawer-header" onclick="toggleDrawer()">
+      <div class="drawer-handle"></div>
+      <div class="drawer-header-row">
+        <div class="dpl-bar high" id="dplBar"></div>
+        <div class="drawer-title">Journey Intelligence</div>
+        <button class="drawer-klh-btn" id="klhBtn" onclick="event.stopPropagation(); playKLH()" aria-label="Listen">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+        </button>
+        <button class="drawer-toggle" id="drawerToggle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="drawer-body" id="drawerBody">
+      <div class="drawer-lang" id="drawerLang">
+        <div class="lang-pill active" data-lang="en" onclick="setLang('en')">EN</div>
+        <div class="lang-pill" data-lang="hi" onclick="setLang('hi')">HI</div>
+        <div class="lang-pill" data-lang="kn" onclick="setLang('kn')">KN</div>
+        <div class="lang-pill" data-lang="ta" onclick="setLang('ta')">TA</div>
+      </div>
+      <div id="jiContent">
+        <div class="ji-loading" id="jiLoading">
+          <div class="ji-spinner"></div> Generating rhetorical layer…
+        </div>
+        <div id="jiData" class="hidden">
+          <div class="ji-section"><div class="ji-label">Headline</div><div class="ji-text" id="jiHeadline"></div></div>
+          <div class="ji-section"><div class="ji-label">Plain Explanation</div><div class="ji-text" id="jiExplanation"></div></div>
+          <div class="ji-section"><div class="ji-label">What Happens Next</div><div class="ji-text" id="jiNext"></div></div>
+          <div class="ji-section"><div class="ji-label">Help Nudge</div><div class="ji-text" id="jiNudge"></div></div>
+          <div class="ji-section" id="jiRiskSection" class="hidden"><div class="ji-label">Risk Signal</div><div class="ji-text risk" id="jiRisk"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KLH AUDIO SHEET -->
+  <div class="klh-sheet" id="klhSheet">
+    <div class="klh-sheet-header">
+      <div class="klh-sheet-title">🔊 Kya Likha Hai</div>
+      <button class="klh-close" onclick="closeKLH()">✕</button>
+    </div>
+    <div class="klh-status" id="klhStatus">Tap speaker to listen</div>
+    <div class="klh-script" id="klhScript"></div>
+    <audio class="klh-audio" id="klhAudio" controls style="display:none"></audio>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+</div><!-- /phone-screen -->
+</div><!-- /phone-wrap -->
+
+<script>
+// === STATE ===
+const state = {
+  screen: 'config', // config, overview, upload, address, preview, face, payment, success
+  step: -1, // -1=config, 0=overview, 1-6=flow steps
+  persona: { gender: 'female', age: 'adult', network: '4g', literacy: 'read-write', language: 'en' },
+  docTypeSelected: '',
+  fileUploaded: false,
+  docChecked: false,
+  transChecked: false,
+  payChecked: false,
+  faceAuth: false,
+  jiCache: {},
+  drawerState: 'peek', // peek, half, open, hidden
+  klhPlaying: false,
+  residualDone: false
+};
+
+const SCREENS = ['config','overview','upload','address','preview','face','payment','success'];
+const STEP_SCREENS = ['overview','upload','address','preview','face','payment','success'];
+// Progress segments: seg0=upload, seg1=address+preview, seg2=face, seg3=payment
+const STEP_TO_SEG = { 1: 0, 2: 1, 3: 1, 4: 2, 5: 3 };
+
+const DPL_AGENCY = {
+  overview: 'MEDIUM',
+  upload: 'LOW',    // high DPL: Tehsildar, Gazetted Officer, PDS
+  address: 'HIGH',  // mostly operational english
+  preview: 'MEDIUM',
+  face: 'HIGH',
+  payment: 'LOW',   // high DPL: processing fee, no refund
+  success: 'HIGH'
+};
+
+const MATERIALITY = {
+  overview: { display: 'INFO', api: 'INFORMATIONAL' },
+  upload: { display: 'ACTION REQUIRED', api: 'TRANSACTIONAL' },
+  address: { display: 'ACTION REQUIRED', api: 'TRANSACTIONAL' },
+  preview: { display: 'REVIEW', api: 'NAVIGATIONAL' },
+  face: { display: 'ACTION REQUIRED', api: 'TRANSACTIONAL' },
+  payment: { display: 'IRREVERSIBLE', api: 'CONSEQUENTIAL' },
+  success: { display: 'INFO', api: 'INFORMATIONAL' }
+};
+
+const FLOW_STEPS = [
+  { id: 'overview', name: 'Process Overview', type: 'info', title: 'Address Update Overview' },
+  { id: 'upload', name: 'Upload Document', type: 'form-complete', title: 'Upload Proof of Address' },
+  { id: 'address', name: 'Add New Address', type: 'form-complete', title: 'Enter New Address' },
+  { id: 'preview', name: 'Preview Address', type: 'navigate', title: 'Preview & Confirm Address' },
+  { id: 'face', name: 'Face Authentication', type: 'form-complete', title: 'Face Authentication' },
+  { id: 'payment', name: 'Make Payment', type: 'submit', title: 'Confirm & Pay ₹75', irreversible: true,
+    risks: ['₹75 payment is non-refundable even if rejected','Processing takes up to 15 working days','Ensure document and address are correct'] },
+  { id: 'success', name: 'Request Submitted', type: 'confirmation', title: 'Request Submitted' }
+];
+
+// === CLOCK ===
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: false });
+}
+updateClock(); setInterval(updateClock, 30000);
+
+// === PERSONA CONFIG ===
+document.querySelectorAll('.config-grid').forEach(grid => {
+  grid.addEventListener('click', e => {
+    const chip = e.target.closest('.config-chip');
+    if (!chip) return;
+    grid.querySelectorAll('.config-chip').forEach(c => c.classList.remove('selected'));
+    chip.classList.add('selected');
+    const group = grid.dataset.group;
+    state.persona[group] = chip.dataset.value;
+  });
+});
+
+function startFlow() {
+  goToStep(0);
+}
+
+// === NAVIGATION ===
+function goToStep(idx) {
+  state.step = idx;
+  const screenId = STEP_SCREENS[idx];
+  state.screen = screenId;
+
+  // Hide all screens, show target
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + screenId).classList.add('active');
+
+  // App bar
+  const appBar = document.getElementById('appBar');
+  appBar.style.display = idx >= 0 ? 'flex' : 'none';
+  document.getElementById('appBarTitle').textContent = idx === 0 ? 'Address Update' : FLOW_STEPS[idx]?.title || 'Address Update';
+
+  // Progress track
+  const pt = document.getElementById('progressTrack');
+  if (idx >= 1 && idx <= 5) {
+    pt.style.display = 'flex';
+    updateProgress(idx);
+  } else {
+    pt.style.display = 'none';
+  }
+
+  // Bottom nav
+  const bn = document.getElementById('bottomNav');
+  const autoSaved = document.getElementById('autoSaved');
+  if (idx === 6) { // success
+    bn.style.display = 'none';
+    autoSaved.style.display = 'none';
+  } else if (idx === 0) {
+    bn.style.display = 'flex';
+    document.getElementById('btnPrev').style.display = 'none';
+    document.getElementById('btnNext').textContent = 'Continue to Update Address';
+    document.getElementById('btnNext').disabled = false;
+    autoSaved.style.display = 'none';
+  } else {
+    bn.style.display = 'flex';
+    document.getElementById('btnPrev').style.display = '';
+    autoSaved.style.display = 'block';
+    updateAutoSaved();
+    updateNextButton(idx);
+  }
+
+  // Drawer
+  if (idx >= 1 && idx <= 5) {
+    showDrawer(screenId);
+  } else {
+    hideDrawer();
+  }
+
+  // Scroll to top
+  document.getElementById('contentArea').scrollTop = 0;
+
+  // Screen-specific setup
+  if (screenId === 'preview') buildPreview();
+  if (screenId === 'success') setupSuccess();
+}
+
+function updateProgress(stepIdx) {
+  for (let i = 0; i < 4; i++) {
+    const seg = document.getElementById('seg' + i);
+    seg.className = 'progress-seg';
+    const currentSeg = STEP_TO_SEG[stepIdx];
+    if (currentSeg !== undefined) {
+      if (i < currentSeg) seg.classList.add('done');
+      else if (i === currentSeg) seg.classList.add('active');
+    }
+  }
+}
+
+function updateNextButton(idx) {
+  const btn = document.getElementById('btnNext');
+  const screenId = STEP_SCREENS[idx];
+  switch (screenId) {
+    case 'upload':
+      btn.textContent = 'Continue to Add New Address';
+      btn.disabled = !(state.docTypeSelected && state.fileUploaded && state.docChecked);
+      break;
+    case 'address':
+      btn.textContent = 'Preview New Address';
+      btn.disabled = !isAddressValid();
+      break;
+    case 'preview':
+      btn.textContent = 'Continue to Face Authentication';
+      btn.disabled = !state.transChecked;
+      break;
+    case 'face':
+      btn.textContent = 'Continue to Review Details';
+      btn.disabled = !state.faceAuth;
+      break;
+    case 'payment':
+      btn.textContent = 'Confirm and Pay ₹75';
+      btn.disabled = !state.payChecked;
+      btn.className = state.payChecked ? 'btn btn-danger' : 'btn btn-primary';
+      break;
+    default:
+      btn.textContent = 'Continue →';
+      btn.disabled = false;
+  }
+}
+
+function nextStep() {
+  if (state.step < STEP_SCREENS.length - 1) {
+    goToStep(state.step + 1);
+  }
+}
+function prevStep() {
+  if (state.step > 0) goToStep(state.step - 1);
+}
+function goBack() {
+  if (state.step === 0) {
+    // Back to config
+    state.step = -1;
+    state.screen = 'config';
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-config').classList.add('active');
+    document.getElementById('appBar').style.display = 'none';
+    document.getElementById('progressTrack').style.display = 'none';
+    document.getElementById('bottomNav').style.display = 'none';
+    document.getElementById('autoSaved').style.display = 'none';
+    hideDrawer();
+  } else {
+    prevStep();
+  }
+}
+
+function updateAutoSaved() {
+  const now = new Date();
+  document.getElementById('autoSavedTime').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+}
+
+// === CHECKBOX ===
+function toggleCheck(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('checked');
+  switch (id) {
+    case 'docCheck': state.docChecked = el.classList.contains('checked'); break;
+    case 'transCheck': state.transChecked = el.classList.contains('checked'); break;
+    case 'payCheck': state.payChecked = el.classList.contains('checked'); break;
+  }
+  updateNextButton(state.step);
+}
+
+// === UPLOAD DOCUMENT ===
+function onDocTypeChange() {
+  const val = document.getElementById('docType').value;
+  state.docTypeSelected = val;
+  document.getElementById('uploadArea').classList.toggle('hidden', !val);
+  if (!val) {
+    state.fileUploaded = false;
+    state.docChecked = false;
+  }
+  updateNextButton(state.step);
+}
+
+function simulateUpload() {
+  state.fileUploaded = true;
+  document.getElementById('uploadOptions').classList.add('hidden');
+  document.getElementById('uploadedFile').classList.remove('hidden');
+  showToast('Document uploaded successfully!');
+  updateNextButton(state.step);
+}
+
+function removeUpload() {
+  state.fileUploaded = false;
+  state.docChecked = false;
+  document.getElementById('uploadOptions').classList.remove('hidden');
+  document.getElementById('uploadedFile').classList.add('hidden');
+  document.getElementById('docCheck').classList.remove('checked');
+  updateNextButton(state.step);
+}
+
+// === ADDRESS FORM ===
+function isAddressValid() {
+  const h = document.getElementById('addr-house').value.trim();
+  const p = document.getElementById('addr-pincode').value.trim();
+  const c = document.getElementById('addr-city').value.trim();
+  const d = document.getElementById('addr-district').value.trim();
+  const s = document.getElementById('addr-state').value.trim();
+  const po = document.getElementById('addr-po').value;
+  return h && p.length === 6 && c && d && s && po;
+}
+function validateAddress() { updateNextButton(state.step); }
+function onPincodeInput() {
+  const el = document.getElementById('addr-pincode');
+  el.value = el.value.replace(/\D/g, '').slice(0, 6);
+  // Auto-fill city/district/state on 6 digits (simulated)
+  if (el.value.length === 6) {
+    if (!document.getElementById('addr-city').value) document.getElementById('addr-city').value = 'Bengaluru Urban';
+    if (!document.getElementById('addr-district').value) document.getElementById('addr-district').value = 'Bengaluru Urban';
+    if (!document.getElementById('addr-state').value) document.getElementById('addr-state').value = 'Karnataka';
+    const po = document.getElementById('addr-po');
+    if (!po.value) { po.innerHTML = '<option value="">Select</option><option value="local" selected>Bengaluru GPO</option>'; po.value = 'local'; }
+  }
+  validateAddress();
+}
+
+// === PREVIEW ===
+function buildPreview() {
+  const parts = [
+    document.getElementById('addr-house').value,
+    document.getElementById('addr-street').value,
+    document.getElementById('addr-area').value,
+    document.getElementById('addr-landmark').value,
+    document.getElementById('addr-city').value,
+    document.getElementById('addr-state').value,
+    document.getElementById('addr-pincode').value
+  ].filter(Boolean);
+  document.getElementById('previewAddrEn').textContent = parts.join(', ');
+
+  // Simulated local language
+  const lang = state.persona.language;
+  if (lang === 'hi') {
+    document.getElementById('previewLocalLabel').textContent = 'नया पता (हिन्दी)';
+    document.getElementById('previewAddrLocal').textContent = parts.join(', ') + ' (हिन्दी अनुवाद)';
+  } else if (lang === 'kn') {
+    document.getElementById('previewLocalLabel').textContent = 'ಹೊಸ ವಿಳಾಸ (ಕನ್ನಡ)';
+    document.getElementById('previewAddrLocal').textContent = parts.join(', ') + ' (ಕನ್ನಡ ಅನುವಾದ)';
+  } else if (lang === 'ta') {
+    document.getElementById('previewLocalLabel').textContent = 'புதிய முகவரி (தமிழ்)';
+    document.getElementById('previewAddrLocal').textContent = parts.join(', ') + ' (தமிழ் மொழிபெயர்ப்பு)';
+  } else {
+    document.getElementById('previewLocalLabel').textContent = 'New Address (Local Language)';
+    document.getElementById('previewAddrLocal').textContent = parts.join(', ');
+  }
+
+  const docEl = document.getElementById('docType');
+  document.getElementById('previewDocType').textContent = docEl.options[docEl.selectedIndex]?.text || '—';
+}
+
+// === FACE AUTH ===
+document.addEventListener('click', e => {
+  if (state.screen === 'face' && !state.faceAuth) {
+    const frame = document.getElementById('faceFrame');
+    if (frame.contains(e.target) || e.target === frame) {
+      state.faceAuth = true;
+      frame.style.borderColor = 'var(--green)';
+      document.getElementById('faceInstruction').textContent = '';
+      document.getElementById('faceSuccess').classList.add('show');
+      updateNextButton(state.step);
+    }
+  }
+});
+
+// === SUCCESS ===
+function setupSuccess() {
+  const now = new Date();
+  document.getElementById('receiptDate').textContent = now.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) + ', ' + now.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' });
+  setupResidualSwipe();
+}
+
+// === RESIDUAL ARTEFACT SWIPE ===
+function setupResidualSwipe() {
+  const card = document.getElementById('residualCard');
+  const body = document.getElementById('residualBody');
+  let startX = 0, currentX = 0, swiping = false;
+
+  function onStart(e) {
+    if (state.residualDone) return;
+    startX = e.touches ? e.touches[0].clientX : e.clientX;
+    swiping = true;
+  }
+  function onMove(e) {
+    if (!swiping) return;
+    currentX = (e.touches ? e.touches[0].clientX : e.clientX) - startX;
+    const clamp = Math.max(-80, Math.min(80, currentX));
+    body.style.transform = `translateX(${clamp}px)`;
+    if (clamp < -20) body.style.background = 'rgba(254,242,242,0.8)';
+    else if (clamp > 20) body.style.background = 'rgba(232,245,233,0.8)';
+    else body.style.background = '';
+  }
+  function onEnd() {
+    if (!swiping) return;
+    swiping = false;
+    body.style.transform = '';
+    body.style.background = '';
+    if (currentX < -40) {
+      completeResidual('anxious');
+    } else if (currentX > 40) {
+      completeResidual('relieved');
+    }
+    currentX = 0;
+  }
+
+  body.addEventListener('touchstart', onStart, { passive: true });
+  body.addEventListener('touchmove', onMove, { passive: true });
+  body.addEventListener('touchend', onEnd);
+  body.addEventListener('mousedown', onStart);
+  body.addEventListener('mousemove', onMove);
+  body.addEventListener('mouseup', onEnd);
+  body.addEventListener('mouseleave', () => { if (swiping) onEnd(); });
+}
+
+function completeResidual(type) {
+  state.residualDone = true;
+  const result = document.getElementById('residualResult');
+  const prompt = document.getElementById('residualPrompt').parentElement;
+  const hint = document.getElementById('residualHint');
+
+  prompt.style.display = 'none';
+  hint.style.display = 'none';
+
+  if (type === 'relieved') {
+    result.className = 'residual-result show residual-relieved';
+    result.innerHTML = '<div class="residual-result-icon">☺</div><div class="residual-result-text">Relieved · राहत</div><div class="residual-result-sub">Transaction felt safe — no cause for concern</div>';
+    showToast('✓ Marked as safe experience');
+  } else {
+    result.className = 'residual-result show residual-anxious';
+    result.innerHTML = '<div class="residual-result-icon">⚠</div><div class="residual-result-text">Anxious · चिंता</div><div class="residual-result-sub">Something about this transaction felt wrong</div>';
+    showToast('✗ Marked as concerning experience');
+  }
+}
+
+// === DRAWER ===
+function showDrawer(screenId) {
+  const drawer = document.getElementById('drawer');
+  const dplBar = document.getElementById('dplBar');
+  const agency = DPL_AGENCY[screenId];
+
+  dplBar.className = 'dpl-bar ' + agency.toLowerCase();
+
+  // Auto-expand based on DPL agency
+  if (agency === 'LOW') {
+    // Thin agency = high DPL → open drawer
+    setDrawerState('open');
+  } else if (agency === 'MEDIUM') {
+    setDrawerState('half');
+  } else {
+    // Thick agency → peek only
+    setDrawerState('peek');
+  }
+
+  // Fetch rhetorical content
+  fetchRhetorical(screenId);
+}
+
+function hideDrawer() {
+  setDrawerState('hidden');
+}
+
+function setDrawerState(s) {
+  state.drawerState = s;
+  const drawer = document.getElementById('drawer');
+  const toggle = document.getElementById('drawerToggle');
+  const overlay = document.getElementById('drawerOverlay');
+
+  drawer.className = 'drawer ' + s;
+  toggle.classList.toggle('flipped', s === 'peek');
+  overlay.classList.toggle('show', s === 'open');
+}
+
+function toggleDrawer() {
+  if (state.drawerState === 'peek' || state.drawerState === 'half') {
+    setDrawerState('open');
+  } else if (state.drawerState === 'open') {
+    setDrawerState('peek');
+  }
+}
+
+function closeDrawer() {
+  setDrawerState('peek');
+}
+
+// === LANGUAGE ===
+function setLang(lang) {
+  state.persona.language = lang;
+  document.querySelectorAll('.lang-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.lang === lang);
+  });
+  // Re-fetch rhetorical for current screen
+  if (state.step >= 1 && state.step <= 5) {
+    fetchRhetorical(STEP_SCREENS[state.step], true);
+  }
+}
+
+// === RHETORICAL API ===
+async function fetchRhetorical(screenId, force = false) {
+  const cacheKey = screenId + '_' + state.persona.language;
+  if (!force && state.jiCache[cacheKey]) {
+    renderJI(state.jiCache[cacheKey]);
+    return;
+  }
+
+  document.getElementById('jiLoading').style.display = 'flex';
+  document.getElementById('jiData').classList.add('hidden');
+
+  const stepObj = FLOW_STEPS.find(s => s.id === screenId) || FLOW_STEPS[0];
+  const mat = MATERIALITY[screenId];
+  const persona = state.persona;
+
+  const langMap = { en: 'English', hi: 'Hindi', kn: 'Kannada', ta: 'Tamil' };
+
+  try {
+    const resp = await fetch('/api/rhetorical', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        step: {
+          id: stepObj.id,
+          name: stepObj.name,
+          type: stepObj.type,
+          title: stepObj.title,
+          irreversible: stepObj.irreversible || false,
+          risks: stepObj.risks || []
+        },
+        context: {
+          language: langMap[persona.language] || 'English',
+          userProfile: {
+            gender: persona.gender,
+            ageGroup: persona.age,
+            network: persona.network,
+            literacy: persona.literacy,
+            preferredModality: persona.literacy === 'listen-only' ? 'audio' : persona.literacy === 'listen-read' ? 'audio+visual' : 'visual'
+          },
+          materiality: mat.api,
+          appName: 'mAadhaar - Address Update'
+        }
+      })
+    });
+    const data = await resp.json();
+    state.jiCache[cacheKey] = data;
+    renderJI(data);
+  } catch (err) {
+    console.error('Rhetorical API error:', err);
+    document.getElementById('jiLoading').style.display = 'none';
+    document.getElementById('jiData').classList.remove('hidden');
+    document.getElementById('jiHeadline').textContent = 'Could not load — check API connection';
+  }
+}
+
+function renderJI(data) {
+  document.getElementById('jiLoading').style.display = 'none';
+  document.getElementById('jiData').classList.remove('hidden');
+  document.getElementById('jiHeadline').textContent = data.headline || '';
+  document.getElementById('jiExplanation').textContent = data.plain_explanation || '';
+  document.getElementById('jiNext').textContent = data.what_happens_next || '';
+  document.getElementById('jiNudge').textContent = data.help_nudge || '';
+
+  const riskSection = document.getElementById('jiRiskSection');
+  if (data.risk_signal) {
+    riskSection.classList.remove('hidden');
+    document.getElementById('jiRisk').textContent = data.risk_signal;
+  } else {
+    riskSection.classList.add('hidden');
+  }
+
+  // Store KLH script
+  state.currentKLHScript = data.kya_likha_hai_script || data.plain_explanation || '';
+}
+
+// === KYA LIKHA HAI ===
+async function playKLH() {
+  if (state.klhPlaying) return;
+  const script = state.currentKLHScript;
+  if (!script) { showToast('No content to read'); return; }
+
+  const sheet = document.getElementById('klhSheet');
+  const status = document.getElementById('klhStatus');
+  const scriptEl = document.getElementById('klhScript');
+  const audioEl = document.getElementById('klhAudio');
+
+  sheet.classList.add('open');
+  scriptEl.textContent = script;
+  status.textContent = 'Generating audio…';
+  audioEl.style.display = 'none';
+  state.klhPlaying = true;
+
+  const langMap = { en: 'en-IN', hi: 'hi-IN', kn: 'kn-IN', ta: 'ta-IN' };
+
+  try {
+    const resp = await fetch('/api/kya-likha-hai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text: script,
+        language: langMap[state.persona.language] || 'en-IN'
+      })
+    });
+    const data = await resp.json();
+    if (data.data_uri || data.audio_base64) {
+      const uri = data.data_uri || ('data:audio/wav;base64,' + data.audio_base64);
+      audioEl.src = uri;
+      audioEl.style.display = 'block';
+      audioEl.play().catch(() => {});
+      status.textContent = 'Playing…';
+    } else {
+      status.textContent = 'Audio unavailable';
+    }
+  } catch (err) {
+    console.error('KLH error:', err);
+    status.textContent = 'Error generating audio';
+  }
+  state.klhPlaying = false;
+}
+
+function closeKLH() {
+  document.getElementById('klhSheet').classList.remove('open');
+  document.getElementById('klhAudio').pause();
+  state.klhPlaying = false;
+}
+
+// === TOAST ===
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// === INIT ===
+document.addEventListener('DOMContentLoaded', () => {
+  // Show config screen by default
+  state.step = -1;
+});
+</script>
+</body>
+</html>
