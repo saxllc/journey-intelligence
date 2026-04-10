@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Journey Intelligence — Aadhaar Address Update v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#FEF5EE;--navy:#1B365D;--white:#FFF;--t1:#0e0f0c;--t2:#454745;--t3:#868685;--grn:#2E7D32;--grnl:#E8F5E9;--grnd:#1B5E20;--blu:#2563EB;--blul:#F0F4FF;--org:#FF6B00;--red:#DC2626;--redl:#FEF2F2;--amb:#F59E0B;--ambl:#FFFBEB;--bdr:#E5E7EB;--sh:0 1px 3px rgba(0,0,0,.08);--r:12px;--rl:16px;--pill:9999px;--f:'Inter',-apple-system,sans-serif}
+html,body{font-family:var(--f);background:#1a1a2e;color:var(--t1);-webkit-font-smoothing:antialiased;overflow:hidden;height:100%}
+.pw{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:393px;height:852px;border-radius:52px;background:#000;padding:12px;box-shadow:0 25px 60px rgba(0,0,0,.5)}
+.ps{width:100%;height:100%;border-radius:42px;background:var(--bg);overflow:hidden;display:flex;flex-direction:column;position:relative}
+@media(max-width:430px){body{background:var(--bg)}.pw{position:fixed;top:0;left:0;transform:none;width:100%;height:100%;border-radius:0;padding:0;box-shadow:none;background:var(--bg)}.ps{border-radius:0}}
+.sb{display:flex;justify-content:space-between;align-items:center;padding:8px 24px 4px;font-size:12px;font-weight:600;flex-shrink:0}.sb-r{display:flex;gap:4px;align-items:center}.sb-r svg{width:16px;height:16px}
+.ab{display:flex;align-items:center;gap:8px;padding:8px 16px 12px;flex-shrink:0}.ab-back{width:36px;height:36px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%}.ab-back:active{background:rgba(0,0,0,.05)}.ab-back svg{width:20px;height:20px}.ab-t{font-size:17px;font-weight:600;flex:1}.ab-lang{width:36px;height:36px;border:1px solid var(--bdr);border-radius:50%;background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--navy)}
+.pt{display:flex;gap:4px;padding:0 16px 12px;flex-shrink:0}.ps-seg{flex:1;height:4px;border-radius:2px;background:var(--bdr);transition:background .3s}.ps-seg.done{background:var(--grn)}.ps-seg.active{background:var(--navy)}
+.ca{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 16px;-webkit-overflow-scrolling:touch}
+.scr{display:none}.scr.on{display:block}
+/* Persona cards */
+.ph{text-align:center;padding:16px 0 8px}.ph h1{font-size:20px;font-weight:700;margin-bottom:4px}.ph p{font-size:13px;color:var(--t2);line-height:1.4}
+.pcs{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.pc{padding:14px;background:var(--white);border-radius:var(--rl);border:2px solid var(--bdr);cursor:pointer;transition:all .15s}.pc:active{transform:scale(.98)}.pc.sel{border-color:var(--navy);box-shadow:0 0 0 3px rgba(27,54,93,.12)}
+.pc-top{display:flex;align-items:center;gap:10px;margin-bottom:6px}.pc-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}.pc-nm{font-size:15px;font-weight:600}
+.pc-tags{display:flex;flex-wrap:wrap;gap:4px}.pc-tag{font-size:10px;padding:2px 8px;border-radius:var(--pill);background:#f3f4f6;color:var(--t3);font-weight:500;text-transform:uppercase;letter-spacing:.3px}
+.p-maya .pc-av{background:var(--grnl)}.p-arjun .pc-av{background:var(--blul)}.p-rajan .pc-av{background:var(--ambl)}.p-priya .pc-av{background:#F3E8FF}.p-custom .pc-av{background:#f3f4f6}
+.cpanel{display:none;margin-top:12px;padding:12px;background:var(--white);border-radius:var(--rl);border:1px solid var(--bdr)}.cpanel.show{display:block}
+.csec{margin-bottom:12px}.clbl{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}.cgrid{display:flex;flex-wrap:wrap;gap:6px}
+.cchip{padding:7px 12px;border-radius:var(--r);border:1.5px solid var(--bdr);background:var(--white);font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;transition:all .15s}.cchip:active{transform:scale(.96)}.cchip.sel{border-color:var(--navy);background:var(--navy);color:var(--white)}
+/* Shared */
+.card{background:var(--white);border-radius:var(--rl);padding:16px;margin-bottom:12px;box-shadow:var(--sh);border:1px solid var(--bdr)}
+.stitle{font-size:22px;font-weight:700;margin-bottom:12px}
+.fg{margin-bottom:14px}.fl{font-size:13px;font-weight:500;margin-bottom:5px;display:block}.fl .rq{color:var(--red)}
+.fi{width:100%;padding:12px 14px;border:1.5px solid var(--bdr);border-radius:var(--r);font-size:15px;font-family:var(--f);background:var(--white);color:var(--t1);transition:border-color .2s;-webkit-appearance:none}.fi:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(27,54,93,.1)}.fi::placeholder{color:var(--t3)}
+.fsel{width:100%;padding:12px 14px;border:1.5px solid var(--bdr);border-radius:var(--r);font-size:15px;font-family:var(--f);background:var(--white);color:var(--t1);cursor:pointer;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23868685' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.uopt{display:flex;align-items:center;gap:12px;padding:16px;background:var(--white);border:1.5px solid var(--bdr);border-radius:var(--r);cursor:pointer;margin-bottom:8px;transition:all .15s}.uopt:active{transform:scale(.98)}.uopt-i{width:40px;height:40px;border-radius:10px;background:var(--blul);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px}.uopt-t{flex:1}.uopt-tt{font-size:14px;font-weight:600}.uopt-ts{font-size:12px;color:var(--t3);margin-top:2px}
+.fc{display:flex;align-items:center;gap:10px;padding:12px;background:var(--white);border:1.5px solid var(--bdr);border-radius:var(--r);margin-bottom:8px}.fc-i{flex:1}.fc-n{font-size:13px;font-weight:500}.fc-s{font-size:11px;color:var(--t3)}.fc-d{font-size:13px;color:var(--red);font-weight:500;cursor:pointer;border:none;background:none;font-family:var(--f)}
+.ckr{display:flex;align-items:flex-start;gap:10px;padding:8px 0;cursor:pointer}.ckb{width:22px;height:22px;border:2px solid var(--bdr);border-radius:6px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s}.ckr.chk .ckb{background:var(--navy);border-color:var(--navy)}.ckb svg{width:14px;height:14px;display:none}.ckr.chk .ckb svg{display:block}.ckt{font-size:13px;color:var(--t2);line-height:1.4}
+.pvc{background:var(--white);border-radius:var(--r);padding:14px;margin-bottom:10px;border:1px solid var(--bdr)}.pvc-l{font-size:13px;font-weight:600;margin-bottom:6px}.pvc-t{font-size:14px;color:var(--t2);line-height:1.5}.pv-edit{display:block;text-align:right;font-size:13px;color:var(--blu);font-weight:500;margin-top:6px;cursor:pointer}.atag{display:inline-block;font-size:11px;padding:2px 8px;background:var(--blul);color:var(--blu);border-radius:var(--pill);font-weight:500;margin-top:4px}
+.fframe{width:200px;height:200px;margin:20px auto;border-radius:50%;border:4px solid var(--grn);display:flex;align-items:center;justify-content:center;background:#f0f0f0;cursor:pointer}.finner{width:160px;height:160px;border-radius:50%;border:2px dashed var(--t3);display:flex;align-items:center;justify-content:center;font-size:60px;opacity:.3}.finst{text-align:center;font-size:16px;font-weight:700;margin-top:12px}.fsub{text-align:center;font-size:13px;color:var(--t2);margin-top:4px}.fok{display:none;text-align:center;padding:20px;background:var(--grnl);border-radius:var(--rl);margin-top:16px}.fok.show{display:block}.fok-t{font-size:16px;font-weight:700;color:var(--grn)}
+.pamt{text-align:center;margin:12px 0 20px}.pamt-v{font-size:32px;font-weight:700;color:var(--navy)}
+.pnote{padding:14px;background:var(--ambl);border-radius:var(--r);margin-top:12px;border-left:3px solid var(--amb)}.pnote-t{font-size:13px;font-weight:600;margin-bottom:4px}.pnote-x{font-size:13px;color:var(--t2);line-height:1.4}.pnote-w{font-size:12px;color:var(--red);margin-top:6px}
+.popt{display:flex;align-items:center;gap:12px;padding:14px;background:var(--white);border:2px solid var(--navy);border-radius:var(--r);margin-bottom:12px}.prad{width:20px;height:20px;border-radius:50%;border:2px solid var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0}.prdi{width:10px;height:10px;border-radius:50%;background:var(--navy)}
+.casb{margin-top:12px;padding:16px;background:var(--redl);border-radius:var(--rl);border:1px solid #fca5a5}.cast{font-size:15px;font-weight:700;color:var(--red);margin-bottom:8px}.casr{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--t2);margin-bottom:6px;line-height:1.4}
+.si{width:72px;height:72px;margin:16px auto;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center}.si svg{width:32px;height:32px}
+.stit{text-align:center;font-size:20px;font-weight:700;margin-bottom:6px}.ssub{text-align:center;font-size:13px;color:var(--t2);margin-bottom:16px;line-height:1.4}
+.rrow{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bdr);font-size:13px}.rrow:last-child{border-bottom:none}.rlbl{color:var(--t3)}.rval{font-weight:500;text-align:right}
+.res{margin-top:16px;background:var(--white);border-radius:var(--rl);overflow:hidden;border:1px solid var(--bdr);touch-action:pan-y}.res-h{padding:12px 16px;text-align:center;font-size:13px;font-weight:600;color:var(--t2)}.res-b{padding:12px 16px;text-align:center;min-height:64px;transition:background .2s}.res-p{font-size:14px;font-weight:500}.res-s{font-size:12px;color:var(--t3);margin-top:4px}.res-hi{display:flex;justify-content:space-between;padding:8px 16px;font-size:11px;color:var(--t3)}
+.res-r{display:none;text-align:center;padding:16px;border-radius:var(--rl)}.res-r.show{display:block}.res-r.rel{background:var(--grnl);border:2px solid var(--grn)}.res-r.rel .rrt{color:var(--grn)}.res-r.anx{background:var(--redl);border:2px solid var(--red)}.res-r.anx .rrt{color:var(--red)}.rri{font-size:28px;margin-bottom:6px}.rrt{font-size:15px;font-weight:600}.rrs{font-size:12px;color:var(--t3);margin-top:4px}
+.bn{display:flex;gap:10px;padding:12px 16px;background:var(--bg);border-top:1px solid var(--bdr);flex-shrink:0}
+.btn{flex:1;padding:14px;border-radius:var(--pill);font-size:15px;font-weight:600;font-family:var(--f);cursor:pointer;border:none;transition:all .15s;text-align:center}.btn:active{transform:scale(.97)}.b1{background:var(--navy);color:var(--white)}.b1:disabled{opacity:.4;cursor:not-allowed;transform:none}.b2{background:var(--white);color:var(--t1);border:1px solid var(--bdr)}.bred{background:var(--red);color:var(--white)}.bfull{flex:none;width:100%}.blink{background:none;border:none;color:var(--blu);font-size:14px;font-weight:500;cursor:pointer;padding:8px;text-align:center;width:100%;font-family:var(--f)}
+.asv{text-align:center;font-size:11px;color:var(--t3);padding:4px 0}
+
+/* DRAWER */
+.dov{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.3);z-index:10;display:none;opacity:0;transition:opacity .3s}.dov.show{display:block;opacity:1}
+.dw{position:absolute;bottom:0;left:0;right:0;background:var(--white);border-radius:20px 20px 0 0;z-index:20;transform:translateY(calc(100% - 56px));transition:transform .35s cubic-bezier(.32,.72,0,1);max-height:70%;display:flex;flex-direction:column;box-shadow:0 -4px 20px rgba(0,0,0,.1)}
+.dw.peek{transform:translateY(calc(100% - 56px))}.dw.half{transform:translateY(40%)}.dw.open{transform:translateY(0)}.dw.hidden{transform:translateY(100%)}
+.dwh{padding:10px 16px 6px;cursor:pointer;flex-shrink:0;display:flex;flex-direction:column;align-items:center;user-select:none}
+.dwhandle{width:36px;height:4px;border-radius:2px;background:var(--bdr);margin-bottom:8px}
+.dwhr{display:flex;align-items:center;width:100%;gap:8px}
+.dplb{width:8px;height:28px;border-radius:4px;flex-shrink:0;transition:background .3s}.dplb.high{background:var(--grn)}.dplb.medium{background:var(--amb)}.dplb.low{background:var(--red)}
+.dwt{flex:1;font-size:13px;font-weight:600;color:var(--t2)}
+.dpll{font-size:10px;font-weight:700;padding:2px 6px;border-radius:var(--pill);margin-right:4px}.dplt{background:var(--grnl);color:var(--grn)}.dplm{background:var(--ambl);color:var(--amb)}.dplth{background:var(--redl);color:var(--red)}
+.dwklh{width:36px;height:36px;border-radius:50%;background:var(--org);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}.dwklh:active{transform:scale(.9)}.dwklh svg{width:20px;height:20px}
+.dwtog{width:32px;height:32px;border:1px solid var(--bdr);border-radius:50%;background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .3s;flex-shrink:0}.dwtog.flip{transform:rotate(180deg)}.dwtog svg{width:16px;height:16px;color:var(--t2)}
+.dwbd{flex:1;overflow-y:auto;padding:0 16px 16px;-webkit-overflow-scrolling:touch}
+.dlang{display:flex;gap:6px;margin-bottom:12px}
+.lp{padding:6px 14px;border-radius:var(--pill);font-size:12px;font-weight:600;border:1.5px solid var(--bdr);background:var(--white);color:var(--t2);cursor:pointer}.lp.on{background:var(--navy);color:var(--white);border-color:var(--navy)}
+.jis{margin-bottom:10px}.jil{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}.jit{font-size:14px;color:var(--t1);line-height:1.5}.jit.risk{color:var(--red);font-weight:500}
+.jild{display:flex;align-items:center;gap:8px;padding:16px 0;color:var(--t3);font-size:13px}.jisp{width:16px;height:16px;border:2px solid var(--bdr);border-top-color:var(--navy);border-radius:50%;animation:sp .8s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
+
+/* KLH */
+.ks{position:absolute;bottom:0;left:0;right:0;background:var(--white);border-radius:20px 20px 0 0;z-index:30;padding:16px;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,.72,0,1);box-shadow:0 -4px 20px rgba(0,0,0,.15)}.ks.open{transform:translateY(0)}
+.ksh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.kst{font-size:15px;font-weight:600}.ksc{width:28px;height:28px;border-radius:50%;border:none;background:#f0f0f0;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.ksst{font-size:13px;color:var(--t2);margin-bottom:8px}
+.ksscr{font-size:13px;color:var(--t3);line-height:1.5;padding:10px;background:#f9f9f9;border-radius:8px;margin-bottom:10px;max-height:160px;overflow-y:auto}
+.ksau{width:100%;margin-top:8px}
+.toast{position:absolute;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--grn);color:var(--white);padding:10px 20px;border-radius:var(--pill);font-size:13px;font-weight:500;opacity:0;transition:all .3s;pointer-events:none;z-index:50;white-space:nowrap}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* === MAYA === */
+.maya-a{background:var(--grnl);border-radius:var(--rl);padding:16px}
+.maya-va{text-align:center;margin-bottom:16px}.maya-mic{width:64px;height:64px;border-radius:50%;background:var(--grn);margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer}.maya-mic:active{transform:scale(.95)}.maya-vt{font-size:16px;font-weight:700}.maya-vs{font-size:13px;color:var(--t2)}.maya-w{text-align:center;font-size:24px;letter-spacing:4px;color:var(--grnd);margin:8px 0}
+.maya-in{display:flex;align-items:center;gap:8px;padding:12px;background:var(--white);border-radius:var(--r);border:1.5px solid var(--bdr);margin-bottom:12px}.maya-in input{flex:1;border:none;outline:none;font-size:15px;font-family:var(--f);background:transparent}
+.maya-np{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.maya-np button{padding:14px;border-radius:50%;background:var(--grn);color:var(--white);font-size:20px;font-weight:700;border:none;cursor:pointer;font-family:var(--f)}.maya-np button:active{transform:scale(.95);opacity:.8}
+.maya-hl{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;background:var(--grn);border-radius:var(--pill);color:var(--white);font-size:14px;font-weight:600;cursor:pointer}
+
+/* === ARJUN === */
+.arjun-a .arjun-sr{display:flex;align-items:center;gap:8px;padding:12px 14px;background:var(--white);border:1.5px solid var(--bdr);border-radius:var(--r);margin-bottom:12px}.arjun-a .arjun-sr input{flex:1;border:none;outline:none;font-size:15px;font-family:var(--f)}
+.arjun-map{width:100%;height:200px;border-radius:var(--r);background:linear-gradient(135deg,#e8e8e8 0%,#d0d0d0 100%);margin-bottom:12px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border:1px solid var(--bdr)}.arjun-map-ph{color:var(--t3);font-size:13px;text-align:center}
+.arjun-acts{display:flex;gap:8px;margin-bottom:12px}.arjun-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border:1.5px solid var(--bdr);border-radius:var(--r);background:var(--white);cursor:pointer;font-size:13px;font-weight:500;font-family:var(--f)}.arjun-btn:active{background:#f9f9f9}
+
+/* === RAJAN === */
+.rajan-a .rajan-pg{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:16px}
+.rajan-sn{width:36px;height:36px;border-radius:50%;background:var(--bdr);color:var(--t3);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700}.rajan-sn.act{background:var(--navy);color:var(--white)}.rajan-sn.dn{background:var(--grn);color:var(--white)}
+.rajan-ln{width:44px;height:3px;background:var(--bdr)}.rajan-ln.dn{background:var(--grn)}
+.rajan-info{display:flex;gap:10px;padding:14px;background:var(--blul);border-radius:var(--r);margin-bottom:20px;align-items:flex-start;border:1px solid #BFDBFE}
+.rajan-fg{margin-bottom:20px}.rajan-fg .fl{font-size:16px;font-weight:600}.rajan-fg .fi{font-size:18px;padding:16px}
+.rajan-ex{display:inline-block;font-size:12px;color:var(--blu);cursor:pointer;margin-top:6px;padding:3px 10px;border:1px solid var(--blu);border-radius:var(--pill)}
+.rajan-spk{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border:1.5px solid var(--bdr);border-radius:var(--r);margin-top:16px;cursor:pointer;font-size:15px;color:var(--t2);font-family:var(--f);background:var(--white);width:100%}.rajan-spk:active{background:#f9f9f9}
+.rajan-bnav{display:flex;gap:10px;margin-top:20px}.rajan-b{flex:1;padding:14px;border-radius:var(--r);font-size:15px;font-weight:600;font-family:var(--f);cursor:pointer;text-align:center;border:none}.rajan-bk{background:var(--white);color:var(--t1);border:1.5px solid var(--bdr)}.rajan-nx{background:var(--grn);color:var(--white)}
+
+/* === PRIYA === */
+.priya-a{background:#1a1a1a;color:#e0e0e0;border-radius:var(--rl);padding:16px}
+.priya-hdr{text-align:center;padding:10px;border:1.5px solid #555;border-radius:var(--r);margin-bottom:14px;font-size:13px;font-weight:600;letter-spacing:.5px;color:#ccc}
+.priya-vc{padding:14px;background:#1B5E20;border-radius:var(--r);margin-bottom:14px}.priya-vt{font-size:15px;font-weight:700;color:#66BB6A;margin-bottom:6px}.priya-cmd{font-size:13px;color:#A5D6A7;margin-bottom:2px}
+.priya-cl{font-size:12px;font-weight:700;color:#F44336;margin-bottom:6px;letter-spacing:.5px}
+.priya-ca{padding:12px;border:1.5px solid #F44336;border-radius:var(--r);font-size:14px;color:#eee;line-height:1.6;margin-bottom:14px}
+.priya-cmds{margin-top:14px}.priya-cmds-l{font-size:12px;font-weight:700;color:#66BB6A;margin-bottom:8px;letter-spacing:.5px}
+.priya-cmds-box{padding:12px;border:1.5px solid #2E7D32;border-radius:var(--r)}
+.priya-ci{font-size:14px;color:#bbb;padding:7px 0;border-bottom:1px solid #333}.priya-ci:last-child{border-bottom:none}
+.priya-sh{margin-top:14px;text-align:center;font-size:11px;color:#666;line-height:1.8}
+
+.hidden{display:none!important}.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}
+</style>
+</head>
+<body>
+<div class="pw"><div class="ps" id="ps">
+
+<div class="sb"><span id="clk">9:41</span><div class="sb-r"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg></div></div>
+
+<div class="ab" id="ab" style="display:none">
+  <button class="ab-back" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="ab-t" id="abt">Address Update</span>
+  <button class="ab-lang" onclick="toggleDw()">अ</button>
+</div>
+
+<div class="pt" id="pt" style="display:none"><div class="ps-seg" id="sg0"></div><div class="ps-seg" id="sg1"></div><div class="ps-seg" id="sg2"></div><div class="ps-seg" id="sg3"></div></div>
+
+<div class="ca" id="ca">
+
+<!-- CONFIG -->
+<div class="scr on" id="scr-config">
+  <div class="ph"><div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:1px">Journey Intelligence</div><h1>Aadhaar Address Update</h1><p>Select a persona to see how the same canonical flow adapts its layout, modality, and rhetorical layer.</p></div>
+  <div class="pcs">
+    <div class="pc p-maya" data-p="maya" onclick="selP(this)"><div class="pc-top"><div class="pc-av">👩</div><div class="pc-nm">Maya</div></div><div class="pc-tags"><span class="pc-tag">Lite UI</span><span class="pc-tag">Voice</span><span class="pc-tag">Regional</span><span class="pc-tag">Low literacy</span><span class="pc-tag">Poor network</span></div></div>
+    <div class="pc p-arjun" data-p="arjun" onclick="selP(this)"><div class="pc-top"><div class="pc-av">👨</div><div class="pc-nm">Arjun</div></div><div class="pc-tags"><span class="pc-tag">Advanced</span><span class="pc-tag">Auto-complete</span><span class="pc-tag">Map</span><span class="pc-tag">5G</span><span class="pc-tag">English</span></div></div>
+    <div class="pc p-rajan" data-p="rajan" onclick="selP(this)"><div class="pc-top"><div class="pc-av">👴</div><div class="pc-nm">Rajan</div></div><div class="pc-tags"><span class="pc-tag">Large text</span><span class="pc-tag">Step-by-step</span><span class="pc-tag">Guide</span><span class="pc-tag">Senior</span><span class="pc-tag">English</span></div></div>
+    <div class="pc p-priya" data-p="priya" onclick="selP(this)"><div class="pc-top"><div class="pc-av">👩‍🦯</div><div class="pc-nm">Priya</div></div><div class="pc-tags"><span class="pc-tag">Screen reader</span><span class="pc-tag">Voice</span><span class="pc-tag">High contrast</span><span class="pc-tag">Simple</span></div></div>
+    <div class="pc p-custom" data-p="custom" onclick="selP(this)"><div class="pc-top"><div class="pc-av">⚙</div><div class="pc-nm">Custom</div></div><div class="pc-tags"><span class="pc-tag">Configure manually</span></div></div>
+  </div>
+  <div class="cpanel" id="cpanel">
+    <div class="csec"><div class="clbl">Gender</div><div class="cgrid" data-g="gender"><div class="cchip sel" data-v="female">Female</div><div class="cchip" data-v="male">Male</div><div class="cchip" data-v="other">Other</div></div></div>
+    <div class="csec"><div class="clbl">Age</div><div class="cgrid" data-g="age"><div class="cchip" data-v="young">18–30</div><div class="cchip sel" data-v="adult">31–55</div><div class="cchip" data-v="senior">56+</div></div></div>
+    <div class="csec"><div class="clbl">Network</div><div class="cgrid" data-g="network"><div class="cchip" data-v="poor">Poor</div><div class="cchip" data-v="3g">3G</div><div class="cchip sel" data-v="4g">4G</div><div class="cchip" data-v="5g">5G</div></div></div>
+    <div class="csec"><div class="clbl">Literacy</div><div class="cgrid" data-g="literacy"><div class="cchip sel" data-v="read-write">Read+Write</div><div class="cchip" data-v="listen-read">Prefer listening</div><div class="cchip" data-v="listen-only">Listen only</div></div></div>
+    <div class="csec"><div class="clbl">Language</div><div class="cgrid" data-g="language"><div class="cchip sel" data-v="en">English</div><div class="cchip" data-v="hi">हिन्दी</div><div class="cchip" data-v="kn">ಕನ್ನಡ</div><div class="cchip" data-v="ta">தமிழ்</div></div></div>
+  </div>
+  <div style="padding:14px 0 4px"><button class="btn b1 bfull" id="startBtn" onclick="startFlow()" disabled>Select a persona to start →</button></div>
+</div>
+
+<!-- OVERVIEW -->
+<div class="scr" id="scr-overview">
+  <div class="stitle">Address Update</div>
+  <div style="display:flex;gap:12px;margin-bottom:16px"><div style="flex:1;background:var(--white);border-radius:var(--r);padding:14px;text-align:center;border:1px solid var(--bdr)"><div style="font-size:20px">⏱</div><div style="font-size:16px;font-weight:700;color:var(--navy)">15 Days</div><div style="font-size:12px;color:var(--t3)">Processing Time</div></div><div style="flex:1;background:var(--white);border-radius:var(--r);padding:14px;text-align:center;border:1px solid var(--bdr)"><div style="font-size:20px">₹</div><div style="font-size:16px;font-weight:700;color:var(--navy)">75.00</div><div style="font-size:12px;color:var(--t3)">Processing Fee</div></div></div>
+  <div class="card"><div style="font-size:15px;font-weight:600;margin-bottom:4px">Required documents</div><div style="font-size:13px;color:var(--t2)">1. Proof of address in your name</div></div>
+  <div class="card"><div style="font-size:15px;font-weight:600;margin-bottom:10px">Steps</div><div style="font-size:12px;color:var(--t3);margin-bottom:12px">This will take about 5 minutes</div><div style="display:flex;align-items:center;gap:12px;padding:8px 0"><div style="width:28px;height:28px;border-radius:50%;background:var(--navy);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0">1</div><div style="font-size:14px">Select & Upload proof of address</div></div><div style="display:flex;align-items:center;gap:12px;padding:8px 0"><div style="width:28px;height:28px;border-radius:50%;background:var(--navy);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0">2</div><div style="font-size:14px">Verify new details</div></div><div style="display:flex;align-items:center;gap:12px;padding:8px 0"><div style="width:28px;height:28px;border-radius:50%;background:var(--navy);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0">3</div><div style="font-size:14px">Face Authentication</div></div><div style="display:flex;align-items:center;gap:12px;padding:8px 0"><div style="width:28px;height:28px;border-radius:50%;background:var(--navy);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0">4</div><div style="font-size:14px">Make payment</div></div></div>
+</div>
+
+<!-- UPLOAD -->
+<div class="scr" id="scr-upload">
+  <div class="stitle">Upload Document</div>
+  <div class="fg"><div class="fl">Select preferred document</div><select class="fsel" id="docType" onchange="onDocCh()"><option value="">Select</option><option value="electricity">Electricity bill (pre-paid/post-paid, not older than 3 months)</option><option value="ration">Ration / PDS Photograph Card / e-Ration Card</option><option value="tehsildar">Standard Certificate by Tehsildar / Gazetted Officer Group 'B'</option><option value="marriage">Marriage Certificate with or without photograph</option><option value="gas">Gas Connection Bill (not older than 3 months)</option><option value="bank">Scheduled Commercial Bank / Post Office Passbook</option></select><div style="font-size:13px;color:var(--blu);cursor:pointer;margin-top:6px">ⓘ See guidelines again</div></div>
+  <div id="ulArea" class="hidden"><div class="fl">Upload File</div>
+    <div id="ulOpts"><div class="uopt" onclick="simUl()"><div class="uopt-i">📷</div><div class="uopt-t"><div class="uopt-tt">Scan documents directly</div><div class="uopt-ts">Opens camera to scan the document</div></div><div style="color:var(--t3)">›</div></div><div class="uopt" onclick="simUl()"><div class="uopt-i">📁</div><div class="uopt-t"><div class="uopt-tt">Select files to upload</div><div class="uopt-ts">JPEG, PNG, PDF | Less than 2MB</div></div><div style="color:var(--t3)">›</div></div></div>
+    <div id="ulFile" class="hidden"><div class="fc"><div style="font-size:24px">📄</div><div class="fc-i"><div class="fc-n">Document_2025.jpg</div><div class="fc-s">200kb</div></div><button class="fc-d" onclick="rmUl()">🗑 Delete</button></div><div style="font-size:12px;color:var(--blu);cursor:pointer;margin-bottom:10px">👆 Tap to preview</div><div class="ckr" id="docChk" onclick="togCk('docChk')"><div class="ckb"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div><div class="ckt">I have previewed the document and it complies with all guidelines</div></div></div>
+  </div>
+</div>
+
+<!-- ADDRESS VARIANTS -->
+<div class="scr" id="scr-address">
+  <div id="addr-default" class="hidden">
+    <div class="stitle">Add New Address</div>
+    <div class="fg"><div class="fl">House/Building/Apartment</div><input class="fi" id="f-h" placeholder="e.g. Flat 203, Sunrise Apartments" oninput="vA()"></div>
+    <div class="fg"><div class="fl">Street/Road/Lane</div><input class="fi" id="f-st" placeholder="e.g. MG Road" oninput="vA()"></div>
+    <div class="fg"><div class="fl">Area/Locality/Sector</div><input class="fi" id="f-ar" placeholder="e.g. Sector 12, Rohini" oninput="vA()"></div>
+    <div class="fg"><div class="fl">Landmark</div><input class="fi" id="f-lm" placeholder="e.g. Near City Mall"></div>
+    <div class="fg"><div class="fl">Pincode <span class="rq">*</span></div><input class="fi" id="f-pin" placeholder="e.g. 560001" maxlength="6" inputmode="numeric" oninput="onPin()"></div>
+    <div class="fg"><div class="fl">Village/Town/City <span class="rq">*</span></div><input class="fi" id="f-ci" placeholder="e.g. Bengaluru" oninput="vA()"></div>
+    <div class="fg"><div class="fl">District <span class="rq">*</span></div><input class="fi" id="f-di" placeholder="e.g. Bengaluru Urban" oninput="vA()"></div>
+    <div class="fg"><div class="fl">State <span class="rq">*</span></div><input class="fi" id="f-sta" placeholder="e.g. Karnataka" oninput="vA()"></div>
+    <div class="fg"><div class="fl">Post office <span class="rq">*</span></div><select class="fsel" id="f-po" onchange="vA()"><option value="">Select</option></select></div>
+  </div>
+
+  <div id="addr-maya" class="hidden"><div class="maya-a">
+    <div class="maya-va"><div class="maya-mic" onclick="toast('🎤 Voice input simulated')">🎤</div><div class="maya-vt">अपना नया पता बोलें</div><div class="maya-vs">Speak your new address</div><div class="maya-w">||||||||</div></div>
+    <div class="maya-in"><span style="font-size:18px">🏠</span><input placeholder="घर का नंबर / House No." oninput="vA()"><span style="font-size:18px;cursor:pointer">🎤</span></div>
+    <div class="maya-in"><span style="font-size:18px">🛤</span><input placeholder="गली / Street" oninput="vA()"><span style="font-size:18px;cursor:pointer">🎤</span></div>
+    <div class="maya-in"><span style="font-size:18px">📍</span><input placeholder="पिनकोड / Pincode" maxlength="6" inputmode="numeric" oninput="vA()"><span style="font-size:18px;cursor:pointer">🎤</span></div>
+    <div class="maya-np"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><button>*</button><button>0</button><button>#</button></div>
+    <div class="maya-hl">📞 हेल्पलाइन 1947</div>
+  </div></div>
+
+  <div id="addr-arjun" class="hidden"><div class="arjun-a">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div class="stitle" style="margin-bottom:0;font-size:18px">Update Address</div><div style="font-size:12px;color:var(--t3)">⏱ 2 min</div></div>
+    <div class="arjun-sr"><span style="color:var(--t3)">🔍</span><input placeholder="Start typing your address..." oninput="vA()"></div>
+    <div class="arjun-map"><div class="arjun-map-ph">📍 Map View<br><span style="font-size:11px">(Tap to pin location)</span></div></div>
+    <div class="arjun-acts"><button class="arjun-btn" onclick="toast('📍 GPS location captured')">📍 Use GPS</button><button class="arjun-btn" onclick="toast('📷 Scan mode activated')">📷 Scan Doc</button></div>
+    <div class="fg"><div class="fl">House/Flat Number <span class="rq">*</span></div><input class="fi" placeholder="e.g. C-123" oninput="vA()"></div>
+    <div class="fg"><div class="fl">Street/Area <span class="rq">*</span></div><input class="fi" placeholder="e.g. Sector 24, Dwarka" oninput="vA()"></div>
+  </div></div>
+
+  <div id="addr-rajan" class="hidden"><div class="rajan-a">
+    <div style="font-size:22px;font-weight:700;margin-bottom:4px">Step 2 of 3: New Address</div>
+    <div class="rajan-pg"><div class="rajan-sn dn">1</div><div class="rajan-ln dn"></div><div class="rajan-sn act">2</div><div class="rajan-ln"></div><div class="rajan-sn">3</div></div>
+    <div class="rajan-info"><div style="font-size:18px;flex-shrink:0">ℹ️</div><div style="font-size:14px;color:var(--t2);line-height:1.5">Enter your new residential address. All fields marked * are required.</div></div>
+    <div class="rajan-fg"><div class="fl" style="font-size:16px;font-weight:600">House/Flat Number <span class="rq">*</span></div><input class="fi" style="font-size:18px;padding:16px" placeholder="C-123" oninput="vA()"></div>
+    <div class="rajan-fg"><div class="fl" style="font-size:16px;font-weight:600">Street/Area <span class="rq">*</span></div><input class="fi" style="font-size:18px;padding:16px" placeholder="Sector 24, Dwarka" oninput="vA()"><div class="rajan-ex" onclick="toast('Example: MG Road, Indiranagar')">Example</div></div>
+    <button class="rajan-spk" onclick="toast('🎤 Voice input activated')">🎤 Speak instead of typing</button>
+    <div class="rajan-bnav"><button class="rajan-b rajan-bk" onclick="prevStep()">← Back</button><button class="rajan-b rajan-nx" onclick="nextStep()">Next →</button></div>
+  </div></div>
+
+  <div id="addr-priya" class="hidden"><div class="priya-a">
+    <div class="priya-hdr">ADDRESS UPDATE (PAGE 2 OF 3)</div>
+    <div class="priya-vc"><div class="priya-vt">Voice Mode Active</div><div class="priya-cmd">Say "Read current address"</div><div class="priya-cmd">Say "Start dictation"</div></div>
+    <div class="priya-cl">CURRENT ADDRESS (READ ONLY):</div>
+    <div class="priya-ca">B-45, Sector 15, Vasant Kunj,<br>New Delhi - 110070</div>
+    <div class="priya-cmds"><div class="priya-cmds-l">AVAILABLE COMMANDS:</div><div class="priya-cmds-box"><div class="priya-ci">• "New address is..."</div><div class="priya-ci">• "Read back to me"</div><div class="priya-ci">• "Correct" / "Change"</div><div class="priya-ci">• "Help" / "Go back"</div></div></div>
+    <div class="priya-sh">Tab: Next &nbsp;|&nbsp; Shift+Tab: Previous<br>Enter: Submit &nbsp;|&nbsp; Esc: Cancel</div>
+  </div></div>
+</div>
+
+<!-- PREVIEW -->
+<div class="scr" id="scr-preview">
+  <div class="stitle">Preview New Address</div>
+  <div class="pvc"><div class="pvc-l">New Address (English)</div><div class="pvc-t" id="pvEn">—</div><a class="pv-edit" onclick="goTo(2)">✏️ Edit</a></div>
+  <div class="pvc"><div class="pvc-l" id="pvLL">नया पता (Local Language)</div><div class="pvc-t" id="pvLo">—</div><div class="atag">Auto-translated</div><a class="pv-edit" onclick="goTo(2)">✏️ Edit</a></div>
+  <div class="ckr mt12" id="transChk" onclick="togCk('transChk')"><div class="ckb"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div><div class="ckt">I have checked the local language translation and it is correct.</div></div>
+  <div class="card mt12"><div style="font-size:14px;font-weight:600;margin-bottom:4px">Review Document</div><div style="font-size:13px;color:var(--t2)" id="pvDoc">—</div></div>
+</div>
+
+<!-- FACE -->
+<div class="scr" id="scr-face">
+  <div class="stitle">Face Authentication</div>
+  <div style="font-size:13px;color:var(--t2);margin-bottom:8px">Hold still and align your face within the frame</div>
+  <div class="fframe" id="ff"><div class="finner">👤</div></div>
+  <div class="finst" id="fi2">PLEASE BLINK</div>
+  <div class="fsub">Tap the frame to simulate</div>
+  <div class="fok" id="fok"><div style="font-size:36px;margin-bottom:8px">✅</div><div class="fok-t">Face Authenticated</div><div style="font-size:13px;color:var(--t2);margin-top:4px">Your profile has been authenticated.</div></div>
+</div>
+
+<!-- PAYMENT -->
+<div class="scr" id="scr-payment">
+  <div class="stitle">Make Payment</div>
+  <div style="font-size:14px;color:var(--t2)">Please pay a processing <strong>fee of ₹75.00</strong> to submit this address update request.</div>
+  <div class="pamt"><div class="pamt-v">₹75</div></div>
+  <div style="font-size:14px;font-weight:500;margin-bottom:8px">Choose preferred payment option</div>
+  <div class="popt"><div class="prad"><div class="prdi"></div></div><div style="font-size:14px;font-weight:500">Payment Option 1</div></div>
+  <div class="pnote"><div class="pnote-t">Please Note</div><div class="pnote-x">After payment, UIDAI will review the address update request and if approved, your address will be updated.</div><div class="pnote-w">If request is not approved, the update will not be processed and no refund will be provided.</div></div>
+  <div class="casb mt16"><div class="cast">⚠️ Before you pay</div><div class="casr"><span>•</span>This payment of ₹75 is non-refundable even if your request is rejected</div><div class="casr"><span>•</span>Processing takes up to 15 working days</div><div class="casr"><span>•</span>Ensure your document and address details are correct before proceeding</div></div>
+  <div class="ckr mt12" id="payChk" onclick="togCk('payChk')"><div class="ckb"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div><div class="ckt">I understand the payment is non-refundable and wish to proceed.</div></div>
+</div>
+
+<!-- SUCCESS -->
+<div class="scr" id="scr-success">
+  <div class="si"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>
+  <div class="stit">Request Submitted Successfully</div>
+  <div class="ssub">Check your request status anytime in 'Track My Requests' under Services.</div>
+  <div class="card"><div class="rrow"><span class="rlbl">Amount Paid</span><span class="rval">₹75.00</span></div><div class="rrow"><span class="rlbl">Date & Time</span><span class="rval" id="rdt">—</span></div><div class="rrow"><span class="rlbl">Transaction ID</span><span class="rval">UPI/538291047</span></div><div class="rrow"><span class="rlbl">SRN Number</span><span class="rval" style="font-size:11px">20260.0001234882666</span></div><div style="font-size:12px;color:var(--blu);margin-top:6px;cursor:pointer">ⓘ What is SRN?</div></div>
+  <div class="res" id="resC"><div class="res-h">How did this transaction feel?</div><div class="res-b" id="resB"><div class="res-p">← Swipe to record →</div><div class="res-s">Encode your emotional response to this transaction</div></div><div class="res-hi" id="resHi"><span>✓ Relieved · राहत</span><span>✗ Anxious · चिंता</span></div><div class="res-r" id="resR"></div></div>
+  <div style="padding:16px 0 4px"><button class="btn b1 bfull">Download Acknowledgement</button><button class="blink mt8">Track Progress</button></div>
+</div>
+
+</div><!-- /ca -->
+
+<div class="asv" id="asv" style="display:none">Auto-saved at <span id="ast">08:06 PM</span></div>
+<div class="bn" id="bn" style="display:none"><button class="btn b2" id="bP" onclick="prevStep()">← Back</button><button class="btn b1" id="bN" onclick="nextStep()">Continue →</button></div>
+
+<!-- DRAWER -->
+<div class="dov" id="dov" onclick="closeDw()"></div>
+<div class="dw hidden" id="dw">
+  <div class="dwh" onclick="toggleDw()">
+    <div class="dwhandle"></div>
+    <div class="dwhr">
+      <div class="dplb high" id="dplB"></div>
+      <div class="dwt">Journey Intelligence</div>
+      <span class="dpll dplt" id="dplL">THICK</span>
+      <button class="dwklh" onclick="event.stopPropagation();playKLH()"><svg viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg></button>
+      <button class="dwtog" id="dwTog" onclick="event.stopPropagation();toggleDw()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 15l-6-6-6 6"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="dwbd">
+    <div class="dlang" id="dL"></div>
+    <div id="jiC">
+      <div class="jild" id="jiLd"><div class="jisp"></div>Generating rhetorical layer…</div>
+      <div id="jiD" class="hidden">
+        <div class="jis"><div class="jil">Headline</div><div class="jit" id="jiH"></div></div>
+        <div class="jis"><div class="jil">Plain Explanation</div><div class="jit" id="jiE"></div></div>
+        <div class="jis"><div class="jil">What Happens Next</div><div class="jit" id="jiN"></div></div>
+        <div class="jis"><div class="jil">Help Nudge</div><div class="jit" id="jiNu"></div></div>
+        <div class="jis" id="jiRS"><div class="jil">Risk Signal</div><div class="jit risk" id="jiR"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KLH SHEET -->
+<div class="ks" id="ksht">
+  <div class="ksh"><div class="kst">🔊 Kya Likha Hai</div><button class="ksc" onclick="closeKLH()">✕</button></div>
+  <div class="ksst" id="ksSt">Tap speaker to listen</div>
+  <div class="ksscr" id="ksSc"></div>
+  <audio class="ksau" id="ksAu" controls style="display:none"></audio>
+</div>
+
+<div class="toast" id="tst"></div>
+</div></div>
+
+<script>
+const S={persona:null,cfg:{gender:'female',age:'adult',network:'4g',literacy:'read-write',language:'en'},step:-1,docType:'',fileUp:false,docChk:false,transChk:false,payChk:false,faceOk:false,jiCache:{},dwState:'hidden',klhBusy:false,resDone:false,jiData:null};
+
+const P={
+  maya:{gender:'female',age:'adult',network:'poor',literacy:'listen-read',language:'hi',av:'maya',
+    desc:'Maya is a 35-year-old woman from rural Rajasthan. She dropped out after Grade 4 and cannot read English. She has a basic smartphone on a slow 2G/poor network. She relies on voice input and Hindi. She needs large buttons, minimal text, and audio guidance.'},
+  arjun:{gender:'male',age:'young',network:'5g',literacy:'read-write',language:'en',av:'arjun',
+    desc:'Arjun is a 22-year-old college student in Mumbai. He uses an iPhone on 5G, is fluent in English, tech-savvy. He prefers auto-complete, map-based location, gestures, and compact efficient forms.'},
+  rajan:{gender:'male',age:'senior',network:'5g',literacy:'read-write',language:'en',av:'rajan',
+    desc:'Rajan is a 65-year-old retired government officer. He reads English but gets overwhelmed by busy forms with many fields. He needs step-by-step guidance showing only 2 fields at a time, large text, clear progress, and a speak-instead-of-typing option.'},
+  priya:{gender:'female',age:'adult',network:'4g',literacy:'listen-only',language:'en',av:'priya',
+    desc:'Priya is a 30-year-old visually impaired woman. She uses a screen reader. She needs high contrast dark mode, NO visual form fields — only voice commands to dictate her address. The screen shows her current address read-only and a list of voice commands.'},
+  custom:{av:'default'}
+};
+
+const STEPS=['overview','upload','address','preview','face','payment','success'];
+const SEGM={1:0,2:1,3:1,4:2,5:3};
+const DPL={overview:'MEDIUM',upload:'LOW',address:'HIGH',preview:'MEDIUM',face:'HIGH',payment:'LOW',success:'HIGH'};
+const MAT={overview:'INFORMATIONAL',upload:'TRANSACTIONAL',address:'TRANSACTIONAL',preview:'NAVIGATIONAL',face:'TRANSACTIONAL',payment:'CONSEQUENTIAL',success:'INFORMATIONAL'};
+
+// Per-persona canonical descriptions
+const CAN={
+  overview:{_all:'Process Overview screen. Shows: processing time 15 working days, processing fee ₹75.00 (non-refundable), requires 1 proof-of-address document. Four steps listed: (1) Select & Upload proof of address, (2) Verify new details, (3) Face Authentication, (4) Make payment. Estimated time: 5 minutes. The user has not started yet and should understand ALL costs and timelines before proceeding.'},
+  upload:{_all:'Upload Document screen. User must select a document type from dropdown and upload a file. CRITICAL DETAILS: Accepted documents: (a) Electricity bill — MUST NOT be older than 3 months, can be pre-paid or post-paid, (b) Ration/PDS Photograph Card or e-Ration Card, (c) Standard Certificate by Tehsildar or Gazetted Officer Group B — "Tehsildar" is a government revenue officer at sub-district level, "Gazetted Officer Group B" is a mid-level government official — many users below Grade 10 will NOT understand these terms, explain in plain language, (d) Marriage Certificate, (e) Gas Connection Bill — also must NOT be older than 3 months, (f) Scheduled Commercial Bank or Post Office Passbook — "Scheduled Commercial Bank" means a recognized bank listed by RBI, like SBI, HDFC etc. File must be JPEG, PNG, or PDF, under 2MB. User must preview the file and check a box confirming it complies with guidelines.'},
+  address:{
+    maya:'Maya sees a SIMPLIFIED voice-first address screen with green background. At top is a large microphone icon for voice input. Hindi text reads "अपना नया पता बोलें" (Speak your new address) with a voice waveform animation. Only 3 input fields are shown: House Number with mic icon, Street/Galli with mic icon, and Pincode with mic icon. Below is a large green number pad (1-9,0,*,#) for entering numbers. At bottom is a green helpline button "📞 हेल्पलाइन 1947" to call for assistance. There are NO complex fields like District, State, Post Office — the system will auto-fill those from Pincode. Everything is designed for someone who prefers speaking over typing.',
+    arjun:'Arjun sees an ADVANCED address screen with search bar, map, and auto-complete. At top: "Update Address" title with "⏱ 2 min" time estimate. A search bar says "Start typing your address..." for auto-complete. Below is a MAP VIEW of Bengaluru area with a location pin — user can tap to pin their exact location. Two action buttons: "📍 Use GPS" captures current device location, "📷 Scan Doc" opens camera to scan an address document. Below the map are only 2 compact fields: "House/Flat Number" and "Street/Area". The map and GPS handle the rest. This is designed for a tech-savvy user who prefers gesture-based location selection over typing 9 form fields.',
+    rajan:'Rajan sees a GUIDED step-by-step address screen with large text. Header: "Step 2 of 3: New Address" in 22px bold. Below is a circle progress showing 3 steps (step 1 green/done, step 2 blue/active, step 3 gray/pending). A blue info banner reads: "Enter your new residential address. All fields marked * are required." Only TWO fields are shown at a time to avoid overwhelming: "House/Flat Number *" and "Street/Area *" — both with 18px font size and large 16px padding. An "Example" pill button shows sample input. A "🎤 Speak instead of typing" button offers voice alternative. In-screen navigation: "← Back" (white) and "Next →" (green) buttons. The design avoids showing all 9 fields at once to reduce cognitive load for a senior citizen.',
+    priya:'Priya sees a HIGH-CONTRAST DARK SCREEN with NO input fields. Dark background (#1a1a1a) with light text. Header in bordered box: "ADDRESS UPDATE (PAGE 2 OF 3)". A green card says "Voice Mode Active" with commands: Say "Read current address" and Say "Start dictation". Below: "CURRENT ADDRESS (READ ONLY):" in red text, with current address "B-45, Sector 15, Vasant Kunj, New Delhi - 110070" in a red-bordered box. Section "AVAILABLE COMMANDS:" in green text, with green-bordered box listing voice commands: "New address is...", "Read back to me", "Correct/Change", "Help/Go back". At bottom: keyboard shortcuts "Tab: Next | Shift+Tab: Previous | Enter: Submit | Esc: Cancel". There are ZERO visual form fields — the user dictates their new address entirely by voice.',
+    default:'Standard address form with 9 fields: House/Building/Apartment, Street/Road/Lane, Area/Locality/Sector, Landmark, Pincode (required, 6 digits — auto-fills city/district/state), Village/Town/City (required), District (required), State (required), Post Office (required, dropdown populated by pincode). The pincode is the key field — entering a valid 6-digit pincode auto-populates the remaining location fields.'
+  },
+  preview:{_all:'Preview screen showing entered address in English and auto-translated to user\'s chosen local language (Hindi, Kannada, Tamil). User MUST verify the local language translation — if wrong, the printed Aadhaar card will have incorrect address in local script. Shows uploaded document type and filename for review. User must check a box confirming "I have checked the local language translation and it is correct" before proceeding.'},
+  face:{_all:'Face Authentication screen. A circular frame with green border shows a face placeholder. User must hold phone steady, align face in frame, and blink when prompted ("PLEASE BLINK"). This matches against the photo in UIDAI database from original Aadhaar enrollment. If face does not match, process fails and user may need to visit an Aadhaar center. Good lighting and steady hands are important. After success, a green card shows "Face Authenticated — Your profile has been authenticated."'},
+  payment:{_all:'IRREVERSIBLE payment screen. Fee: ₹75.00. CRITICAL: This payment is NON-REFUNDABLE — even if UIDAI rejects the address update request, the ₹75 will NOT be returned. Processing takes up to 15 working days. The user should be absolutely certain their document and address are correct before paying. A "Please Note" warning box states: "After payment, UIDAI will review the address update request and if approved, your address will be updated. If request is not approved, the update will not be processed and no refund will be provided." A red CAS (Comprehension Assessment) box lists 3 risks. User must check a consent box before the "Confirm and Pay ₹75" button enables.'}
+};
+
+function getP(){return P[S.persona]||P.custom}
+function getLang(){return getP().language||S.cfg.language||'en'}
+function getCanonical(sid){
+  const c=CAN[sid];if(!c)return'';
+  const pn=S.persona||'default';
+  if(typeof c==='string')return c;
+  return c[pn]||c._all||c.default||'';
+}
+
+// Clock
+function uc(){document.getElementById('clk').textContent=new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:false})}
+uc();setInterval(uc,30000);
+
+// Persona select
+function selP(el){
+  document.querySelectorAll('.pc').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  S.persona=el.dataset.p;
+  document.getElementById('cpanel').classList.toggle('show',S.persona==='custom');
+  if(S.persona==='custom')P.custom={...S.cfg,av:'default',desc:'Custom persona: '+Object.values(S.cfg).join(', ')};
+  const b=document.getElementById('startBtn');b.disabled=false;
+  b.textContent=S.persona==='custom'?'Start with Custom Config →':'Start as '+el.querySelector('.pc-nm').textContent+' →';
+}
+document.querySelectorAll('.cgrid').forEach(g=>{g.addEventListener('click',e=>{const c=e.target.closest('.cchip');if(!c)return;g.querySelectorAll('.cchip').forEach(x=>x.classList.remove('sel'));c.classList.add('sel');S.cfg[g.dataset.g]=c.dataset.v;P.custom={...S.cfg,av:'default',desc:'Custom: '+Object.values(S.cfg).join(', ')};})});
+
+function buildLP(){const ls=[{c:'en',l:'EN'},{c:'hi',l:'HI'},{c:'kn',l:'KN'},{c:'ta',l:'TA'}],cur=getLang();document.getElementById('dL').innerHTML=ls.map(l=>`<div class="lp${l.c===cur?' on':''}" data-l="${l.c}" onclick="setLang('${l.c}')">${l.l}</div>`).join('');}
+function setLang(l){const p=getP();if(S.persona==='custom'){S.cfg.language=l;P.custom.language=l}else P[S.persona].language=l;buildLP();if(S.step>=1&&S.step<=5){const sid=STEPS[S.step];delete S.jiCache[sid+'_'+l+'_'+S.persona];fetchJI(sid,true)}}
+
+function startFlow(){if(!S.persona)return;buildLP();goTo(0)}
+
+// Nav
+function goTo(i){
+  S.step=i;const sid=STEPS[i];
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.getElementById('scr-'+sid).classList.add('on');
+  document.getElementById('ab').style.display=i>=0?'flex':'none';
+  const ts=['Address Update','Upload Document','Add New Address','Preview New Address','Face Authentication','Make Payment',''];
+  document.getElementById('abt').textContent=ts[i]||'Address Update';
+  const pt=document.getElementById('pt');pt.style.display=(i>=1&&i<=5)?'flex':'none';
+  if(i>=1&&i<=5)updProg(i);
+  const bn=document.getElementById('bn'),asv=document.getElementById('asv');
+  if(i===6){bn.style.display='none';asv.style.display='none'}
+  else if(i===0){bn.style.display='flex';asv.style.display='none';document.getElementById('bP').style.display='none';document.getElementById('bN').textContent='Continue to Update Address';document.getElementById('bN').disabled=false;document.getElementById('bN').className='btn b1'}
+  else{bn.style.display='flex';asv.style.display='block';document.getElementById('bP').style.display='';document.getElementById('ast').textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});updBtn(i)}
+  if(sid==='address')showAV();
+  if(sid==='preview')buildPV();
+  if(sid==='success')setupOK();
+  if(i>=1&&i<=5)showDw(sid);else hideDw();
+  document.getElementById('ca').scrollTop=0;
+}
+function showAV(){const v=getP().av||'default';['default','maya','arjun','rajan','priya'].forEach(id=>{document.getElementById('addr-'+id).classList.toggle('hidden',id!==v)})}
+function updProg(i){for(let j=0;j<4;j++){const s=document.getElementById('sg'+j);s.className='ps-seg';const c=SEGM[i];if(c!==undefined){if(j<c)s.classList.add('done');else if(j===c)s.classList.add('active')}}}
+function updBtn(i){
+  const b=document.getElementById('bN'),sid=STEPS[i];
+  const lbls={upload:'Continue to Add New Address',address:'Preview New Address',preview:'Continue to Face Authentication',face:'Continue to Review Details',payment:'Confirm and Pay ₹75'};
+  b.textContent=lbls[sid]||'Continue →';b.className='btn b1';
+  switch(sid){case 'upload':b.disabled=!(S.docType&&S.fileUp&&S.docChk);break;case 'address':b.disabled=false;break;case 'preview':b.disabled=!S.transChk;break;case 'face':b.disabled=!S.faceOk;break;case 'payment':b.disabled=!S.payChk;if(S.payChk)b.className='btn bred';break;default:b.disabled=false}
+}
+function nextStep(){if(S.step<STEPS.length-1)goTo(S.step+1)}
+function prevStep(){if(S.step>0)goTo(S.step-1)}
+function goBack(){if(S.step===0){S.step=-1;document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById('scr-config').classList.add('on');document.getElementById('ab').style.display='none';document.getElementById('pt').style.display='none';document.getElementById('bn').style.display='none';document.getElementById('asv').style.display='none';hideDw()}else prevStep()}
+
+// Form
+function togCk(id){const el=document.getElementById(id);el.classList.toggle('chk');const v=el.classList.contains('chk');if(id==='docChk')S.docChk=v;if(id==='transChk')S.transChk=v;if(id==='payChk')S.payChk=v;updBtn(S.step)}
+function onDocCh(){S.docType=document.getElementById('docType').value;document.getElementById('ulArea').classList.toggle('hidden',!S.docType);if(!S.docType){S.fileUp=false;S.docChk=false}updBtn(S.step)}
+function simUl(){S.fileUp=true;document.getElementById('ulOpts').classList.add('hidden');document.getElementById('ulFile').classList.remove('hidden');toast('Document uploaded successfully!');updBtn(S.step)}
+function rmUl(){S.fileUp=false;S.docChk=false;document.getElementById('ulOpts').classList.remove('hidden');document.getElementById('ulFile').classList.add('hidden');document.getElementById('docChk').classList.remove('chk');updBtn(S.step)}
+function vA(){updBtn(S.step)}
+function onPin(){const el=document.getElementById('f-pin');if(el){el.value=el.value.replace(/\D/g,'').slice(0,6);if(el.value.length===6){['f-ci','f-di','f-sta'].forEach((id,i)=>{const e=document.getElementById(id);if(e&&!e.value)e.value=['Bengaluru Urban','Bengaluru Urban','Karnataka'][i]});const po=document.getElementById('f-po');if(po&&!po.value){po.innerHTML='<option value="">Select</option><option value="l" selected>Bengaluru GPO</option>';po.value='l'}}}vA()}
+function buildPV(){
+  const h=document.getElementById('f-h');
+  if(h){const parts=['f-h','f-st','f-ar','f-lm','f-ci','f-sta','f-pin'].map(id=>{const e=document.getElementById(id);return e?e.value:''}).filter(Boolean);document.getElementById('pvEn').textContent=parts.join(', ')||'Address entered via persona variant'}
+  else document.getElementById('pvEn').textContent='Address entered via '+S.persona+' variant';
+  const lang=getLang(),ll={hi:'नया पता (हिन्दी)',kn:'ಹೊಸ ವಿಳಾಸ (ಕನ್ನಡ)',ta:'புதிய முகவரி (தமிழ்)',en:'New Address (Local Language)'};
+  document.getElementById('pvLL').textContent=ll[lang]||ll.en;
+  document.getElementById('pvLo').textContent=document.getElementById('pvEn').textContent;
+  const d=document.getElementById('docType');document.getElementById('pvDoc').textContent=d.options[d.selectedIndex]?.text||'—';
+}
+document.addEventListener('click',e=>{if(STEPS[S.step]==='face'&&!S.faceOk&&document.getElementById('ff').contains(e.target)){S.faceOk=true;document.getElementById('fi2').textContent='';document.getElementById('fok').classList.add('show');updBtn(S.step)}});
+function setupOK(){document.getElementById('rdt').textContent=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})+', '+new Date().toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'});setupSwp()}
+function setupSwp(){const b=document.getElementById('resB');let sx=0,cx=0,sw=false;function oS(e){if(S.resDone)return;sx=(e.touches?e.touches[0].clientX:e.clientX);sw=true}function oM(e){if(!sw)return;cx=(e.touches?e.touches[0].clientX:e.clientX)-sx;const cl=Math.max(-80,Math.min(80,cx));b.style.transform=`translateX(${cl}px)`;b.style.background=cl<-20?'rgba(254,242,242,.8)':cl>20?'rgba(232,245,233,.8)':''}function oE(){if(!sw)return;sw=false;b.style.transform='';b.style.background='';if(cx<-40)doRes('anx');else if(cx>40)doRes('rel');cx=0}b.addEventListener('touchstart',oS,{passive:true});b.addEventListener('touchmove',oM,{passive:true});b.addEventListener('touchend',oE);b.addEventListener('mousedown',oS);b.addEventListener('mousemove',oM);b.addEventListener('mouseup',oE);b.addEventListener('mouseleave',()=>{if(sw)oE()})}
+function doRes(t){S.resDone=true;const r=document.getElementById('resR');document.getElementById('resB').style.display='none';document.getElementById('resHi').style.display='none';if(t==='rel'){r.className='res-r show rel';r.innerHTML='<div class="rri">☺</div><div class="rrt">Relieved · राहत</div><div class="rrs">Transaction felt safe — no cause for concern</div>';toast('✓ Marked as safe experience')}else{r.className='res-r show anx';r.innerHTML='<div class="rri">⚠</div><div class="rrt">Anxious · चिंता</div><div class="rrs">Something about this transaction felt wrong</div>';toast('✗ Marked as concerning experience')}}
+
+// Drawer
+function showDw(sid){
+  const bar=document.getElementById('dplB'),lbl=document.getElementById('dplL'),ag=DPL[sid];
+  bar.className='dplb '+ag.toLowerCase();
+  if(ag==='HIGH'){lbl.className='dpll dplt';lbl.textContent='THICK AGENCY'}else if(ag==='MEDIUM'){lbl.className='dpll dplm';lbl.textContent='MEDIUM'}else{lbl.className='dpll dplth';lbl.textContent='THIN AGENCY'}
+  if(ag==='LOW')setDw('open');else if(ag==='MEDIUM')setDw('half');else setDw('peek');
+  fetchJI(sid);
+}
+function hideDw(){setDw('hidden')}
+function setDw(s){S.dwState=s;const d=document.getElementById('dw'),t=document.getElementById('dwTog'),o=document.getElementById('dov');d.className='dw '+s;t.classList.toggle('flip',s==='peek');o.classList.toggle('show',s==='open')}
+function toggleDw(){if(S.dwState==='peek'||S.dwState==='half')setDw('open');else if(S.dwState==='open')setDw('peek')}
+function closeDw(){setDw('peek')}
+
+// Rhetorical API
+async function fetchJI(sid,force=false){
+  const lang=getLang(),ck=sid+'_'+lang+'_'+S.persona;
+  if(!force&&S.jiCache[ck]){renderJI(S.jiCache[ck]);return}
+  document.getElementById('jiLd').style.display='flex';document.getElementById('jiD').classList.add('hidden');
+  const p=getP(),ln={en:'English',hi:'Hindi',kn:'Kannada',ta:'Tamil'};
+  try{
+    const r=await fetch('/api/rhetorical',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      step:{id:sid,name:sid,type:'form-complete',title:document.getElementById('abt').textContent,irreversible:sid==='payment',
+        risks:sid==='payment'?['₹75 is non-refundable even if rejected','Processing takes 15 working days','No refund if not approved']:[],
+        canonical_content:getCanonical(sid),
+        persona_context:p.desc||''},
+      context:{language:ln[lang]||'English',
+        userProfile:{gender:p.gender||'female',ageGroup:p.age||'adult',network:p.network||'4g',literacy:p.literacy||'read-write',personaDescription:p.desc||'',preferredModality:p.literacy==='listen-only'?'audio':p.literacy==='listen-read'?'audio+visual':'visual'},
+        materiality:MAT[sid]||'INFORMATIONAL',appName:'mAadhaar - Address Update',
+        instruction:'Be thorough and verbose. Your response must explain EVERY detail from canonical_content. For document selection, explain what Tehsildar means (government revenue officer), what Gazetted Officer Group B means, what PDS means (Public Distribution System), what Scheduled Commercial Bank means (RBI-recognized banks like SBI, HDFC). For time-bound documents, explicitly state the 3-month rule. For payment, emphasize non-refundable nature. The kya_likha_hai_script MUST be a complete verbal walkthrough of everything visible on screen — describe each UI element, each button, each field, each instruction shown. If the screen shows a map, describe the map. If it shows voice commands, list them. If it shows a number pad, mention it. Be specific to what this persona actually sees on screen.'}
+    })});
+    const d=await r.json();S.jiCache[ck]=d;renderJI(d);
+  }catch(e){console.error(e);document.getElementById('jiLd').style.display='none';document.getElementById('jiD').classList.remove('hidden');document.getElementById('jiH').textContent='Could not load — check API connection'}
+}
+function renderJI(d){
+  document.getElementById('jiLd').style.display='none';document.getElementById('jiD').classList.remove('hidden');
+  document.getElementById('jiH').textContent=d.headline||'';document.getElementById('jiE').textContent=d.plain_explanation||'';
+  document.getElementById('jiN').textContent=d.what_happens_next||'';document.getElementById('jiNu').textContent=d.help_nudge||'';
+  const rs=document.getElementById('jiRS');if(d.risk_signal){rs.classList.remove('hidden');document.getElementById('jiR').textContent=d.risk_signal}else rs.classList.add('hidden');
+  S.jiData=d;
+}
+
+// KLH - TTS with chunking
+function chunkText(text,maxLen){
+  if(!text)return[];if(text.length<=maxLen)return[text];
+  const chunks=[];let rest=text;
+  while(rest.length>0){
+    if(rest.length<=maxLen){chunks.push(rest);break}
+    let cut=rest.lastIndexOf('. ',maxLen);
+    if(cut<maxLen*0.3)cut=rest.lastIndexOf(' ',maxLen);
+    if(cut<maxLen*0.3)cut=maxLen;
+    chunks.push(rest.slice(0,cut+1).trim());rest=rest.slice(cut+1).trim();
+  }
+  return chunks;
+}
+
+async function playKLH(){
+  if(S.klhBusy)return;
+  if(!S.jiData){toast('No content');return}
+  // Concatenate ALL JI sections
+  const full=[S.jiData.headline,S.jiData.plain_explanation,S.jiData.what_happens_next,S.jiData.help_nudge,S.jiData.risk_signal].filter(Boolean).join('. ');
+  if(!full){toast('No content');return}
+
+  const sheet=document.getElementById('ksht'),st=document.getElementById('ksSt'),sc=document.getElementById('ksSc'),au=document.getElementById('ksAu');
+  sheet.classList.add('open');sc.textContent=full;au.style.display='none';S.klhBusy=true;
+
+  const chunks=chunkText(full,500);
+  const lm={en:'en-IN',hi:'hi-IN',kn:'kn-IN',ta:'ta-IN'};
+  const lang=lm[getLang()]||'en-IN';
+
+  for(let i=0;i<chunks.length;i++){
+    st.textContent=chunks.length>1?`Generating audio ${i+1} of ${chunks.length}…`:'Generating audio…';
+    try{
+      const r=await fetch('/api/kya-likha-hai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:chunks[i],language:lang})});
+      const d=await r.json();
+      if(d.data_uri||d.audio_base64){
+        const uri=d.data_uri||('data:audio/wav;base64,'+d.audio_base64);
+        au.src=uri;au.style.display='block';
+        st.textContent=chunks.length>1?`Playing ${i+1} of ${chunks.length}…`:'Playing…';
+        au.play().catch(()=>{});
+        // Wait for audio to finish before next chunk
+        if(i<chunks.length-1){await new Promise(res=>{au.onended=res;setTimeout(res,30000)})}
+      }else{st.textContent='Audio unavailable for chunk '+(i+1)}
+    }catch(e){console.error(e);st.textContent='Error generating audio'}
+  }
+  st.textContent='Done';S.klhBusy=false;
+}
+function closeKLH(){document.getElementById('ksht').classList.remove('open');document.getElementById('ksAu').pause();S.klhBusy=false}
+
+function toast(m){const t=document.getElementById('tst');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+</script>
+</body>
+</html>
