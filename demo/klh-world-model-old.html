@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KLH — Consequence World Model</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8f8fc;color:#1a1a2e;min-height:100vh}
+.header{background:#1a1a2e;color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
+.header-title{font-size:16px;font-weight:600;letter-spacing:-0.3px}
+.header-sub{font-size:11px;opacity:.6}
+.cfg-strip{font-size:10px;background:rgba(255,255,255,.1);padding:4px 10px;border-radius:12px;display:flex;align-items:center;gap:6px}
+.cfg-dot{width:6px;height:6px;border-radius:50%;background:#ef4444}
+.cfg-dot.on{background:#22c55e}
+.tabs{display:flex;background:#fff;border-bottom:1px solid #e5e7eb;padding:0 16px;overflow-x:auto}
+.tab{padding:12px 16px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;color:#888;border-bottom:2px solid transparent;white-space:nowrap}
+.tab.on{color:#1a1a2e;border-bottom-color:#6c5ce7}
+.main{max-width:800px;margin:0 auto;padding:16px}
+.panel{display:none}.panel.on{display:block}
+.arch-bar{background:#f0efff;border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:start;gap:10px}
+.arch-icon{font-size:18px;flex-shrink:0;margin-top:2px}
+.arch-label{font-size:12px;font-weight:600;color:#6c5ce7}
+.arch-desc{font-size:12px;color:#555;line-height:1.5;margin-top:2px}
+.jsel{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.jbtn{padding:5px 10px;font-size:11px;border-radius:8px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;color:#888;transition:all .15s}
+.jbtn.on{background:#6c5ce7;border-color:#6c5ce7;color:#fff}
+.jbtn.l4{border-left:3px solid #e24b4a}
+.jbtn.l3{border-left:3px solid #ef9f27}
+.jbtn.l2{border-left:3px solid #378add}
+.jbtn.l1{border-left:3px solid #97c459}
+.screen-box{background:#fff;border-radius:12px;padding:14px;font-size:13px;line-height:1.9;border:1px solid #e5e7eb;margin-bottom:12px}
+.dpl{border-radius:3px;padding:1px 4px;cursor:default;font-weight:500}
+.dpl.l4{background:#fcebeb;border-bottom:2px solid #e24b4a;color:#791f1f}
+.dpl.l3{background:#faeeda;border-bottom:2px solid #ef9f27;color:#633806}
+.dpl.l2{background:#e6f1fb;border-bottom:2px solid #378add;color:#0c447c}
+.dpl.l1{background:#eaf3de;border-bottom:2px solid #97c459;color:#173404}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.st{background:#fff;border-radius:10px;padding:10px;border:1px solid #e5e7eb;text-align:center}
+.st-l{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.5px}
+.st-v{font-size:20px;font-weight:600;margin-top:2px}
+.st-v.l4{color:#e24b4a}.st-v.l3{color:#ef9f27}.st-v.l2{color:#378add}.st-v.l1{color:#97c459}
+.terms-list{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.term-chip{font-size:11px;padding:3px 8px;border-radius:6px;background:#fff;border:1px solid #e5e7eb}
+.term-cat{font-size:9px;padding:1px 5px;border-radius:3px;background:#f0efff;color:#6c5ce7;margin-left:4px}
+.act-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.act-card{border-radius:12px;padding:12px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;transition:all .15s}
+.act-card:hover{border-color:#6c5ce7;box-shadow:0 2px 8px rgba(108,92,231,.1)}
+.act-card.sel{border-color:#6c5ce7;border-width:2px;background:#faf9ff}
+.act-h{font-size:14px;font-weight:600;margin-bottom:4px}
+.act-risk{font-size:11px;padding:2px 8px;border-radius:4px;display:inline-block}
+.risk-critical{background:#fcebeb;color:#791f1f}
+.risk-high{background:#faeeda;color:#633806}
+.risk-medium{background:#e6f1fb;color:#0c447c}
+.risk-low{background:#eaf3de;color:#173404}
+.risk-none{background:#f3f4f6;color:#888}
+.cons-box{background:#fff;border-radius:12px;padding:14px;border:1px solid #e5e7eb;margin-bottom:12px}
+.cons-label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.cons-text{font-size:13px;line-height:1.7}
+.next-state{background:#f8f8fc;border-radius:8px;padding:10px;margin-top:8px;font-size:12px;color:#555;line-height:1.5}
+.persona-row{display:flex;gap:6px;margin-bottom:10px}
+.pbtn{padding:5px 12px;font-size:11px;border-radius:8px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;color:#888;transition:all .15s}
+.pbtn.on{background:#e1f5ee;border-color:#0f6e56;color:#085041}
+.verb-row{display:flex;gap:6px;margin-bottom:12px}
+.vbtn{padding:5px 10px;font-size:11px;border-radius:8px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;color:#888}
+.vbtn.on{background:#faeeda;border-color:#854f0b;color:#633806}
+.narr-box{background:#f0efff;border-radius:12px;padding:16px;margin-bottom:12px}
+.narr-text{font-size:14px;line-height:1.8;color:#26215c}
+.narr-meta{font-size:11px;color:#888;margin-top:8px}
+.play-btn{width:100%;padding:12px;background:#6c5ce7;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s}
+.play-btn:hover{background:#5a4bd1}
+.play-btn:disabled{background:#ccc;cursor:not-allowed}
+.play-btn.playing{background:#ef9f27}
+.hm-row{display:grid;grid-template-columns:130px 50px 1fr 40px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid #f0f0f5;font-size:12px}
+.hm-header{font-weight:600;color:#888;font-size:10px;text-transform:uppercase;letter-spacing:.5px;border-bottom:none}
+.hm-bar{height:16px;border-radius:4px;transition:width .4s cubic-bezier(.22,1,.36,1)}
+.hm-name{font-size:12px;cursor:pointer;color:#6c5ce7;text-decoration:none}
+.hm-name:hover{text-decoration:underline}
+.trigger-line{position:relative;margin:8px 0}
+.trigger-line::after{content:'threshold 0.15';position:absolute;right:0;top:-14px;font-size:9px;color:#e24b4a}
+@media(max-width:600px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .act-grid{grid-template-columns:1fr}
+  .hm-row{grid-template-columns:100px 40px 1fr 30px;font-size:11px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">KLH consequence world model</div>
+    <div class="header-sub">When Bharat speaks digital</div>
+  </div>
+  <div class="cfg-strip">
+    <div class="cfg-dot" id="cfg-dot"></div>
+    <span id="cfg-text">connecting...</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="showTab(0)">encoder h(o)</button>
+  <button class="tab" onclick="showTab(1)">predictor f(s,a)</button>
+  <button class="tab" onclick="showTab(2)">decoder g(s)</button>
+  <button class="tab" onclick="showTab(3)">journey heatmap</button>
+</div>
+
+<div class="main">
+  <div class="panel on" id="p0"></div>
+  <div class="panel" id="p1"></div>
+  <div class="panel" id="p2"></div>
+  <div class="panel" id="p3"></div>
+</div>
+
+<script>
+// ── Supabase ──────────────────────────────────────────────
+const SUPA_URL='https://xbtmbolhfgyondgibhki.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhidG1ib2xoZmd5b25kZ2liaGtpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwMzcsImV4cCI6MjA5MTcyNDAzN30.UeyeyCyi1O74V7rJt7Ghu5b01Ot6l9uxsUgsI0FHHVM';
+const db=supabase.createClient(SUPA_URL,SUPA_KEY);
+let ngrokUrl='';
+
+async function initConfig(){
+  try{
+    const{data,error}=await db.from('configurations').select('*').eq('id','active').single();
+    if(error)throw error;
+    if(data){
+      ngrokUrl=data.ngrok_url||'';
+      document.getElementById('cfg-dot').classList.add('on');
+      document.getElementById('cfg-text').textContent=(data.persona_name||'DEMO')+' · '+(ngrokUrl?'API OK':'no ngrok');
+    }
+    db.channel('klh-wm').on('postgres_changes',{event:'UPDATE',schema:'public',table:'configurations'},p=>{
+      ngrokUrl=p.new.ngrok_url||'';
+      document.getElementById('cfg-text').textContent=(p.new.persona_name||'DEMO')+' · '+(ngrokUrl?'API OK':'no ngrok');
+    }).subscribe();
+  }catch(e){
+    document.getElementById('cfg-text').textContent='offline mode';
+  }
+}
+initConfig();
+
+// ── DPL Dictionary ────────────────────────────────────────
+const DPL={
+'approve':{cat:'CONSENT',mat:3,fraud:'MEDIUM'},
+'authorize':{cat:'IDENTITY',mat:4,fraud:'HIGH',aliases:['authentication','verify identity','authorise']},
+'mandate':{cat:'CONSENT',mat:4,fraud:'HIGH',aliases:['nach mandate','standing instruction']},
+'autopay':{cat:'CONSENT',mat:4,fraud:'HIGH',aliases:['auto debit','recurring payment','auto-debit']},
+'debit':{cat:'PAYMENT',mat:3,fraud:'MEDIUM',aliases:['deducted','debited']},
+'collect':{cat:'PAYMENT',mat:3,fraud:'CRITICAL',aliases:['collect request','payment request']},
+'pin':{cat:'IDENTITY',mat:4,fraud:'CRITICAL',aliases:['mpin','upi pin','4-digit pin']},
+'consent':{cat:'CONSENT',mat:3,fraud:'MEDIUM',aliases:['agree','i agree','permission']},
+'aadhaar':{cat:'IDENTITY',mat:4,fraud:'HIGH',aliases:['aadhar','uidai']},
+'otp':{cat:'IDENTITY',mat:3,fraud:'HIGH',aliases:['one time password','verification code']},
+'beneficiary':{cat:'PAYMENT',mat:3,fraud:'MEDIUM',aliases:['payee','recipient']},
+'settlement':{cat:'PAYMENT',mat:2,fraud:'LOW',aliases:['settled','processed']},
+'token':{cat:'FRONTIER',mat:3,fraud:'MEDIUM',aliases:['tokenize','digital token','tokenization']},
+'collateral':{cat:'CONSENT',mat:4,fraud:'HIGH',aliases:['pledge','security']},
+'liquidation':{cat:'REVERSIBILITY',mat:4,fraud:'HIGH',aliases:['liquidate','seize']},
+'irreversible':{cat:'REVERSIBILITY',mat:4,fraud:'HIGH',aliases:['cannot be undone','permanent']},
+'credit line':{cat:'PAYMENT',mat:4,fraud:'HIGH',aliases:['loan','udhaar','borrow']},
+'ekyc':{cat:'IDENTITY',mat:4,fraud:'HIGH',aliases:['kyc','know your customer']},
+'biometric':{cat:'IDENTITY',mat:4,fraud:'CRITICAL',aliases:['fingerprint','face scan']},
+'vpa':{cat:'IDENTITY',mat:2,fraud:'LOW',aliases:['upi id','virtual payment address']},
+'transaction':{cat:'SYSTEM_STATE',mat:1,fraud:'LOW',aliases:['txn','payment']},
+'balance':{cat:'SYSTEM_STATE',mat:1,fraud:'LOW',aliases:['account balance','available balance']},
+'limit':{cat:'SYSTEM_STATE',mat:1,fraud:'LOW',aliases:['transaction limit','daily limit']},
+'refund':{cat:'REVERSIBILITY',mat:2,fraud:'LOW',aliases:['reversal','cashback']},
+'escrow':{cat:'FRONTIER',mat:3,fraud:'MEDIUM',aliases:['held in escrow']},
+'smart contract':{cat:'FRONTIER',mat:4,fraud:'HIGH',aliases:['automated contract']},
+'digital sign':{cat:'CONSENT',mat:4,fraud:'HIGH',aliases:['e-sign','aadhaar sign']},
+'penalty':{cat:'PAYMENT',mat:3,fraud:'MEDIUM',aliases:['fine','late fee','apr']},
+'account aggregator':{cat:'CONSENT',mat:3,fraud:'MEDIUM',aliases:['aa','data sharing']},
+'decline':{cat:'SYSTEM_STATE',mat:2,fraud:'LOW',aliases:['rejected','failed']},
+'qr':{cat:'PAYMENT',mat:2,fraud:'LOW',aliases:['qr code','scan and pay']},
+'merchant':{cat:'PAYMENT',mat:2,fraud:'LOW',aliases:['shop','seller','vendor']}
+};
+
+const FRAUD_W={LOW:0,MEDIUM:.25,HIGH:.5,CRITICAL:1};
+
+// ── 13 Journeys ───────────────────────────────────────────
+const J=[
+{id:'balance',name:'Balance check',mat:1,screen:'Check your account balance. Available balance: Rs. 12,450. Last transaction: Rs. 500 sent. Daily limit remaining: Rs. 95,500.',
+actions:[{name:'Done',cons:'No action. Information only. No money moved.',risk:'none',next:'Home screen. No state change.'}]},
+
+{id:'p2p_low',name:'P2P send (<500)',mat:2,screen:'Send money to Rahul Sharma. Amount: Rs. 200. UPI ID: rahul@ybl. Enter UPI PIN to approve this payment. Amount will be debited from your account. Transaction will be settled instantly.',
+actions:[{name:'Approve',cons:'Rs. 200 leaves your account immediately. Goes to Rahul. Reversible only if Rahul voluntarily sends it back.',risk:'low',next:'Success screen. Balance reduced by Rs. 200. Settlement complete.'},{name:'Cancel',cons:'Nothing happens. Money stays in your account.',risk:'none',next:'Home screen.'}]},
+
+{id:'p2p_high',name:'P2P send (>5000)',mat:3,screen:'Send money to Unknown User. Amount: Rs. 15,000. UPI ID: unknown_987@paytm. First time beneficiary. Enter UPI PIN to authorize this transaction. Amount will be debited immediately. Verify recipient details before proceeding.',
+actions:[{name:'Approve',cons:'Rs. 15,000 leaves your account immediately. First-time recipient — no prior history. Reversal depends entirely on recipient cooperation. If wrong person, recovery is uncertain.',risk:'medium',next:'Success screen. New beneficiary added. Balance reduced by Rs. 15,000.'},{name:'Cancel',cons:'Nothing happens.',risk:'none',next:'Home screen.'}]},
+
+{id:'p2m_qr',name:'P2M QR scan',mat:2,screen:'Pay to Sharma General Store. Amount: Rs. 850. Merchant ID: SHARMA_GS@ybl. Verified merchant. Enter UPI PIN to approve payment. Transaction will be settled to merchant account.',
+actions:[{name:'Pay',cons:'Rs. 850 goes to Sharma General Store. Verified merchant — lower risk. Refund possible through merchant or bank dispute.',risk:'low',next:'Payment receipt. Balance reduced.'},{name:'Cancel',cons:'Nothing happens.',risk:'none',next:'Scanner screen.'}]},
+
+{id:'collect',name:'Collect request',mat:4,screen:'Payment request from shop_electronics@ybl. Amount: Rs. 8,500. Message: "Order #4421 payment". This is a collect request — money will be debited from YOUR account. Enter UPI PIN to approve. Decline if you do not recognize this request.',
+actions:[{name:'Pay',cons:'Rs. 8,500 LEAVES your account. This is NOT money coming to you — this person is ASKING for your money. Once paid, it cannot be reversed without recipient cooperation. If you do not recognize this sender, this may be fraud.',risk:'critical',next:'Payment sent. Irreversible. Balance reduced by Rs. 8,500.'},{name:'Decline',cons:'Nothing happens. No money moves. Request dismissed.',risk:'none',next:'Home screen. Request removed.'}]},
+
+{id:'beneficiary',name:'Beneficiary add',mat:3,screen:'Add new beneficiary to your account. Name: Priya Verma. UPI ID: priya.v@oksbi. Once added, you can send money to this person without re-entering their details. Approve to add this beneficiary to your list.',
+actions:[{name:'Add',cons:'This person is permanently added to your quick-send list. Future payments to them require fewer verification steps. If someone you do not know told you to add this number — this is a social engineering setup.',risk:'medium',next:'Beneficiary list updated. Priya Verma now in quick-send.'},{name:'Cancel',cons:'Not added. No change.',risk:'none',next:'Beneficiary list unchanged.'}]},
+
+{id:'nach',name:'NACH mandate',mat:4,screen:'Set up NACH mandate for QuickLoan Finance. Monthly auto-debit: Rs. 5,200. Start date: 15 May 2026. End date: 14 May 2029. Maximum debit amount per cycle: Rs. 5,200. This creates a standing instruction to debit your account automatically. Authorize mandate by entering UPI PIN. To cancel, visit bank app settings.',
+actions:[{name:'Authorize',cons:'Rs. 5,200 will be automatically debited EVERY MONTH for 3 years without your PIN. You gave irrevocable standing permission. Total commitment: Rs. 1,87,200. Cancelling requires navigating to bank app settings — most users never find this option. Late cancellation may incur penalty.',risk:'critical',next:'Mandate active. Monthly auto-debit begins 15 May. Cannot be stopped by ignoring.'},{name:'Cancel',cons:'No mandate created. No commitment.',risk:'none',next:'Loan application screen.'}]},
+
+{id:'autopay',name:'UPI autopay',mat:4,screen:'Set up UPI AutoPay for StreamFlix subscription. Amount: Rs. 499 per month. Recurring payment will be authorized without PIN for amounts up to Rs. 499. Auto-debit will continue until you cancel in settings. Approve autopay setup by entering UPI PIN.',
+actions:[{name:'Approve',cons:'Rs. 499 debited every month automatically without your PIN. Will continue indefinitely until YOU find and cancel it in app settings. Forgetting means paying forever. If the service is bad, you still pay.',risk:'high',next:'AutoPay active. First debit on next billing cycle.'},{name:'Cancel',cons:'No autopay. Manual payment each month.',risk:'none',next:'Subscription page.'}]},
+
+{id:'ekyc',name:'eKYC verification',mat:4,screen:'Complete eKYC verification with QuickLoan App. Aadhaar verification required. Your biometric data and identity information will be shared with QuickLoan Finance Pvt Ltd. Consent to share: Name, Address, Photo, Date of Birth, Phone Number, Biometric data. This is an irreversible identity disclosure. Authorize with Aadhaar OTP.',
+actions:[{name:'Authorize',cons:'Your complete Aadhaar identity — name, address, photo, DOB, phone, biometrics — permanently shared with QuickLoan Finance. This CANNOT be taken back. If this company is fraudulent or the link came via SMS/WhatsApp, this is identity theft. Your data is now with them forever.',risk:'critical',next:'eKYC complete. Identity shared. Cannot be revoked.'},{name:'Cancel',cons:'No data shared. Identity protected.',risk:'none',next:'Loan application paused.'}]},
+
+{id:'credit',name:'Credit line activation',mat:4,screen:'Activate UPI Credit Line from Bank of Baroda. Credit limit: Rs. 50,000. Interest rate: 18.5% APR. Spend now via UPI, repay later. Amount spent will be added to your loan balance. Late payment will negatively affect your CIBIL score. Authorize credit line activation with UPI PIN.',
+actions:[{name:'Activate',cons:'You are taking a LOAN of up to Rs. 50,000. Interest: 18.5% per year. Every UPI payment now adds to your debt. Late payment = CIBIL score drops, making future loans harder. Bank can auto-deduct repayment from your account. This is NOT free money — it is borrowing.',risk:'critical',next:'Credit line active. UPI payments now draw from loan. Repayment cycle begins.'},{name:'Cancel',cons:'No loan taken. No credit line.',risk:'none',next:'Banking screen.'}]},
+
+{id:'ondc',name:'ONDC order',mat:3,screen:'Place order on ONDC network. Seller: Handloom Weavers Cooperative, Varanasi. Items: 2x Cotton Saree. Total: Rs. 3,400. Payment via UPI. Delivery: 7-10 days. Return policy: 7 days from delivery. Enter UPI PIN to approve payment and place order.',
+actions:[{name:'Pay and order',cons:'Rs. 3,400 leaves your account. Order placed with Handloom Weavers Cooperative via ONDC. Refund possible within 7 days of delivery if you return. Seller is not verified by your UPI app — ONDC network seller.',risk:'medium',next:'Order confirmed. Delivery tracking starts.'},{name:'Cancel',cons:'No payment. Cart preserved.',risk:'none',next:'Cart screen.'}]},
+
+{id:'token_lock',name:'Token lock (Finternet)',mat:4,screen:'Lock your digital asset token. Asset: 2 Acres Agricultural Land. Token value: Rs. 2,00,000. Lock period: 12 months. During lock, this asset cannot be transferred, sold, or used as collateral elsewhere. Early unlock penalty: 5% of token value. Authorize token lock by entering UPI PIN.',
+actions:[{name:'Lock',cons:'Your land token is frozen for 12 months. During this time you CANNOT sell it, transfer it, or use it as collateral for another loan. If you need emergency money, early unlock costs Rs. 10,000 (5% penalty). Think — will you not need this asset for 12 months?',risk:'critical',next:'Token locked. Asset frozen for 12 months. Counter starts.'},{name:'Cancel',cons:'Token remains unlocked and liquid.',risk:'none',next:'Asset dashboard.'}]},
+
+{id:'aadhaar_sign',name:'Aadhaar digital sign',mat:4,screen:'Aadhaar digital signing for QuickLoan Agreement. Document: Loan Agreement #QL-2026-44521. You are digitally signing this document using your Aadhaar. This signature is legally binding and valid in court. Once signed, the terms in this document apply to you. Authorize digital sign with Aadhaar OTP.',
+actions:[{name:'Sign',cons:'You are putting your legally binding signature on a loan agreement. This is as permanent as signing on paper — valid in court. Every clause in the document now applies to you. If you have not read the document, you are signing blind. If this came from an SMS link, it may be fraud.',risk:'critical',next:'Document signed. Legal commitment active. Cannot be unsigned.'},{name:'Cancel',cons:'Document not signed. No legal commitment.',risk:'none',next:'Document review screen.'}]}
+];
+
+// ── Narration Templates ───────────────────────────────────
+const PERSONAS=[
+{id:'P1',name:'Arjun (GenZ)',lang:'Hinglish',profile:'tech-savvy, English-first, Mumbai'},
+{id:'P4',name:'Rajan (Farmer)',lang:'Hindi',profile:'grade 4 literacy, Vidarbha, skeptical'},
+{id:'P3',name:'Sunita (Migrant)',lang:'Colloquial Hindi',profile:'very low confidence, Dharavi'}
+];
+const VERBS=['LOW','MEDIUM','HIGH'];
+const SPEAKERS=['anushka','manisha','vidya','arya','karun','hitesh','abhilash'];
+
+const N={
+collect:{
+P1:{LOW:'Bro ye collect hai — paisa JAAYEGA, aayega nahi.',MEDIUM:'Ye collect request hai — ye insaan tumse Rs. 8,500 MAANG raha hai. PIN daaloge toh paisa tumhare account se JAYEGA. Ye incoming nahi hai.',HIGH:'Dhyan se — ye collect request hai. Bahut log confuse hote hain, sochte hain paisa aa raha hai. Nahi. Ye insaan tumse Rs. 8,500 maang raha hai. PIN = paisa gaya. Sender: shop_electronics@ybl — pehchaan lo. Nahi pehchante? Decline karo.'},
+P4:{LOW:'Ruko. Paisa MAANGA ja raha hai. PIN mat daalo.',MEDIUM:'Ruko Rajan bhai. Yeh aadmi aapse Rs. 8,500 maang raha hai. PIN daaloge toh paisa chala jayega. Nahi jaante kaun hai — cancel karo.',HIGH:'Rajan bhai, dhyan se suno. Screen pe likha hai collect request. Iska matlab yeh aadmi aapse paisa maang raha hai — Rs. 8,500. Bahut log galti karte hain — sochte hain paisa aa raha hai, PIN daal dete hain, paisa chala jaata hai. Nahi jaante kaun hai — turant cancel karo. PIN mat daalo.'},
+P3:{LOW:'Paisa maanga ja raha. PIN mat do.',MEDIUM:'Sunita didi, yeh aadmi aapse paisa maang raha — 8,500 rupay. PIN daalogi toh paisa nikal jayega. Nahi jaanti kaun hai toh cancel karo.',HIGH:'Sunita didi, suno dhyan se. Yeh screen pe likha hai collect request. Matlab yeh aadmi aapse paisa maang raha hai — 8,500 rupay. Bahut log galti kar dete hain — sochte hain paisa aa raha, PIN daal dete hain, paisa chala jaata hai. Nahi jaanti yeh kaun hai — cancel karo. PIN bilkul mat do.'}},
+nach:{
+P1:{LOW:'Auto-debit 5,200/month, 3 saal. Cancel mushkil.',MEDIUM:'NACH mandate — har mahine 5,200 automatic katega 3 saal tak. Cancel karna hai toh bank app settings mein jaana padega. Total: 1.87 lakh.',HIGH:'Bro ye NACH mandate hai. Har mahine Rs. 5,200 tere account se automatic kate — bina PIN ke. 3 saal tak. Total: Rs. 1,87,200. Cancel karna bank app ki settings mein jaake manually off karna padega. Bhool gaya toh katega.'},
+P4:{LOW:'Har mahine 5,200 apne aap katega. 3 saal.',MEDIUM:'Rajan bhai, yeh NACH mandate hai. Har mahine Rs. 5,200 aapke account se apne aap katega — 3 saal tak. Band karna mushkil. Total: Rs. 1,87,200.',HIGH:'Rajan bhai, dhyan se suno. Yeh NACH mandate hai — aap permission de rahe ho ki har mahine Rs. 5,200 aapke account se automatic kate. 3 saal tak. Total Rs. 1,87,200. Ek baar sign kiya toh chalta rahega. Band karna hai toh bank app mein settings mein off karna padega — bahut mushkil hai.'},
+P3:{LOW:'Har mahine paisa apne aap katega. 3 saal.',MEDIUM:'Didi, yeh sign karogi toh har mahine 5,200 rupay apne aap kat jayega — 3 saal tak. Rokna mushkil. Total 1 lakh 87 hazaar.',HIGH:'Sunita didi, yeh bahut zaroori baat hai. Yeh NACH mandate hai — har mahine 5,200 rupay aapke account se apne aap kate. 3 saal tak. Total 1 lakh 87 hazaar rupay. Ek baar sign kiya toh band karna bahut mushkil — bank app mein settings mein off karna padega.'}},
+ekyc:{
+P1:{LOW:'Aadhaar data permanently share ho jayega. Company legit hai?',MEDIUM:'eKYC — tera poora Aadhaar data QuickLoan ko permanently jaayega. Naam, photo, address, biometric. Wapas nahi hoga. Company legit hai? SMS link se aaya toh fraud ho sakta.',HIGH:'Ruk — eKYC matlab tu apna complete identity package — Aadhaar, photo, biometric, address, phone — QuickLoan ko permanently de raha hai. Yeh vapas nahi aata. Agar yeh company fake hai ya link SMS se aaya hai toh identity theft ho sakti hai. Pehle company verify kar.'},
+P4:{LOW:'Aadhaar ki poori jaankari chali jayegi. Wapas nahi.',MEDIUM:'Rajan bhai, yeh eKYC hai. Aapka Aadhaar — naam, photo, pata — QuickLoan company ko chala jayega. Yeh wapas nahi hoga kabhi. Company sahi hai?',HIGH:'Rajan bhai, ruko. Yeh eKYC hai — matlab aapka poora Aadhaar — naam, pata, photo, phone number, ungli ka nishaan — sab QuickLoan company ko chala jayega. Ek baar gaya toh wapas nahi aata. Agar kisi ne SMS ya WhatsApp pe link bheja hai toh dhokha ho sakta hai. Sirf bank ki asli app mein karo.'},
+P3:{LOW:'Aadhaar sab jaankari chali jayegi. Wapas nahi.',MEDIUM:'Didi, yeh karogi toh aapka Aadhaar — naam, photo, pata — sab QuickLoan ko chala jayega. Wapas nahi hoga. SMS link se aaya toh mat karo.',HIGH:'Sunita didi, dhyan se suno. Yeh eKYC hai — matlab aapka poora Aadhaar is company ko jaayega — naam, pata, photo, phone number, ungli ka nishaan. Ek baar gaya toh wapas nahi aata kabhi. Agar kisine SMS ya WhatsApp pe link bheja hai toh dhokha ho sakta hai. Sirf bank ki asli app mein karo.'}},
+credit:{
+P1:{LOW:'Loan le raha hai. 18.5% interest. CIBIL pe asar.',MEDIUM:'Credit line = loan. Rs. 50,000 tak UPI se kharch kar sakta, baad mein vapas karna. 18.5% interest. Late hua toh CIBIL girega.',HIGH:'Bro, ye credit line hai — matlab loan. Bank tujhe Rs. 50,000 tak UPI se kharch karne dega, aur baad mein vapas karna padega. Interest 18.5%. Late payment = CIBIL score girega, future mein loan nahi milega. Ye free paisa NAHI hai.'},
+P4:{LOW:'Yeh udhaar hai. Vapas karna padega.',MEDIUM:'Rajan bhai, yeh loan hai — udhaar. Rs. 50,000 tak kharch kar sakte ho lekin vapas karna padega. Interest lagega. Late kiya toh CIBIL girega.',HIGH:'Rajan bhai, ruko. Yeh udhaar hai — loan. Bank aapko Rs. 50,000 tak UPI se kharch karne dega, lekin baad mein vapas karna padega. Byaaj bhi lagega — jitne din late utna zyada. Free paisa NAHI hai. Time pe nahi chukate toh CIBIL score girega, aage loan mushkil hoga.'},
+P3:{LOW:'Yeh udhaar hai. Vapas karna hai.',MEDIUM:'Didi, yeh loan hai — udhaar. 50 hazaar tak kharch kar sakti ho lekin vapas karna padega. Byaaj lagega.',HIGH:'Sunita didi, yeh bahut zaroori baat hai. Yeh credit line hai matlab udhaar — loan. 50 hazaar rupay tak UPI se kharch kar sakti ho lekin sab vapas karna padega. Byaaj bhi lagega. Late kiya toh aage loan nahi milega. Free paisa nahi hai yeh.'}}
+};
+
+// ── Scorer ────────────────────────────────────────────────
+function score(text){
+  let tokens=text.toLowerCase().split(/[\s,.\-;:()]+/).filter(Boolean);
+  let found=[];let seen=new Set();
+  for(let i=0;i<tokens.length;i++){
+    for(let w=3;w>=1;w--){
+      let phrase=tokens.slice(i,i+w).join(' ');
+      for(let[term,d]of Object.entries(DPL)){
+        if(seen.has(term))continue;
+        let aliases=d.aliases||[];
+        if(phrase===term||aliases.some(a=>phrase===a.toLowerCase())){
+          found.push({term,display:phrase,cat:d.cat,mat:d.mat,fraud:d.fraud});
+          seen.add(term);
+        }
+      }
+    }
+  }
+  let wt=found.reduce((s,t)=>s+t.mat*(1+FRAUD_W[t.fraud]),0);
+  let density=wt/Math.max(tokens.length,5);
+  let maxMat=found.length?Math.max(...found.map(t=>t.mat)):1;
+  return{found,density:Math.min(density,1),materiality:maxMat,wordCount:tokens.length};
+}
+
+function highlight(text,terms){
+  let out=text;
+  let sorted=[...terms].sort((a,b)=>b.display.length-a.display.length);
+  sorted.forEach(t=>{
+    let re=new RegExp('('+t.display.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');
+    out=out.replace(re,`<span class="dpl l${t.mat}" title="${t.term} | ${t.cat} | L${t.mat} | ${t.fraud}">$1</span>`);
+  });
+  return out;
+}
+
+// ── State ─────────────────────────────────────────────────
+let S={j:0,action:null,persona:0,verb:1,playing:false,speaker:null,audioCtx:null,currentSource:null};
+
+// ── Audio ─────────────────────────────────────────────────
+function pickSpeaker(){
+  if(!S.speaker)S.speaker=SPEAKERS[Math.floor(Math.random()*SPEAKERS.length)];
+  return S.speaker;
+}
+
+async function playTTS(text,lang){
+  if(!ngrokUrl){alert('Set ngrok URL in configurator first.');return;}
+  if(S.playing){stopAudio();return;}
+  S.playing=true;
+  updatePlayBtn();
+  try{
+    if(!S.audioCtx)S.audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    await S.audioCtx.resume();
+    const langMap={Hindi:'hi-IN',Hinglish:'hi-IN','Colloquial Hindi':'hi-IN'};
+    const sarvamLang=langMap[lang]||'hi-IN';
+    const res=await fetch(ngrokUrl+'/api/tts',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'},
+      body:JSON.stringify({text,language:sarvamLang.split('-')[0],speaker:pickSpeaker()})
+    });
+    const data=await res.json();
+    if(!data.data_uri)throw new Error('No audio returned');
+    const audioRes=await fetch(data.data_uri);
+    const buf=await audioRes.arrayBuffer();
+    const decoded=await S.audioCtx.decodeAudioData(buf);
+    S.currentSource=S.audioCtx.createBufferSource();
+    S.currentSource.buffer=decoded;
+    S.currentSource.connect(S.audioCtx.destination);
+    S.currentSource.onended=()=>{S.playing=false;S.currentSource=null;updatePlayBtn();};
+    S.currentSource.start();
+  }catch(e){
+    console.error('TTS error:',e);
+    S.playing=false;
+    updatePlayBtn();
+  }
+}
+
+function stopAudio(){
+  if(S.currentSource){try{S.currentSource.stop();}catch(e){}}
+  S.playing=false;S.currentSource=null;
+  updatePlayBtn();
+}
+
+function updatePlayBtn(){
+  const btn=document.getElementById('play-btn');
+  if(!btn)return;
+  btn.textContent=S.playing?'⏸ Playing... tap to stop':'▶ Play narration via Sarvam';
+  btn.classList.toggle('playing',S.playing);
+}
+
+// ── Renderers ─────────────────────────────────────────────
+function renderEncoder(){
+  let j=J[S.j],s=score(j.screen);
+  document.getElementById('p0').innerHTML=`
+  <div class="arch-bar"><div class="arch-icon">h</div><div><div class="arch-label">encoder h(o) — world state extraction</div><div class="arch-desc">Raw UPI screen text → structured DPL state vector. Each highlighted term is a latent feature with category, materiality, and fraud risk coordinates.</div></div></div>
+  <div class="jsel">${J.map((x,i)=>`<button class="jbtn${i===S.j?' on':''} l${x.mat}" onclick="selJ(${i})">${x.name}</button>`).join('')}</div>
+  <div class="screen-box">${highlight(j.screen,s.found)}</div>
+  <div class="stats">
+    <div class="st"><div class="st-l">density</div><div class="st-v">${s.density.toFixed(2)}</div></div>
+    <div class="st"><div class="st-l">materiality</div><div class="st-v l${s.materiality}">L${s.materiality}</div></div>
+    <div class="st"><div class="st-l">DPL terms</div><div class="st-v">${s.found.length}</div></div>
+    <div class="st"><div class="st-l">narrate?</div><div class="st-v">${s.density>=0.15?'<span style="color:#0f6e56">YES</span>':'<span style="color:#888">NO</span>'}</div></div>
+  </div>
+  <div style="font-size:11px;color:#888;margin-bottom:6px">latent state vector (detected terms)</div>
+  <div class="terms-list">${s.found.map(t=>`<span class="term-chip">${t.term}<span class="term-cat">${t.cat}</span> <span style="font-size:10px;color:#888">L${t.mat}</span></span>`).join('')}</div>`;
+}
+
+function renderPredictor(){
+  let j=J[S.j],s=score(j.screen);
+  document.getElementById('p1').innerHTML=`
+  <div class="arch-bar"><div class="arch-icon">f</div><div><div class="arch-label">predictor f(s,a) — consequence simulation</div><div class="arch-desc">Given current DPL state + user action → predict consequence. Each action path leads to a different next world state. This is what PAN does with video frames; KLH does it with financial consequences.</div></div></div>
+  <div class="jsel">${J.map((x,i)=>`<button class="jbtn${i===S.j?' on':''} l${x.mat}" onclick="selJ(${i})">${x.name}</button>`).join('')}</div>
+  <div style="font-size:12px;color:#888;margin-bottom:8px">state: ${s.found.length} DPL terms · density ${s.density.toFixed(2)} · materiality L${s.materiality}</div>
+  <div style="font-size:13px;font-weight:600;margin-bottom:8px">actions available from this state</div>
+  <div class="act-grid">${j.actions.map((a,i)=>`<div class="act-card${S.action===i?' sel':''}" onclick="selA(${i})">
+    <div class="act-h">${a.name}</div>
+    <span class="act-risk risk-${a.risk}">${a.risk}</span>
+  </div>`).join('')}</div>
+  ${S.action!==null?`
+  <div class="cons-box"><div class="cons-label">consequence prediction</div><div class="cons-text">${j.actions[S.action].cons}</div>
+  <div class="next-state"><strong>next state:</strong> ${j.actions[S.action].next}</div></div>
+  `:'<div style="font-size:12px;color:#888;padding:16px;text-align:center;background:#fff;border-radius:12px;border:1px solid #e5e7eb">tap an action to see its consequence prediction and next state</div>'}`;
+}
+
+function renderDecoder(){
+  let j=J[S.j],pid=PERSONAS[S.persona].id,vl=VERBS[S.verb];
+  let narr=N[j.id]&&N[j.id][pid]?N[j.id][pid][vl]:null;
+  document.getElementById('p2').innerHTML=`
+  <div class="arch-bar"><div class="arch-icon">g</div><div><div class="arch-label">decoder g(s) — Sarvam narration</div><div class="arch-desc">Consequence prediction → narration in user's language, register, and verbosity. Sarvam Bulbul v2 converts to speech. Same consequence, different words per persona.</div></div></div>
+  <div class="jsel">${J.map((x,i)=>`<button class="jbtn${i===S.j?' on':''} l${x.mat}" onclick="selJ(${i})">${x.name}</button>`).join('')}</div>
+  <div style="font-size:12px;font-weight:600;margin-bottom:6px">persona</div>
+  <div class="persona-row">${PERSONAS.map((p,i)=>`<button class="pbtn${i===S.persona?' on':''}" onclick="selP(${i})">${p.name}</button>`).join('')}</div>
+  <div style="font-size:12px;font-weight:600;margin-bottom:6px">verbosity</div>
+  <div class="verb-row">${VERBS.map((v,i)=>`<button class="vbtn${i===S.verb?' on':''}" onclick="selV(${i})">${v}</button>`).join('')}</div>
+  ${narr?`
+  <div class="narr-box"><div class="narr-text">${narr}</div></div>
+  <div class="narr-meta">~${narr.split(/\s+/).length} words · ${PERSONAS[S.persona].lang} · ${PERSONAS[S.persona].profile} · Sarvam Bulbul v2 @ 0.85x for L4</div>
+  <button class="play-btn" id="play-btn" onclick="playTTS(\`${narr.replace(/`/g,"'")}\`,'${PERSONAS[S.persona].lang}')">▶ Play narration via Sarvam</button>
+  `:`<div style="padding:16px;background:#fff;border-radius:12px;border:1px solid #e5e7eb;font-size:12px;color:#888;text-align:center;line-height:1.6">
+  Narration templates available for: <strong>collect request</strong>, <strong>NACH mandate</strong>, <strong>eKYC</strong>, <strong>credit line</strong>.<br>Select one of those journeys to see persona-adapted decoder output with live Sarvam audio.</div>`}`;
+}
+
+function renderHeatmap(){
+  let rows=J.map(j=>{let s=score(j.screen);return{name:j.name,id:j.id,density:s.density,mat:s.materiality,terms:s.found.length,idx:J.indexOf(j)};}).sort((a,b)=>b.density-a.density);
+  let maxD=Math.max(...rows.map(r=>r.density));
+  let colors={1:'#97c459',2:'#378add',3:'#ef9f27',4:'#e24b4a'};
+  document.getElementById('p3').innerHTML=`
+  <div class="arch-bar"><div class="arch-icon">Σ</div><div><div class="arch-label">journey matrix — billion users, million journeys</div><div class="arch-desc">DPL density across 13 UPI journey types. Higher density = more consequence terms on screen = larger comprehension gap. At 14B txns/month, ~15-20% are L3+L4 = 2-3B Sarvam API calls/month.</div></div></div>
+  <div class="hm-row hm-header"><div>journey</div><div>level</div><div>DPL density</div><div>terms</div></div>
+  ${rows.map((r,i)=>{
+    let aboveThreshold=r.density>=0.15;
+    return`<div class="hm-row" style="${aboveThreshold?'':'opacity:.5'}">
+    <a class="hm-name" onclick="selJ(${r.idx});showTab(0)">${r.name}</a>
+    <div><span style="font-weight:600;color:${colors[r.mat]}">L${r.mat}</span></div>
+    <div style="display:flex;align-items:center;gap:6px"><div class="hm-bar" style="width:${(r.density/maxD*100).toFixed(0)}%;background:${colors[r.mat]}"></div><span style="font-size:11px">${r.density.toFixed(2)}</span></div>
+    <div style="text-align:center">${r.terms}</div>
+  </div>`+(i===rows.filter(x=>x.density>=0.15).length-1?'<div style="border-top:2px dashed #e24b4a;margin:4px 0;position:relative"><span style="position:absolute;right:0;top:-14px;font-size:9px;color:#e24b4a">narration trigger threshold (0.15)</span></div>':'');
+  }).join('')}
+  <div style="margin-top:16px;padding:12px;background:#fff;border-radius:10px;border:1px solid #e5e7eb;font-size:12px;line-height:1.6;color:#555">
+  <strong>For Sarvam:</strong> Every journey above the threshold line = 1 Bulbul TTS call + 1 Sarvam-30B inference call per transaction. At UPI scale (14B txns/month), with ~18% L3+L4 trigger rate, that's ~2.5B API calls/month. No single customer can offer Sarvam this volume.
+  </div>`;
+}
+
+function showTab(n){
+  stopAudio();
+  document.querySelectorAll('.tab').forEach((t,i)=>{t.classList.toggle('on',i===n)});
+  document.querySelectorAll('.panel').forEach((p,i)=>{p.classList.toggle('on',i===n)});
+  [renderEncoder,renderPredictor,renderDecoder,renderHeatmap][n]();
+}
+function selJ(i){S.j=i;S.action=null;S.speaker=null;let active=[...document.querySelectorAll('.tab')].findIndex(t=>t.classList.contains('on'));showTab(active);}
+function selA(i){S.action=i;renderPredictor();}
+function selP(i){S.persona=i;S.speaker=null;renderDecoder();}
+function selV(i){S.verb=i;renderDecoder();}
+</script>
+</body>
+</html>

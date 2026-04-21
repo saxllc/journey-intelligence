@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>KLH World Model</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f5f7;--card:#fff;--border:#e2e2e8;--text:#1a1a2e;--text2:#555;--text3:#888;
+  --sidebar:#1a1a2e;--accent:#6c5ce7;--accent-light:#a29bfe;
+  --L1:#2ecc71;--L2:#3498db;--L3:#f39c12;--L4:#e74c3c;
+  --green:#2ecc71;--red:#e74c3c;--amber:#f39c12;
+  --sheet-bg:#1a1a2e;--sheet-text:#eee;
+  --upi-blue:#1a237e;
+  --sidebar-w:200px;
+}
+html{font-size:15px}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;display:flex}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--sidebar);color:#fff;position:fixed;left:0;top:0;bottom:0;z-index:100;display:flex;flex-direction:column;padding:28px 18px 18px}
+.sidebar h1{font-size:1rem;font-weight:600;letter-spacing:-.3px;line-height:1.3}
+.sidebar .sub{font-size:.68rem;color:#888;margin-top:4px;line-height:1.4}
+.sidebar-divider{height:1px;background:#333;margin:20px 0}
+.sidebar-section{font-size:.58rem;text-transform:uppercase;letter-spacing:.8px;color:#666;margin-bottom:8px;font-weight:500}
+.status-row{display:flex;align-items:center;gap:6px;font-size:.7rem;color:#aaa;margin-bottom:8px}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.dot-g{background:var(--green)}.dot-r{background:var(--red)}.dot-y{background:var(--amber)}
+.sidebar-meta{margin-top:auto;font-size:.6rem;color:#555;line-height:1.5}
+.sidebar-meta span{color:#777}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column}
+
+/* TABS */
+.tabs{display:flex;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.tab-btn{padding:12px 24px;font-size:.8rem;font-weight:500;color:var(--text2);border-bottom:2px solid transparent;transition:all .15s}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.tab-panel{display:none;padding:20px 24px;flex:1}
+.tab-panel.active{display:flex;flex-direction:column}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px}
+.card-title{font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;font-weight:500}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.stat .val{font-size:1.4rem;font-weight:700}
+.stat .lbl{font-size:.62rem;color:var(--text3);margin-top:2px}
+
+/* HEATMAP */
+.hm-row{display:grid;grid-template-columns:1.2fr 40px 140px 32px 32px;align-items:center;padding:6px 0;border-bottom:1px solid #f0f0f3;font-size:.76rem;gap:6px}
+.hm-row:last-child{border-bottom:none}
+.hm-name{font-weight:500;cursor:pointer;color:var(--accent)}
+.hm-name:hover{text-decoration:underline}
+.hm-mat{font-size:.6rem;font-weight:600;padding:2px 5px;border-radius:4px;text-align:center;color:#fff}
+.hm-bar-wrap{height:8px;background:#eee;border-radius:4px;overflow:hidden}
+.hm-bar{height:100%;border-radius:4px;transition:width .4s}
+.hm-count{font-size:.7rem;text-align:center;color:var(--text2)}
+.hm-play{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;transition:background .15s}
+.hm-play.can-play{background:var(--accent);color:#fff}
+.hm-play.can-play:hover{background:#5a4bd1}
+.hm-play.no-play{background:#eee;color:#ccc;cursor:default}
+.threshold-line{border-top:2px dashed var(--red);margin:4px 0;position:relative}
+.threshold-label{position:absolute;right:0;top:-14px;font-size:.58rem;color:var(--red);font-weight:500}
+.screen-text{font-size:.76rem;line-height:1.7;padding:12px;background:#fafafa;border-radius:8px;border:1px solid var(--border)}
+.screen-text .dpl{padding:1px 4px;border-radius:3px;font-weight:600}
+.chip{display:inline-block;padding:2px 7px;border-radius:4px;font-size:.65rem;margin:2px;font-weight:500;color:#fff}
+
+/* KLH TWO-COL */
+.klh-layout{display:grid;grid-template-columns:300px 1fr;gap:20px;flex:1;min-height:0}
+.klh-phone-col{display:flex;flex-direction:column;align-items:center;padding-top:8px}
+.klh-controls-col{display:flex;flex-direction:column;overflow-y:auto;padding-right:4px}
+
+/* IPHONE */
+.iphone{width:280px;background:#0a0a0a;border-radius:40px;padding:12px;box-shadow:0 16px 48px rgba(0,0,0,.2);flex-shrink:0}
+.iphone-inner{background:#fff;border-radius:30px;overflow:hidden;position:relative}
+.iphone-notch{width:100px;height:22px;background:#0a0a0a;border-radius:0 0 16px 16px;margin:0 auto}
+.iphone-screen{min-height:480px}
+.upi-header{background:var(--upi-blue);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:500}
+.upi-header .back{font-size:1rem}
+.upi-body{padding:14px}
+.upi-field{margin-bottom:10px}
+.upi-field label{font-size:.62rem;color:var(--text3);display:block;margin-bottom:2px}
+.upi-field .val{font-size:.8rem;padding:7px 10px;background:#f5f5f7;border-radius:6px;border:1px solid var(--border)}
+.upi-warn{padding:7px 10px;border-radius:6px;margin:8px 0;font-size:.68rem;display:flex;align-items:center;gap:6px}
+.upi-actions{display:flex;gap:8px;margin-top:14px}
+.upi-btn{flex:1;padding:10px;border-radius:8px;font-size:.78rem;font-weight:600;transition:transform .1s}
+.upi-btn:active{transform:scale(.96)}
+.upi-btn.primary{background:var(--upi-blue);color:#fff}
+.upi-btn.secondary{background:#eee;color:var(--text)}
+.consequence-panel{margin-top:10px;width:280px;opacity:0;max-height:0;overflow:hidden;transition:all .3s}
+.consequence-panel.show{opacity:1;max-height:300px}
+.consequence-inner{padding:10px;border-radius:8px;border:1px solid var(--border);background:#fff;font-size:.75rem}
+.risk-tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:.6rem;font-weight:600;color:#fff;margin-bottom:4px}
+
+/* PILLS */
+.pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.pill{padding:4px 10px;border-radius:14px;font-size:.7rem;font-weight:500;border:1px solid var(--border);color:var(--text2);transition:all .15s}
+.pill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* NARRATION */
+.narration-box{padding:14px;border-radius:10px;font-size:.82rem;line-height:1.6;min-height:60px}
+.narration-box.has-content{background:linear-gradient(135deg,#2d1b69,#1a1a2e);color:#eee}
+.narration-box.no-content{background:#f5f5f7;color:var(--text2);text-align:center;padding:24px 14px}
+.word-count{font-size:.65rem;color:var(--text3);margin-top:4px}
+
+/* FAB */
+.fab{position:fixed;bottom:24px;right:20px;width:50px;height:50px;border-radius:50%;background:var(--accent);color:#fff;font-size:1.2rem;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(108,92,231,.4);z-index:200;transition:transform .2s}
+.fab:hover{transform:scale(1.08)}
+
+/* BOTTOM SHEET */
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;opacity:0;pointer-events:none;transition:opacity .25s}
+.sheet-overlay.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;bottom:0;left:0;right:0;background:var(--sheet-bg);color:var(--sheet-text);border-radius:14px 14px 0 0;z-index:301;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,.24,1);max-height:55vh;overflow-y:auto;padding:0 18px 20px}
+.sheet.open{transform:translateY(0)}
+.sheet-handle{width:32px;height:4px;background:#555;border-radius:2px;margin:10px auto}
+.sheet-hdr{display:flex;align-items:center;justify-content:space-between;padding:6px 0 10px}
+.sheet-hdr h3{font-size:.82rem;font-weight:600}
+.sheet-close{font-size:1.1rem;color:#aaa;padding:4px}
+.sheet .pills .pill{border-color:#444;color:#aaa}
+.sheet .pills .pill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.sheet-script{background:#111;border-radius:8px;padding:10px;font-size:.76rem;line-height:1.6;max-height:100px;overflow-y:auto;margin:8px 0;color:#ddd}
+.sheet-play{width:100%;padding:10px;border-radius:8px;background:var(--accent);color:#fff;font-size:.82rem;font-weight:600;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px}
+.sheet-play:disabled{opacity:.5;cursor:not-allowed}
+.sheet-progress{font-size:.68rem;color:#888;margin-top:4px;text-align:center;min-height:14px}
+
+/* MOBILE */
+@media(max-width:900px){
+  .sidebar{width:100%;min-height:auto;position:relative;flex-direction:row;flex-wrap:wrap;padding:12px 16px;align-items:center;gap:8px}
+  .sidebar h1{font-size:.9rem}
+  .sidebar .sub,.sidebar-divider,.sidebar-section,.sidebar-meta{display:none}
+  .status-row{margin-bottom:0}
+  .main{margin-left:0}
+  :root{--sidebar-w:0px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .klh-layout{grid-template-columns:1fr;gap:12px}
+  .klh-phone-col{order:1}
+  .klh-controls-col{order:0}
+  .iphone{width:100%;max-width:300px;border-radius:32px;padding:10px}
+  .consequence-panel{width:100%;max-width:300px}
+  .hm-row{grid-template-columns:1fr 32px 80px 24px 24px;font-size:.7rem}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <h1>KLH consequence<br>world model</h1>
+  <p class="sub">When Bharat speaks digital</p>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section">Service Status</div>
+  <div class="status-row"><span class="dot dot-r" id="dotSupa"></span><span id="lblSupa">Supabase: checking…</span></div>
+  <div class="status-row"><span class="dot dot-r" id="dotNgrok"></span><span id="lblNgrok">ngrok: checking…</span></div>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section">Active Config</div>
+  <div class="status-row" id="cfgPersona">Persona: —</div>
+  <div class="status-row" id="cfgVerbosity">Verbosity: —</div>
+  <div class="status-row" id="cfgSpeaker">Speaker: —</div>
+  <div class="sidebar-meta">
+    <span>DPL Terms</span>: <span id="dplCount">0</span><br>
+    <span>Journeys</span>: 13<br>
+    <span>Threshold</span>: 0.15
+  </div>
+</aside>
+
+<div class="main">
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+    <button class="tab-btn" data-tab="klh">Kya Likha Hai</button>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="tab-panel active" id="tab-dashboard">
+    <div class="stats">
+      <div class="stat"><div class="val">13</div><div class="lbl">Total Journeys</div></div>
+      <div class="stat"><div class="val" id="statNarr">—</div><div class="lbl">Need Narration</div></div>
+      <div class="stat"><div class="val" id="statDens">—</div><div class="lbl">Selected Density</div></div>
+      <div class="stat"><div class="val" id="statMat">—</div><div class="lbl">Materiality</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Journey Heatmap — DPL Density</div>
+      <div id="heatmap"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">DPL Breakdown — <span id="breakdownTitle">select a journey</span></div>
+      <div class="pills" id="breakdownPills"></div>
+      <div class="screen-text" id="screenTextBox" style="margin-bottom:8px">Select a journey from the heatmap above.</div>
+      <div id="dplChips"></div>
+    </div>
+  </div>
+
+  <!-- KLH -->
+  <div class="tab-panel" id="tab-klh">
+    <div class="klh-layout">
+      <div class="klh-phone-col">
+        <div class="iphone"><div class="iphone-inner"><div class="iphone-notch"></div><div class="iphone-screen" id="phoneScreen"><div style="display:flex;align-items:center;justify-content:center;height:480px;color:#bbb;font-size:.8rem;text-align:center;padding:20px">Select a journey to preview UPI screen</div></div></div></div>
+        <div class="consequence-panel" id="conseqPanel"><div class="consequence-inner" id="conseqInner"></div></div>
+      </div>
+      <div class="klh-controls-col">
+        <div class="card"><div class="card-title">Journey</div><div class="pills" id="klhJourneyPills"></div></div>
+        <div class="card"><div class="card-title">Persona</div><div class="pills" id="personaPills"></div></div>
+        <div class="card"><div class="card-title">Verbosity</div><div class="pills" id="verbPills"></div></div>
+        <div class="card">
+          <div class="card-title">Narration</div>
+          <div id="narrationOut"></div>
+          <div class="word-count" id="wordCount"></div>
+          <p style="font-size:.62rem;color:var(--text3);margin-top:6px">Tap 🔊 for audio playback.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="fab" id="fabBtn" title="Open KLH Audio">🔊</button>
+
+<div class="sheet-overlay" id="sheetOverlay"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-hdr"><h3>Kya Likha Hai — Journey Intelligence</h3><button class="sheet-close" id="sheetClose">✕</button></div>
+  <div class="pills" id="langPills"></div>
+  <div class="sheet-script" id="sheetScript">Select a journey and persona to see the KLH script.</div>
+  <button class="sheet-play" id="sheetPlay" disabled>▶ Play</button>
+  <div class="sheet-progress" id="sheetProgress"></div>
+</div>
+
+<script>
+const S={selectedJourney:null,persona:'arjun',verbosity:'MEDIUM',ttsLang:'hi',ngrokUrl:null,supaOk:false,playing:false,speaker:null,actx:null};
+const SUPA_URL='https://xbtmbolhfgyondgibhki.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhidG1ib2xoZmd5b25kZ2liaGtpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwMzcsImV4cCI6MjA5MTcyNDAzN30.UeyeyCyi1O74V7rJt7Ghu5b01Ot6l9uxsUgsI0FHHVM';
+
+async function loadConfig(){try{const r=await fetch(SUPA_URL+'/rest/v1/configurations?id=eq.active&select=*',{headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}});if(!r.ok)throw new Error(r.status);const rows=await r.json();if(rows.length>0){const c=rows[0];S.ngrokUrl=c.ngrok_url||null;if(c.persona_name){const m={P1:'arjun',P2:'arjun',P3:'sunita',P4:'rajan'};if(m[c.persona_name])S.persona=m[c.persona_name];}if(c.klh_verbosity)S.verbosity=c.klh_verbosity;S.supaOk=true;}}catch(e){console.warn('Supabase load failed',e);}updateStatus();renderPersonaPills();renderVerbPills();updateSidebarConfig();}
+
+function subscribeRealtime(){try{const ws=new WebSocket(SUPA_URL.replace('https','wss')+'/realtime/v1/websocket?apikey='+SUPA_KEY+'&vsn=1.0.0');ws.onopen=()=>{ws.send(JSON.stringify({topic:'realtime:public:configurations',event:'phx_join',payload:{config:{broadcast:{self:false},presence:{key:''},postgres_changes:[{event:'*',schema:'public',table:'configurations'}]}},ref:'1'}));setInterval(()=>ws.send(JSON.stringify({topic:'phoenix',event:'heartbeat',payload:{},ref:'hb'})),30000);};ws.onmessage=(e)=>{try{const msg=JSON.parse(e.data);if(msg.event==='postgres_changes'&&msg.payload?.data?.record){const c=msg.payload.data.record;if(c.ngrok_url)S.ngrokUrl=c.ngrok_url;updateStatus();}}catch(ex){}};}catch(e){console.warn('WS failed',e);}}
+
+function updateStatus(){const ds=document.getElementById('dotSupa'),ls=document.getElementById('lblSupa'),dn=document.getElementById('dotNgrok'),ln=document.getElementById('lblNgrok');ds.className='dot '+(S.supaOk?'dot-g':'dot-r');ls.textContent=S.supaOk?'Supabase: connected':'Supabase: offline';dn.className='dot '+(S.ngrokUrl?'dot-g':'dot-r');ln.textContent=S.ngrokUrl?'ngrok: active':'ngrok: unavailable';}
+function updateSidebarConfig(){document.getElementById('cfgPersona').textContent='Persona: '+S.persona;document.getElementById('cfgVerbosity').textContent='Verbosity: '+S.verbosity;document.getElementById('cfgSpeaker').textContent='Speaker: '+S.speaker;}
+
+// DPL
+const DPL=[
+{term:'auto-debit',aliases:['auto debit','automatic debit','recurring debit'],cat:'PAYMENT',mat:4,fraud:'MEDIUM'},
+{term:'mandate',aliases:['NACH mandate','e-mandate','standing instruction'],cat:'CONSENT',mat:4,fraud:'HIGH'},
+{term:'irrevocable',aliases:['cannot be reversed','non-reversible','irreversible'],cat:'REVERSIBILITY',mat:4,fraud:'CRITICAL'},
+{term:'consent',aliases:['I agree','I authorize','I hereby'],cat:'CONSENT',mat:3,fraud:'MEDIUM'},
+{term:'Aadhaar',aliases:['aadhaar number','UIDAI','12-digit'],cat:'IDENTITY',mat:4,fraud:'HIGH'},
+{term:'biometric',aliases:['fingerprint','iris scan','face scan'],cat:'IDENTITY',mat:4,fraud:'HIGH'},
+{term:'OTP',aliases:['one-time password','verification code'],cat:'IDENTITY',mat:2,fraud:'LOW'},
+{term:'UPI PIN',aliases:['MPIN','transaction PIN','enter PIN'],cat:'PAYMENT',mat:3,fraud:'LOW'},
+{term:'beneficiary',aliases:['payee','recipient','new beneficiary'],cat:'PAYMENT',mat:3,fraud:'MEDIUM'},
+{term:'unknown',aliases:['first time','new contact','unverified'],cat:'PAYMENT',mat:3,fraud:'HIGH'},
+{term:'credit line',aliases:['pre-approved loan','instant credit','credit limit'],cat:'PAYMENT',mat:4,fraud:'HIGH'},
+{term:'EMI',aliases:['equated monthly','installment','monthly payment'],cat:'PAYMENT',mat:3,fraud:'MEDIUM'},
+{term:'token',aliases:['asset token','tokenize','digital asset'],cat:'FRONTIER',mat:4,fraud:'MEDIUM'},
+{term:'lock',aliases:['freeze','asset freeze','token lock'],cat:'FRONTIER',mat:4,fraud:'HIGH'},
+{term:'digital signature',aliases:['e-sign','Aadhaar sign','legally binding','electronic signature'],cat:'CONSENT',mat:4,fraud:'CRITICAL'},
+{term:'eKYC',aliases:['e-KYC','electronic KYC','know your customer'],cat:'IDENTITY',mat:4,fraud:'HIGH'},
+{term:'digilocker',aliases:['DigiLocker','digital locker'],cat:'IDENTITY',mat:3,fraud:'MEDIUM'},
+{term:'collect request',aliases:['payment request','collect money','request money'],cat:'PAYMENT',mat:3,fraud:'CRITICAL'},
+{term:'merchant',aliases:['store','shop','vendor','seller'],cat:'PAYMENT',mat:1,fraud:'LOW'},
+{term:'balance',aliases:['account balance','available balance','check balance'],cat:'SYSTEM_STATE',mat:1,fraud:'LOW'},
+{term:'QR code',aliases:['scan QR','QR scan','scan to pay'],cat:'PAYMENT',mat:2,fraud:'MEDIUM'},
+{term:'refund',aliases:['money back','reversal','cashback'],cat:'REVERSIBILITY',mat:2,fraud:'LOW'},
+{term:'dispute',aliases:['raise complaint','transaction failed'],cat:'REVERSIBILITY',mat:2,fraud:'LOW'},
+{term:'autopay',aliases:['auto-pay','recurring payment','subscription'],cat:'PAYMENT',mat:4,fraud:'HIGH'},
+{term:'ONDC',aliases:['open network','digital commerce'],cat:'FRONTIER',mat:3,fraud:'MEDIUM'},
+{term:'Finternet',aliases:['finternet','unified ledger'],cat:'FRONTIER',mat:4,fraud:'MEDIUM'},
+{term:'NBFC',aliases:['non-banking','lending partner'],cat:'PAYMENT',mat:3,fraud:'MEDIUM'},
+{term:'interest rate',aliases:['rate of interest','APR','annual percentage'],cat:'PAYMENT',mat:3,fraud:'LOW'},
+{term:'penalty',aliases:['late fee','overdue charge','fine'],cat:'PAYMENT',mat:3,fraud:'LOW'},
+{term:'settlement',aliases:['final settlement','cleared','settled'],cat:'SYSTEM_STATE',mat:2,fraud:'LOW'},
+{term:'verified',aliases:['KYC verified','identity confirmed'],cat:'IDENTITY',mat:2,fraud:'LOW'},
+{term:'unverified',aliases:['not verified','pending verification'],cat:'IDENTITY',mat:3,fraud:'HIGH'}
+];
+function fraudBoost(f){return{LOW:0,MEDIUM:.25,HIGH:.5,CRITICAL:1}[f]||0;}
+function scoreText(text){const lower=text.toLowerCase(),tokens=lower.split(/\s+/);let tw=0;const found=[];for(const d of DPL){const all=[d.term,...d.aliases];for(const a of all){if(lower.includes(a.toLowerCase())){const w=d.mat*(1+fraudBoost(d.fraud));tw+=w;found.push({...d,matched:a,weight:w});break;}}}return{density:Math.round(tw/tokens.length*1000)/1000,terms:found,tokenCount:tokens.length};}
+
+// JOURNEYS
+const JOURNEYS=[
+{id:'balance',name:'Balance Check',mat:1,upiTitle:'Check Balance',screen:'Check your account balance. Your available balance will be shown after UPI PIN verification. Balance enquiry is free. Enter UPI PIN to view balance.',actions:[{label:'Check Balance',type:'primary',consequence:'Your current bank balance is displayed on screen. No money is moved. Read-only operation.',risk:'none'},{label:'Cancel',type:'secondary',consequence:'Balance check cancelled.',risk:'none'}],fields:[{label:'Account',value:'SBI Savings ****4521'},{label:'Action',value:'Balance Enquiry'}],sample:'बैलेंस चेक करने से कोई पैसा नहीं कटता। बस आपका बैलेंस स्क्रीन पर दिखेगा।'},
+{id:'p2p_small',name:'P2P Send <₹500',mat:2,upiTitle:'Send Money',screen:'Send ₹350 to Rahul Sharma via UPI. UPI ID: rahul@okaxis. Amount: ₹350. Enter UPI PIN to confirm payment. Refund possible if sent to wrong UPI ID — contact bank within 24 hours.',actions:[{label:'Pay ₹350',type:'primary',consequence:'₹350 debited and credited to rahul@okaxis instantly. Small amount, refund possible within 24 hours.',risk:'low'},{label:'Cancel',type:'secondary',consequence:'Payment cancelled.',risk:'none'}],fields:[{label:'To',value:'Rahul Sharma'},{label:'UPI ID',value:'rahul@okaxis'},{label:'Amount',value:'₹350'}],sample:'राहुल शर्मा को तीन सौ पचास रुपये भेजने वाले हो। छोटी रकम है।'},
+{id:'p2p_large_unknown',name:'P2P >₹5K Unknown',mat:3,upiTitle:'Send Money',screen:'Send ₹8,500 to unknown contact. UPI ID: merchant8847@ybl. First time transfer to this UPI ID. This recipient is unverified. Amount ₹8,500. Enter UPI PIN to authorize consent. Irrevocable once sent.',actions:[{label:'Pay ₹8,500',type:'primary',consequence:'₹8,500 permanently sent to unverified UPI ID. First-time unknown recipient. Irrevocable. High scam risk.',risk:'high'},{label:'Decline',type:'secondary',consequence:'Payment declined. Account safe.',risk:'none'}],fields:[{label:'To',value:'Unknown Contact'},{label:'UPI ID',value:'merchant8847@ybl'},{label:'Amount',value:'₹8,500'},{label:'Status',value:'⚠ First time · Unverified'}],sample:'रुको! ये अनजान UPI ID है। आठ हज़ार पाँच सौ रुपये एक बार गए तो वापस नहीं आएँगे।'},
+{id:'p2m_qr',name:'P2M QR Scan',mat:2,upiTitle:'Pay Merchant',screen:'Pay merchant via QR code. Merchant: Fresh Mart Store. Verified merchant. Amount: ₹1,200. Payment to verified merchant via QR scan. Enter UPI PIN to pay.',actions:[{label:'Pay ₹1,200',type:'primary',consequence:'₹1,200 paid to Fresh Mart Store, verified merchant.',risk:'low'},{label:'Cancel',type:'secondary',consequence:'Payment cancelled.',risk:'none'}],fields:[{label:'Merchant',value:'Fresh Mart Store ✓'},{label:'Amount',value:'₹1,200'},{label:'Method',value:'QR Code Scan'}],sample:'फ्रेश मार्ट स्टोर को बारह सौ रुपये। वेरिफाइड दुकान है।'},
+{id:'collect_unknown',name:'Collect Request Unknown',mat:4,upiTitle:'Collect Request',screen:'Collect request received from unknown UPI ID: fraud_alert99@paytm. Amount: ₹15,000. This is a collect request — money will be debited from YOUR account if you approve. Sender is unverified. Never approve collect requests from unknown sources. Enter UPI PIN to authorize consent. Irrevocable.',actions:[{label:'Approve ₹15,000',type:'primary',consequence:'₹15,000 DEBITED from your account to unknown sender. #1 UPI fraud method. Irrevocable. CRITICAL RISK.',risk:'critical'},{label:'Decline',type:'secondary',consequence:'Declined. No money leaves your account.',risk:'none'}],fields:[{label:'From',value:'⚠ fraud_alert99@paytm'},{label:'Amount',value:'₹15,000'},{label:'Type',value:'COLLECT (money leaves YOU)'},{label:'Status',value:'🚨 Unknown · Unverified'}],sample:'खतरा! ये collect request है — आपके खाते से पंद्रह हज़ार कटेंगे! बिल्कुल approve मत करो!'},
+{id:'beneficiary_add',name:'Beneficiary Add',mat:3,upiTitle:'Add Beneficiary',screen:'Add new beneficiary. Name: Unknown Trader. Account: ****7823. IFSC: SBIN0001234. First time beneficiary addition. Once added, quick transfers enabled without re-verification. Consent required to add. Verify details carefully.',actions:[{label:'Add Beneficiary',type:'primary',consequence:'Unknown Trader permanently added. Future transfers skip verification.',risk:'medium'},{label:'Cancel',type:'secondary',consequence:'Not added.',risk:'none'}],fields:[{label:'Name',value:'Unknown Trader'},{label:'Account',value:'****7823'},{label:'IFSC',value:'SBIN0001234'},{label:'Status',value:'⚠ First time'}],sample:'नया बेनिफिशियरी जोड़ रहे हो। एक बार जोड़ने के बाद बिना वेरिफिकेशन पैसे भेज सकोगे।'},
+{id:'nach_mandate',name:'NACH Mandate Sign',mat:4,upiTitle:'NACH e-Mandate',screen:'Sign NACH e-Mandate. Creditor: QuickLoan NBFC. Amount: up to ₹25,000/month. Frequency: Monthly auto-debit. Duration: 3 years (36 months). This mandate authorizes automatic debit from your account every month for 3 years. Irrevocable for mandate period. Digital signature consent required. Enter UPI PIN to authorize.',actions:[{label:'Sign Mandate',type:'primary',consequence:'Legally binding 3-year auto-debit. Up to ₹25,000/month. Total ₹9,00,000 exposure. Irrevocable.',risk:'critical'},{label:'Decline',type:'secondary',consequence:'Mandate not signed. Account protected.',risk:'none'}],fields:[{label:'Creditor',value:'QuickLoan NBFC'},{label:'Amount',value:'Up to ₹25,000/month'},{label:'Duration',value:'3 years (36 months)'},{label:'Type',value:'NACH Auto-Debit'}],sample:'ये NACH mandate है — 3 साल हर महीने 25 हज़ार तक अपने-आप कट सकते हैं। कुल 9 लाख तक।'},
+{id:'autopay',name:'UPI AutoPay Setup',mat:4,upiTitle:'UPI AutoPay',screen:'Setup UPI AutoPay. Merchant: StreamFlix Premium. Amount: ₹599/month. Frequency: Monthly recurring. This enables recurring payment without UPI PIN after first authorization. Autopay will debit automatically every month. Consent to auto-debit. Cancel anytime from UPI app settings.',actions:[{label:'Enable AutoPay',type:'primary',consequence:'₹599 auto-debited monthly without PIN. Must manually cancel from settings.',risk:'high'},{label:'Skip',type:'secondary',consequence:'Not enabled. Pay manually.',risk:'none'}],fields:[{label:'Merchant',value:'StreamFlix Premium'},{label:'Amount',value:'₹599/month'},{label:'Type',value:'Recurring AutoPay'},{label:'PIN Required',value:'Only first time'}],sample:'AutoPay चालू करोगे तो हर महीने 599 बिना PIN के अपने-आप कट जाएँगे।'},
+{id:'ekyc',name:'eKYC Aadhaar',mat:4,upiTitle:'eKYC Verification',screen:'Complete eKYC with Aadhaar. Your Aadhaar number and biometric data will be shared with the service provider. eKYC is irrevocable — once shared, your identity data cannot be recalled. Aadhaar-based eKYC shares: full name, address, photo, date of birth, and Aadhaar number. Digital consent required. I authorize sharing my Aadhaar details.',actions:[{label:'Complete eKYC',type:'primary',consequence:'Full Aadhaar identity permanently shared. Irrevocable. Identity exposure permanent.',risk:'critical'},{label:'Cancel',type:'secondary',consequence:'Cancelled. No data shared.',risk:'none'}],fields:[{label:'Method',value:'Aadhaar eKYC'},{label:'Data Shared',value:'Name, Address, Photo, DOB, Aadhaar#'},{label:'Reversible',value:'❌ Irrevocable'}],sample:'eKYC करोगे तो आधार से सब जानकारी कंपनी को मिल जाएगी। वापस नहीं ले सकते।'},
+{id:'credit_line',name:'Credit Line Activation',mat:4,upiTitle:'Activate Credit',screen:'Activate pre-approved credit line. Lender: QuickCash NBFC. Credit limit: ₹50,000. Interest rate: 18% APR. EMI auto-debit enabled. Late payment penalty: ₹500 + interest. By activating, you consent to loan terms, auto-debit mandate, and credit bureau reporting. Digital signature required.',actions:[{label:'Activate Credit',type:'primary',consequence:'₹50,000 loan at 18% APR. EMI auto-debited. ₹500 late penalty. Affects CIBIL. Legally binding.',risk:'critical'},{label:'Decline',type:'secondary',consequence:'Not activated. No loan.',risk:'none'}],fields:[{label:'Lender',value:'QuickCash NBFC'},{label:'Limit',value:'₹50,000'},{label:'Interest',value:'18% APR'},{label:'Penalty',value:'₹500 + interest/late'}],sample:'ये लोन है — 50 हज़ार, 18% ब्याज। EMI अपने-आप कटेगी। CIBIL पर असर पड़ेगा।'},
+{id:'ondc',name:'ONDC Order',mat:3,upiTitle:'ONDC Order',screen:'Place order via ONDC open network. Seller: KisanDirect Farm. Item: Organic Rice 5kg. Price: ₹450. Delivery via ONDC logistics. Refund policy per seller terms. Payment via UPI. ONDC is an open network — dispute resolution differs from marketplace apps.',actions:[{label:'Pay ₹450',type:'primary',consequence:'₹450 to KisanDirect Farm via ONDC. No centralized marketplace protection. Disputes with seller directly.',risk:'medium'},{label:'Cancel',type:'secondary',consequence:'Order cancelled.',risk:'none'}],fields:[{label:'Seller',value:'KisanDirect Farm'},{label:'Item',value:'Organic Rice 5kg'},{label:'Price',value:'₹450'},{label:'Network',value:'ONDC (Open Network)'}],sample:'ONDC से ऑर्डर — Amazon जैसा नहीं, दिक्कत हुई तो seller से बात करनी पड़ेगी।'},
+{id:'token_lock',name:'Token Lock / Finternet',mat:4,upiTitle:'Finternet Token Lock',screen:'Lock digital asset token via Finternet unified ledger. Asset: Land Parcel Token #LPT-4421. Lock duration: 180 days. During lock period, this token cannot be transferred, sold, or used as collateral. Asset freeze is irrevocable for lock duration. Digital signature and consent required. Token lock registered on unified ledger.',actions:[{label:'Lock Token',type:'primary',consequence:'Land token frozen 180 days. Cannot sell, transfer, or collateralize. Irrevocable. Registered on unified ledger.',risk:'critical'},{label:'Cancel',type:'secondary',consequence:'Not locked. Asset remains transferable.',risk:'none'}],fields:[{label:'Asset',value:'Land Token #LPT-4421'},{label:'Lock',value:'180 days'},{label:'Restrictions',value:'No transfer/sale/collateral'},{label:'Reversible',value:'❌ Irrevocable 180 days'}],sample:'ज़मीन का टोकन 180 दिन लॉक। न बेच सकते, न ट्रांसफर, न गिरवी। 6 महीने तक नहीं खुलेगा।'},
+{id:'aadhaar_sign',name:'Aadhaar Digital Sign',mat:4,upiTitle:'Aadhaar e-Sign',screen:'Sign document with Aadhaar digital signature. Document: Property Sale Agreement. This creates a legally binding electronic signature equivalent to a physical signature. Aadhaar e-Sign is irrevocable and legally enforceable under IT Act 2000. Your Aadhaar identity will be permanently linked to this document. Consent and biometric verification required. I authorize this digital signature.',actions:[{label:'Sign Document',type:'primary',consequence:'Legally binding signature on Property Sale Agreement. Equivalent to physical. Irrevocable. IT Act 2000 enforceable. Cannot be undone.',risk:'critical'},{label:'Decline',type:'secondary',consequence:'Not signed. No legal commitment.',risk:'none'}],fields:[{label:'Document',value:'Property Sale Agreement'},{label:'Method',value:'Aadhaar e-Sign'},{label:'Legal',value:'Binding (IT Act 2000)'},{label:'Reversible',value:'❌ Irrevocable'}],sample:'ये आधार से डिजिटल हस्ताक्षर — कानूनी तौर पर हाथ से sign जैसा। कोर्ट में मान्य, वापस नहीं।'}
+];
+
+JOURNEYS.forEach(j=>{const s=scoreText(j.screen);j.density=s.density;j.dplTerms=s.terms;j.tokenCount=s.tokenCount;});
+JOURNEYS.sort((a,b)=>b.density-a.density);
+const THRESHOLD=0.15;const aboveThreshold=JOURNEYS.filter(j=>j.density>=THRESHOLD);
+
+// NARRATIONS (90 templates: 10 journeys × 3 personas × 3 verbosity)
+const NR={};function N(j,p,v,t){NR[j+'|'+p+'|'+v]=t;}
+
+N('p2p_large_unknown','arjun','LOW','Bro unknown ID hai, ₹8.5K irrevocable — double check kar.');
+N('p2p_large_unknown','arjun','MEDIUM','Dude, ₹8,500 unknown UPI ID pe jaa raha hai. First time, irrevocable — ek baar gaya toh gone. Verify kar.');
+N('p2p_large_unknown','arjun','HIGH','Bro sun — ₹8,500 bhej raha hai ek aisi UPI ID pe jo tere contacts mein nahi hai. First time transfer hai. Yeh irrevocable hai — bank bhi wapas nahi la sakta. Unknown IDs pe bade amounts scam ka #1 method hai. Pehle call karke confirm kar.');
+N('p2p_large_unknown','rajan','LOW','अनजान आदमी को आठ हज़ार पाँच सौ — वापस नहीं आएगा।');
+N('p2p_large_unknown','rajan','MEDIUM','भाऊ, ये UPI ID पहली बार है, जानते नहीं किसकी। आठ हज़ार पाँच सौ भेज दिए तो वापस नहीं। पहले पता करो।');
+N('p2p_large_unknown','rajan','HIGH','भाऊ, सुनो ध्यान से — ये UPI ID तुम्हारी लिस्ट में नहीं है, पहली बार है। आठ हज़ार पाँच सौ बहुत पैसा है। एक बार भेज दिया तो बैंक भी वापस नहीं कर सकता। अनजान लोगों को पैसे भेजना — ऐसे ही ठगी होती है। पहले फोन करो, पूछो, पक्का करो।');
+N('p2p_large_unknown','sunita','LOW','अनजान नंबर है, साढ़े आठ हज़ार वापस नहीं आएगा।');
+N('p2p_large_unknown','sunita','MEDIUM','दीदी, ये नंबर पहचान का नहीं। साढ़े आठ हज़ार भेजोगी तो वापस नहीं मिलेगा। पहले पूछ लो।');
+N('p2p_large_unknown','sunita','HIGH','दीदी, रुको — ये नंबर तुम्हारी लिस्ट में नहीं है। पहली बार भेज रही हो। साढ़े आठ हज़ार बहुत पैसा है। एक बार भेज दिया तो वापस नहीं। ठगी ऐसे ही होती है। पहले किसी से पूछो, फोन करो, तब भेजो।');
+
+N('collect_unknown','arjun','LOW','Collect request — TERE account se katega! Decline kar.');
+N('collect_unknown','arjun','MEDIUM','Yeh collect request hai unknown ID se. Approve karega toh ₹15K tere account se cut hoga. UPI fraud #1 method. Decline.');
+N('collect_unknown','arjun','HIGH','Listen — yeh COLLECT request hai, approve karoge toh ₹15,000 leave YOUR account. Unknown sender "fraud_alert99". #1 UPI fraud method — scammers pretend they\'re sending money but actually take FROM you. Irrevocable. Decline immediately.');
+N('collect_unknown','rajan','LOW','खतरा! तुम्हारे खाते से पैसे काटेगा। मना करो।');
+N('collect_unknown','rajan','MEDIUM','भाऊ, collect request है — तुम्हारे खाते से पंद्रह हज़ार कटेगा! अनजान है। ठगी का तरीका। मना करो।');
+N('collect_unknown','rajan','HIGH','भाऊ, ध्यान से — collect request है। हाँ कहोगे तो पंद्रह हज़ार तुम्हारे खाते से कट जाएँगे। ये पैसे नहीं भेज रहा — तुमसे माँग रहा है। "fraud_alert99" — अनजान है। UPI ठगी का सबसे बड़ा तरीका। बिल्कुल approve मत करो।');
+N('collect_unknown','sunita','LOW','दीदी ये तुम्हारा पैसा काटेगा! मना करो!');
+N('collect_unknown','sunita','MEDIUM','दीदी, collect request है — खाते से पंद्रह हज़ार कटेगा! अनजान है। ठगी है। मना करो।');
+N('collect_unknown','sunita','HIGH','दीदी, ध्यान से सुनो — ये पैसे भेजने वाला नहीं है। Collect request है — okay बोलोगी तो खाते से पंद्रह हज़ार चले जाएँगे। अनजान है। ऐसे ही ठगी होती है। बिल्कुल हाँ मत बोलो।');
+
+N('beneficiary_add','arjun','LOW','New beneficiary — future transfers skip verification.');
+N('beneficiary_add','arjun','MEDIUM','"Unknown Trader" add karne se future transfers bina verification. Naam sketchy — verify kar.');
+N('beneficiary_add','arjun','HIGH','Bro, beneficiary add kiya toh next time transfers direct without re-verification. "Unknown Trader" naam sketchy hai. Fraud account hai toh fast lane bana raha hai paise udaane ka. Details match kara le.');
+N('beneficiary_add','rajan','LOW','नया बेनिफिशियरी — आगे बिना जाँच पैसे जाएँगे।');
+N('beneficiary_add','rajan','MEDIUM','भाऊ, जोड़ दोगे तो अगली बार बिना वेरिफिकेशन पैसे जाएँगे। "Unknown Trader" — पक्का करो कौन है।');
+N('beneficiary_add','rajan','HIGH','भाऊ, "Unknown Trader" नाम से बेनिफिशियरी जोड़ रहे हो। जोड़ दिया तो आगे बिना जाँच सीधे पैसे भेज सकोगे। गलत अकाउंट है तो रास्ता खोल रहे हो। पहले नंबर मिलाओ, नाम पूछो, तब जोड़ो।');
+N('beneficiary_add','sunita','LOW','नया नाम जुड़ेगा — आगे बिना पूछे पैसे जाएँगे।');
+N('beneficiary_add','sunita','MEDIUM','दीदी, जोड़ दोगी तो अगली बार सीधे पैसे जाएँगे। "Unknown Trader" — पता करो कौन है।');
+N('beneficiary_add','sunita','HIGH','दीदी, नया नाम जोड़ रही हो — "Unknown Trader"। जोड़ दिया तो अगली बार बिना जाँच सीधे पैसे भेज सकती हो। गलत अकाउंट है तो दिक्कत। पहले पूछो कौन है, तब जोड़ो।');
+
+N('nach_mandate','arjun','LOW','3yr auto-debit ₹25K/month — irrevocable. Think twice.');
+N('nach_mandate','arjun','MEDIUM','3 year NACH mandate. ₹25K/month auto-debit — total ₹9L exposure. Irrevocable, rok nahi sakta easily.');
+N('nach_mandate','arjun','HIGH','Dude, NACH mandate — 3 saal har mahine ₹25,000 tak automatic kat sakta hai. Total ₹9,00,000 exposure. Irrevocable — band karna hai toh formal dispute. QuickLoan NBFC ko 36 months blanket permission. EMI miss = penalties. Soch ke kar.');
+N('nach_mandate','rajan','LOW','3 साल, हर महीने 25 हज़ार — रोक नहीं पाओगे।');
+N('nach_mandate','rajan','MEDIUM','भाऊ, mandate — 3 साल हर महीने 25 हज़ार तक अपने-आप। बीच में बंद करना मुश्किल। कुल 9 लाख।');
+N('nach_mandate','rajan','HIGH','भाऊ, बहुत बड़ा फैसला। NACH mandate — 36 महीने हर महीने 25 हज़ार तक अपने-आप कटेगा। कोई नहीं पूछेगा। कुल 9 लाख। एक बार sign कर दिया तो रोकना बहुत मुश्किल — शिकायत दर्ज करनी पड़ेगी।');
+N('nach_mandate','sunita','LOW','3 साल हर महीने 25 हज़ार कटेगा — बंद नहीं होगा।');
+N('nach_mandate','sunita','MEDIUM','दीदी, sign करोगी तो 3 साल हर महीने 25 हज़ार तक अपने-आप। रोकना मुश्किल। 9 लाख तक।');
+N('nach_mandate','sunita','HIGH','दीदी, बहुत ज़रूरी — mandate है, 3 साल हर महीने 25 हज़ार तक अपने-आप कटेगा। कोई नहीं पूछेगा। कुल 9 लाख। एक बार sign किया तो बंद करना बहुत मुश्किल। सोच लो, किसी से पूछो।');
+
+N('autopay','arjun','LOW','₹599/month autopay — no PIN after first time.');
+N('autopay','arjun','MEDIUM','AutoPay = ₹599 har month bina PIN ke katega. Cancel settings se karna padega. Bhul gaya toh silently charge.');
+N('autopay','arjun','HIGH','Bro, AutoPay — pehli baar PIN, uske baad har month ₹599 automatically bina confirmation. StreamFlix band kiya but AutoPay cancel nahi kiya toh silently charge. Cancel karna manually UPI settings se. Forget it = lose money.');
+N('autopay','rajan','LOW','599 हर महीने बिना पूछे कट जाएगा।');
+N('autopay','rajan','MEDIUM','भाऊ, चालू किया तो 599 हर महीने अपने-आप, बिना PIN। बंद करने settings में जाना पड़ेगा। भूल गए तो कटता रहेगा।');
+N('autopay','rajan','HIGH','भाऊ, AutoPay — एक बार चालू किया तो हर महीने 599 बिना पूछे कटेगा। PIN नहीं माँगेगा। देखना बंद किया लेकिन AutoPay बंद नहीं किया तो कटता रहेगा। बंद करने UPI settings में जाना पड़ेगा — खुद-ब-खुद नहीं होता।');
+N('autopay','sunita','LOW','हर महीने 599 बिना पूछे कट जाएगा।');
+N('autopay','sunita','MEDIUM','दीदी, चालू करोगी तो हर महीने 599 अपने-आप। कोई नहीं पूछेगा। बंद करना settings में।');
+N('autopay','sunita','HIGH','दीदी, AutoPay — हाँ बोलोगी तो हर महीने 599 अपने-आप। कोई message नहीं, PIN नहीं। App बंद किया लेकिन AutoPay बंद नहीं किया तो कटता रहेगा। बंद करने settings में जाना पड़ेगा — किसी से मदद लो।');
+
+N('ekyc','arjun','LOW','Full Aadhaar data shared permanently — irrevocable.');
+N('ekyc','arjun','MEDIUM','eKYC = naam, address, photo, DOB, Aadhaar — sab permanently share. Irrevocable, wapas nahi. Privacy policy pe depend.');
+N('ekyc','arjun','HIGH','Bro, eKYC = poori identity — name, address, photo, DOB, Aadhaar number. Ek baar share toh IRREVOCABLE. Data breach hua toh identity permanently exposed. Genuinely zaroorat hai toh kar, otherwise skip.');
+N('ekyc','rajan','LOW','आधार से सब जानकारी जाएगी — वापस नहीं।');
+N('ekyc','rajan','MEDIUM','भाऊ, eKYC — आधार से नाम, पता, फोटो, जन्मतिथि सब कंपनी को। वापस नहीं ले सकते।');
+N('ekyc','rajan','HIGH','भाऊ, eKYC — आधार से सारी जानकारी। नाम, पता, फोटो, जन्मतिथि, आधार नंबर — सब कंपनी के पास। एक बार दिया तो वापस नहीं, कभी नहीं। कंपनी मर्ज़ी से इस्तेमाल कर सकती है। ज़रूरत नहीं तो मत दो।');
+N('ekyc','sunita','LOW','आधार की सारी जानकारी जाएगी — वापस नहीं।');
+N('ekyc','sunita','MEDIUM','दीदी, eKYC से नाम, पता, फोटो, आधार नंबर — सब कंपनी को। एक बार दिया तो वापस नहीं।');
+N('ekyc','sunita','HIGH','दीदी, eKYC — आधार से सारी जानकारी कंपनी को। नाम, पता, फोटो, जन्मतिथि, आधार नंबर। एक बार दिया तो कभी वापस नहीं। कंपनी कैसे भी इस्तेमाल कर सकती है। ज़रूरत नहीं तो मत दो — किसी से पूछो।');
+
+N('credit_line','arjun','LOW','₹50K loan at 18% — EMI auto-debit, hits CIBIL.');
+N('credit_line','arjun','MEDIUM','This is a LOAN not free money. ₹50K at 18%, EMI auto-debit. Late = ₹500 penalty. CIBIL impact.');
+N('credit_line','arjun','HIGH','"Pre-approved credit" = loan. ₹50K at 18% from QuickCash NBFC. EMI har month auto-debit. Miss kiya toh ₹500 penalty + interest. Credit bureau report — CIBIL affected. Default kiya toh future loans mushkil. Karz hai, free paisa nahi.');
+N('credit_line','rajan','LOW','कर्ज है — 50 हज़ार, 18% ब्याज, CIBIL पर असर।');
+N('credit_line','rajan','MEDIUM','भाऊ, मुफ्त नहीं — कर्ज। 50 हज़ार, 18% ब्याज। EMI अपने-आप कटेगी। लेट = 500 पेनल्टी। CIBIL पर असर।');
+N('credit_line','rajan','HIGH','भाऊ, "प्री-अप्रूव्ड" लिखा है लेकिन कर्ज है। 50 हज़ार, 18% ब्याज। हर महीने EMI अपने-आप कटेगी। एक EMI लेट तो 500 पेनल्टी और ब्याज। CIBIL में जाएगा — आगे लोन नहीं मिलेगा। मुफ्त नहीं, कर्ज है।');
+N('credit_line','sunita','LOW','कर्ज है — 50 हज़ार, ब्याज लगेगा।');
+N('credit_line','sunita','MEDIUM','दीदी, फ्री नहीं — कर्ज। 50 हज़ार, 18% ब्याज। EMI हर महीने कटेगी। लेट = 500 पेनल्टी।');
+N('credit_line','sunita','HIGH','दीदी, "प्री-अप्रूव्ड" लिखा लेकिन कर्ज है। 50 हज़ार, ब्याज 18%। EMI अपने-आप कटेगी। लेट हुई तो 500 पेनल्टी। CIBIL में जाएगा — आगे लोन लेना मुश्किल। सोच-समझ कर, किसी से सलाह लो।');
+
+N('token_lock','arjun','LOW','Land token locked 180 days — no sell/transfer/collateral.');
+N('token_lock','arjun','MEDIUM','Land token 180 din freeze. No selling, transfer, collateral. Irrevocable — 6 months kuch nahi kar sakta.');
+N('token_lock','arjun','HIGH','Bro, Finternet token lock — land parcel #LPT-4421 180 days frozen. 6 months na bech, na transfer, na collateral. Irrevocable — koi circumstance ho, undo nahi hoga. Unified ledger pe permanently register. Emergency mein bhi asset inaccessible.');
+N('token_lock','rajan','LOW','ज़मीन 180 दिन लॉक — न बेच सकोगे, न गिरवी।');
+N('token_lock','rajan','MEDIUM','भाऊ, ज़मीन का टोकन 180 दिन लॉक। न बेच सकते, न दे सकते, न गिरवी। 6 महीने कुछ नहीं।');
+N('token_lock','rajan','HIGH','भाऊ, बहुत बड़ा फैसला — ज़मीन का टोकन 180 दिन, 6 महीने पूरी तरह बंद। न बेच सकते, न ट्रांसफर, न गिरवी। एक बार लॉक तो 6 महीने पहले नहीं खुलेगा — कोई मजबूरी हो। Finternet लेजर पर हमेशा के लिए दर्ज।');
+N('token_lock','sunita','LOW','ज़मीन 6 महीने बंद — कुछ नहीं कर सकती।');
+N('token_lock','sunita','MEDIUM','दीदी, ज़मीन का टोकन 6 महीने बंद। न बेच सकती, न दे सकती, न गिरवी। बीच में नहीं खुलेगा।');
+N('token_lock','sunita','HIGH','दीदी, बहुत बड़ी बात — ज़मीन का टोकन 180 दिन पूरी तरह बंद। न बेच सकती, न दे सकती, न लोन के लिए रख सकती। बंद हुआ तो नहीं खुलेगा — चाहे कितनी ज़रूरत हो। सोच लो, किसी से पूछो।');
+
+N('aadhaar_sign','arjun','LOW','Legal e-sign on property agreement — irrevocable, court-valid.');
+N('aadhaar_sign','arjun','MEDIUM','LEGAL signature. Aadhaar e-Sign on Property Sale Agreement — equivalent to physical. IT Act 2000. Court valid. Irrevocable. Read it.');
+N('aadhaar_sign','arjun','HIGH','Dude, Aadhaar se Property Sale Agreement sign. Legally binding = physical signature. IT Act 2000 enforceable — court mein challenge nearly impossible. Aadhaar permanently linked. Irrevocable. Fraud ya galat details toh legally bound. Poora document padh, lawyer se baat kar.');
+N('aadhaar_sign','rajan','LOW','कानूनी हस्ताक्षर — कोर्ट में मान्य, वापस नहीं।');
+N('aadhaar_sign','rajan','MEDIUM','भाऊ, आधार से डिजिटल हस्ताक्षर — कागज़ पर sign जैसा। Property Sale Agreement। कोर्ट में मान्य। वापस नहीं।');
+N('aadhaar_sign','rajan','HIGH','भाऊ, बहुत गंभीर — आधार से डिजिटल हस्ताक्षर, कागज़ पर हाथ से sign जैसा। ज़मीन बेचने का काग़ज़। कोर्ट में मान्य, IT Act 2000। वापस नहीं ले सकते। आधार हमेशा के लिए जुड़ जाएगा। पूरा काग़ज़ पढ़ो, वकील से बात करो।');
+N('aadhaar_sign','sunita','LOW','हस्ताक्षर है — कोर्ट में चलेगा, वापस नहीं।');
+N('aadhaar_sign','sunita','MEDIUM','दीदी, आधार से sign — कागज़ पर sign जैसा। ज़मीन का काग़ज़। कोर्ट में मान्य। वापस नहीं।');
+N('aadhaar_sign','sunita','HIGH','दीदी, बहुत बड़ी बात — आधार से sign। कागज़ पर हाथ से sign जैसा। ज़मीन बेचने का काग़ज़। कोर्ट में मान्य, कानूनी। वापस नहीं ले सकती। पूरा पढ़ो, किसी को दिखाओ, वकील से बात करो — तब sign करो।');
+
+N('ondc','arjun','LOW','ONDC — no marketplace protection, seller handles disputes.');
+N('ondc','arjun','MEDIUM','ONDC pe order — Amazon/Flipkart nahi. Problem = directly seller se deal. Refund seller ki policy.');
+N('ondc','arjun','HIGH','Bro, ONDC open network — no centralized marketplace protection. KisanDirect Farm ₹450 order. Product kharab/missing toh dispute directly seller. Refund bhi seller policy. Small amount = low risk, but know the difference.');
+N('ondc','rajan','LOW','ONDC — दिक्कत हुई तो seller से बात।');
+N('ondc','rajan','MEDIUM','भाऊ, ONDC — Amazon जैसा नहीं। दिक्कत = seller से सीधे। Refund seller की policy।');
+N('ondc','rajan','HIGH','भाऊ, ONDC — Amazon/Flipkart जैसा नहीं। KisanDirect Farm से 450 का ऑर्डर। सामान खराब/नहीं आया तो seller से बात। रिफंड seller की मर्ज़ी। रकम कम — चिंता कम, लेकिन जानकर रखो।');
+N('ondc','sunita','LOW','ONDC — दिक्कत हुई तो दुकानदार से बात।');
+N('ondc','sunita','MEDIUM','दीदी, ONDC — Amazon जैसा नहीं। दिक्कत = दुकानदार से सीधे।');
+N('ondc','sunita','HIGH','दीदी, ONDC — Amazon/Flipkart जैसा नहीं। KisanDirect Farm से 450 का सामान। नहीं आया/खराब तो दुकानदार से बात। पैसे वापस — दुकानदार पर। रकम कम लेकिन जान लो।');
+
+// TTS
+const SPEAKERS=['anushka','abhilash','manisha','vidya','arya','karun','hitesh'];
+S.speaker=SPEAKERS[Math.floor(Math.random()*SPEAKERS.length)];
+function getActx(){if(!S.actx)S.actx=new(window.AudioContext||window.webkitAudioContext)();return S.actx;}
+let currentSource=null,stopFlag=false;
+
+function chunkText(text,max=200){const parts=text.match(/[^।\.!\?]+[।\.!\?]*/g)||[text];const out=[];let cur='';for(const s of parts){if(cur.length+s.length>max&&cur){out.push(cur.trim());cur=s;}else cur+=' '+s;}if(cur.trim())out.push(cur.trim());return out.filter(c=>c.length>0);}
+
+async function fetchAndDecode(text,speaker,ngrok){const langMap={hi:'hi-IN',en:'en-IN',kn:'kn-IN',ta:'ta-IN'};const r=await fetch(ngrok+'/api/tts',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'},body:JSON.stringify({text,language:langMap[S.ttsLang]||'hi-IN',speaker})});if(!r.ok)throw new Error('TTS '+r.status);const data=await r.json();if(!data.data_uri)throw new Error('No audio');const ctx=getActx();await ctx.resume();const b64=data.data_uri.split(',')[1];const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return ctx.decodeAudioData(bytes.buffer);}
+
+function playBuffer(buf){return new Promise(resolve=>{const ctx=getActx(),src=ctx.createBufferSource();src.buffer=buf;src.connect(ctx.destination);currentSource=src;src.onended=()=>{currentSource=null;resolve();};src.start();});}
+
+function stopPlayback(){stopFlag=true;if(currentSource){try{currentSource.stop();}catch(e){}currentSource=null;}S.playing=false;updatePlayBtn();}
+
+async function quickPlay(text,btnEl){if(!S.ngrokUrl){alert('ngrok not available — start demo server.');return;}if(S.playing){stopPlayback();return;}const ctx=getActx();await ctx.resume();S.playing=true;btnEl.textContent='⏸';try{const buf=await fetchAndDecode(text,S.speaker,S.ngrokUrl);if(!S.playing)return;await playBuffer(buf);}catch(e){console.error('Quick play',e);}S.playing=false;btnEl.textContent='▶';}
+
+async function sheetPlay(){const scriptEl=document.getElementById('sheetScript');const text=scriptEl.textContent;if(!text||text.startsWith('Select'))return;if(!S.ngrokUrl){alert('ngrok not available.');return;}if(S.playing){stopPlayback();return;}const ctx=getActx();await ctx.resume();S.playing=true;stopFlag=false;updatePlayBtn();const chunks=chunkText(text);const progress=document.getElementById('sheetProgress');let buffers=new Array(chunks.length).fill(null);const pf0=fetchAndDecode(chunks[0],S.speaker,S.ngrokUrl).then(b=>buffers[0]=b).catch(()=>null);if(chunks.length>1)fetchAndDecode(chunks[1],S.speaker,S.ngrokUrl).then(b=>buffers[1]=b).catch(()=>null);await pf0;for(let i=0;i<chunks.length;i++){if(stopFlag)break;progress.textContent=(i+1)+'/'+chunks.length+' bol raha hai...';if(i+2<chunks.length&&!buffers[i+2])fetchAndDecode(chunks[i+2],S.speaker,S.ngrokUrl).then(b=>buffers[i+2]=b).catch(()=>null);if(!buffers[i]){try{buffers[i]=await fetchAndDecode(chunks[i],S.speaker,S.ngrokUrl);}catch(e){continue;}}if(stopFlag)break;await playBuffer(buffers[i]);}S.playing=false;stopFlag=false;progress.textContent='';updatePlayBtn();}
+
+function updatePlayBtn(){document.getElementById('sheetPlay').textContent=S.playing?'⏹ Stop':'▶ Play';}
+
+// RENDER HELPERS
+function matColor(m){return[null,'var(--L1)','var(--L2)','var(--L3)','var(--L4)'][m]||'#888';}
+function matLabel(m){return'L'+m;}
+function riskColor(r){return{none:'#aaa',low:'var(--L1)',medium:'var(--L3)',high:'var(--L4)',critical:'#8b0000'}[r]||'#888';}
+function escapeAttr(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');}
+
+function renderHeatmap(){const el=document.getElementById('heatmap');const maxD=Math.max(...JOURNEYS.map(j=>j.density));let html='',drawnLine=false;for(let i=0;i<JOURNEYS.length;i++){const j=JOURNEYS[i];if(!drawnLine&&j.density<THRESHOLD){html+='<div class="threshold-line"><span class="threshold-label">threshold 0.15</span></div>';drawnLine=true;}const pct=maxD>0?(j.density/maxD*100):0;const cp=j.density>=THRESHOLD;html+='<div class="hm-row"><span class="hm-name" onclick="selectJourney(\''+j.id+'\')">'+j.name+'</span><span class="hm-mat" style="background:'+matColor(j.mat)+'">'+matLabel(j.mat)+'</span><div class="hm-bar-wrap"><div class="hm-bar" style="width:'+pct+'%;background:'+matColor(j.mat)+'"></div></div><span class="hm-count">'+j.dplTerms.length+'</span>';if(cp)html+='<button class="hm-play can-play" onclick="quickPlay(\''+escapeAttr(j.sample)+'\',this)">▶</button>';else html+='<span class="hm-play no-play">—</span>';html+='</div>';}if(!drawnLine)html+='<div class="threshold-line"><span class="threshold-label">threshold 0.15</span></div>';el.innerHTML=html;}
+
+function renderBreakdown(j){document.getElementById('breakdownTitle').textContent=j.name;let txt=j.screen;const sorted=[...j.dplTerms].sort((a,b)=>b.matched.length-a.matched.length);const bgMap={'var(--L1)':'#d5f5e3','var(--L2)':'#d6eaf8','var(--L3)':'#fdebd0','var(--L4)':'#fadbd8'};for(const t of sorted){const re=new RegExp('('+t.matched.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');const bg=bgMap[matColor(t.mat)]||'#eee';txt=txt.replace(re,'<span class="dpl" style="background:'+bg+'">$1</span>');}document.getElementById('screenTextBox').innerHTML=txt;let chips='';for(const t of j.dplTerms)chips+='<span class="chip" style="background:'+matColor(t.mat)+'">'+t.term+' <small>('+t.cat+')</small></span>';document.getElementById('dplChips').innerHTML=chips;document.getElementById('statDens').textContent=j.density.toFixed(3);document.getElementById('statMat').textContent=matLabel(j.mat);}
+
+function renderPredictor(j){const screen=document.getElementById('phoneScreen');let html='<div class="upi-header"><span class="back">←</span> '+j.upiTitle+'</div><div class="upi-body">';for(const f of j.fields)html+='<div class="upi-field"><label>'+f.label+'</label><div class="val">'+f.value+'</div></div>';if(j.mat>=3){const bgc=j.mat===4?'#fadbd8':'#fdebd0';const txtc=j.mat===4?'#922':'#7d5a00';html+='<div class="upi-warn" style="background:'+bgc+';color:'+txtc+'">⚠ DPL: '+j.density.toFixed(3)+' — '+matLabel(j.mat)+'</div>';}html+='<div class="upi-actions">';for(const a of j.actions)html+='<button class="upi-btn '+a.type+'" onclick="showConsequence(\''+j.id+'\',\''+a.type+'\')">'+a.label+'</button>';html+='</div></div>';screen.innerHTML=html;document.getElementById('conseqPanel').classList.remove('show');}
+
+function showConsequence(jid,atype){const j=JOURNEYS.find(x=>x.id===jid),a=j.actions.find(x=>x.type===atype);const panel=document.getElementById('conseqPanel'),inner=document.getElementById('conseqInner');inner.innerHTML='<span class="risk-tag" style="background:'+riskColor(a.risk)+'">'+a.risk.toUpperCase()+'</span><p style="font-size:.78rem;line-height:1.5;margin-top:6px">'+a.consequence+'</p>';panel.classList.add('show');}
+
+function renderDecoder(j){if(!j||j.density<THRESHOLD){document.getElementById('narrationOut').innerHTML='<div class="narration-box no-content">No narration needed — density '+(j?j.density.toFixed(3):'0')+' below 0.15.</div>';document.getElementById('wordCount').textContent='';return;}const key=j.id+'|'+S.persona+'|'+S.verbosity;const text=NR[key]||'Template not available.';const words=text.split(/\s+/).length;document.getElementById('narrationOut').innerHTML='<div class="narration-box has-content">'+text+'</div>';document.getElementById('wordCount').textContent=words+' words · '+S.persona+' · '+S.verbosity;document.getElementById('sheetScript').textContent=text;}
+
+function renderJourneyPills(id){const el=document.getElementById(id);if(!el)return;let h='';for(const j of JOURNEYS){const c=(S.selectedJourney&&S.selectedJourney.id===j.id)?'pill active':'pill';h+='<button class="'+c+'" onclick="selectJourney(\''+j.id+'\')">'+j.name+'</button>';}el.innerHTML=h;}
+function renderPersonaPills(){const el=document.getElementById('personaPills');let h='';[{id:'arjun',l:'Arjun (GenZ)'},{id:'rajan',l:'Rajan (Farmer)'},{id:'sunita',l:'Sunita (Migrant)'}].forEach(p=>{h+='<button class="pill '+(S.persona===p.id?'active':'')+'" onclick="setPersona(\''+p.id+'\')">'+p.l+'</button>';});el.innerHTML=h;}
+function renderVerbPills(){const el=document.getElementById('verbPills');let h='';['LOW','MEDIUM','HIGH'].forEach(v=>{h+='<button class="pill '+(S.verbosity===v?'active':'')+'" onclick="setVerbosity(\''+v+'\')">'+v+'</button>';});el.innerHTML=h;}
+function renderLangPills(){const el=document.getElementById('langPills');let h='';[{id:'hi',l:'हि Hindi'},{id:'en',l:'EN Eng'},{id:'kn',l:'ಕ Kan'},{id:'ta',l:'த Tam'}].forEach(l=>{h+='<button class="pill '+(S.ttsLang===l.id?'active':'')+'" onclick="setLang(\''+l.id+'\')">'+l.l+'</button>';});el.innerHTML=h;}
+
+// ACTIONS
+function selectJourney(id){const j=JOURNEYS.find(x=>x.id===id);if(!j)return;S.selectedJourney=j;renderBreakdown(j);renderJourneyPills('breakdownPills');renderJourneyPills('klhJourneyPills');renderPredictor(j);renderDecoder(j);}
+function setPersona(p){S.persona=p;renderPersonaPills();updateSidebarConfig();if(S.selectedJourney)renderDecoder(S.selectedJourney);}
+function setVerbosity(v){S.verbosity=v;renderVerbPills();updateSidebarConfig();if(S.selectedJourney)renderDecoder(S.selectedJourney);}
+function setLang(l){S.ttsLang=l;renderLangPills();if(S.selectedJourney&&S.ngrokUrl&&S.selectedJourney.density>=THRESHOLD){const ln={hi:'Hindi',en:'English',kn:'Kannada',ta:'Tamil'};const pp={arjun:'GenZ, Hinglish, casual',rajan:'Farmer, Hindi, grade 4, Vidarbha',sunita:'Migrant, colloquial Hindi, simple'};fetch(S.ngrokUrl+'/api/klh-script',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'},body:JSON.stringify({screen_content:S.selectedJourney.screen,persona_profile:pp[S.persona],language:ln[l],verbosity:S.verbosity})}).then(r=>r.json()).then(d=>{if(d.script)document.getElementById('sheetScript').textContent=d.script;}).catch(()=>{});}}
+
+// TABS
+document.querySelectorAll('.tab-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));btn.classList.add('active');document.getElementById('tab-'+btn.dataset.tab).classList.add('active');});});
+
+// SHEET
+document.getElementById('fabBtn').addEventListener('click',()=>{document.getElementById('sheetOverlay').classList.add('open');document.getElementById('sheet').classList.add('open');});
+function closeSheet(){document.getElementById('sheetOverlay').classList.remove('open');document.getElementById('sheet').classList.remove('open');}
+document.getElementById('sheetClose').addEventListener('click',closeSheet);
+document.getElementById('sheetOverlay').addEventListener('click',closeSheet);
+document.getElementById('sheetPlay').addEventListener('click',sheetPlay);
+
+// INIT
+function init(){
+  document.getElementById('dplCount').textContent=DPL.length;
+  renderHeatmap();renderJourneyPills('breakdownPills');renderJourneyPills('klhJourneyPills');
+  renderPersonaPills();renderVerbPills();renderLangPills();
+  document.getElementById('statNarr').textContent=aboveThreshold.length;
+  updateSidebarConfig();
+  const obs=new MutationObserver(()=>{const t=document.getElementById('sheetScript').textContent;document.getElementById('sheetPlay').disabled=!t||t.startsWith('Select')||t.includes('not available');});
+  obs.observe(document.getElementById('sheetScript'),{childList:true,characterData:true,subtree:true});
+  selectJourney(JOURNEYS[0].id);
+  loadConfig();subscribeRealtime();
+}
+init();
+</script>
+</body>
+</html>

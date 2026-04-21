@@ -865,7 +865,7 @@ async function generateAndSetKLH(screenContent) {
       body: JSON.stringify({
         screen_content: screenContent,
         persona_profile: persona().profile,
-        language: lang(),
+        language: ({'hi':'Hindi — USE DEVANAGARI SCRIPT ONLY, never Roman/Latin','en':'English','kn':'Kannada — USE KANNADA SCRIPT ONLY','ta':'Tamil — USE TAMIL SCRIPT ONLY'})[lang()]||'Hindi — USE DEVANAGARI SCRIPT ONLY',
         verbosity: S.config.klh_verbosity || 'MEDIUM'
       })
     });
@@ -1015,10 +1015,11 @@ async function startPlayback() {
 }
 
 async function fetchAndDecode(text, speaker) {
+  const langMap = {hi:'hi-IN',en:'en-IN',kn:'kn-IN',ta:'ta-IN'};
   const r = await fetch('/api/tts', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ text, language: S.ttsLang, speaker })
+    body: JSON.stringify({ text, language: langMap[S.ttsLang]||'hi-IN', speaker })
   });
   if (!r.ok) throw new Error('TTS ' + r.status);
   const data = await r.json();

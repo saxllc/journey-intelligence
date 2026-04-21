@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node demo/server.js)",
+      "Bash(curl -s http://localhost:3000/api/classify -X POST -H \"Content-Type: application/json\" -d '{\"type\":\"navigate\"}')",
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(node -e \"require\\('dotenv'\\).config\\(\\); const Anthropic = require\\('@anthropic-ai/sdk'\\); const client = new Anthropic\\({apiKey: process.env.ANTHROPIC_API_KEY}\\); client.messages.create\\({model: 'claude-sonnet-4-5', max_tokens: 10, messages: [{role: 'user', content: 'hi'}]}\\).then\\(r => console.log\\('SUCCESS'\\)\\).catch\\(e => console.log\\('ERROR', e.status, e.message\\)\\)\")",
+      "Bash(curl -s http://localhost:3000/api/rhetorical -X POST -H \"Content-Type: application/json\" -d '{\"step\":{\"id\":\"test\",\"type\":\"navigate\",\"title\":\"Test\"},\"context\":{\"language\":\"en\",\"materiality\":\"NAVIGATIONAL\"}}')",
+      "Bash(node -e \"require\\('dotenv'\\).config\\(\\); const Anthropic = require\\('@anthropic-ai/sdk'\\); console.log\\('key:', process.env.ANTHROPIC_API_KEY?.slice\\(0,20\\)\\); const client = new Anthropic\\(\\); client.messages.create\\({model: 'claude-sonnet-4-5', max_tokens: 10, messages: [{role: 'user', content: 'hi'}]}\\).then\\(r => console.log\\('SUCCESS'\\)\\).catch\\(e => console.log\\('FAIL', e.status, e.message\\)\\)\")",
+      "Bash(node -e ':*)",
+      "Read(//tmp/**)",
+      "Bash(taskkill /F /PID 25620)",
+      "Bash(netstat -ano)",
+      "Bash(cmd.exe /c \"taskkill /F /PID 25620\")",
+      "Bash(cmd.exe:*)",
+      "Bash(ls:*)",
+      "Bash(curl -s http://localhost:3000/api/debug-key)",
+      "Bash(curl -s -X POST http://localhost:3000/api/debug-key)",
+      "Bash(echo \"EXIT: $?\")"
+    ]
+  }
+}

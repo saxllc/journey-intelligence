@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Applicationator — Configurator</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#0f0f1a;color:#e0e0e0;min-height:100vh}
+.layout{display:grid;grid-template-columns:220px 1fr 260px;min-height:100vh}
+.topnav{display:none;grid-column:1/-1;background:#1a1a2e;border-bottom:1px solid #2a2a4a;padding:12px 16px;align-items:center;gap:12px}
+.topnav-logo{font-size:13px;font-weight:700;color:#7c7cff;letter-spacing:2px;text-transform:uppercase}
+.topnav-menu{margin-left:auto;background:none;border:1px solid #2a2a4a;color:#aaa;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px}
+.sidebar{background:#1a1a2e;padding:20px 14px;display:flex;flex-direction:column;gap:6px;border-right:1px solid #2a2a4a}
+.sidebar-logo{font-size:12px;font-weight:700;color:#7c7cff;letter-spacing:2px;text-transform:uppercase;padding:6px 10px 18px;border-bottom:1px solid #2a2a4a;margin-bottom:6px}
+.sidebar-label{font-size:10px;font-weight:600;color:#444;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;margin-top:6px}
+.nav-item{padding:9px 10px;border-radius:7px;font-size:13px;color:#888;cursor:pointer;transition:all .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-item:hover{background:#252545;color:#fff}
+.nav-item.active{background:#252565;color:#7c7cff;font-weight:600}
+.nav-item.dim{opacity:.35;cursor:not-allowed}
+.sidebar-spacer{flex:1}
+.main{padding:24px 28px;overflow-y:auto}
+.preview{background:#1a1a2e;border-left:1px solid #2a2a4a;padding:20px 16px;overflow-y:auto}
+.page-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:2px}
+.page-sub{font-size:12px;color:#555;margin-bottom:20px}
+.status-bar{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:10px;margin-bottom:20px;font-size:12px}
+.sdot{width:8px;height:8px;border-radius:50%;background:#444;flex-shrink:0}
+.sdot.on{background:#22c55e;box-shadow:0 0 6px #22c55e}
+.sdot.err{background:#ef4444}
+.sdot.warn{background:#f59e0b}
+.stext{color:#888;flex:1}
+.stime{color:#444;font-size:11px}
+.section{margin-bottom:22px}
+.sec-title{font-size:10px;font-weight:600;color:#444;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
+.svc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.svc-card{background:#0f0f1a;border:1px solid #2a2a4a;border-radius:10px;padding:11px 12px;display:flex;align-items:center;gap:10px}
+.svc-ico{font-size:18px;flex-shrink:0}
+.svc-info{flex:1;min-width:0}
+.svc-name{font-size:11px;font-weight:600;color:#ccc;margin-bottom:2px}
+.svc-status{font-size:10px;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.svc-dot{width:7px;height:7px;border-radius:50%;background:#444;flex-shrink:0}
+.svc-dot.on{background:#22c55e;box-shadow:0 0 5px #22c55e}
+.svc-dot.err{background:#ef4444}
+.svc-dot.checking{background:#f59e0b;animation:pulse .8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.btn-svc{flex:1;padding:10px;background:#1e1e38;border:1px solid #3a3a6a;border-radius:9px;color:#7c7cff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-svc:hover{background:#252565}
+.btn-svc:disabled{opacity:.5;cursor:not-allowed}
+.btn-svc.danger{color:#f87171;border-color:#5a2a2a;background:#1e1010}
+.btn-svc.danger:hover{background:#2e1010}
+.ngrok-row{display:flex;gap:8px}
+.ngrok-input{flex:1;background:#1a1a2e;border:1px solid #2a2a4a;border-radius:8px;padding:9px 12px;color:#fff;font-size:12px;font-family:'Inter',monospace;outline:none;transition:border .15s;min-width:0}
+.ngrok-input:focus{border-color:#7c7cff}
+.ngrok-input::placeholder{color:#333}
+.btn-small{padding:9px 14px;border-radius:8px;border:none;font-size:12px;font-weight:600;cursor:pointer;background:#252565;color:#7c7cff;transition:all .15s;white-space:nowrap;font-family:inherit}
+.btn-small:hover{background:#2a2a75}
+.persona-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pcard{background:#1a1a2e;border:2px solid #2a2a4a;border-radius:12px;padding:14px;cursor:pointer;transition:all .2s;position:relative}
+.pcard:hover{border-color:#7c7cff;background:#1e1e38}
+.pcard.selected{border-color:#7c7cff;background:#1e1e3f;box-shadow:0 0 0 1px #7c7cff33}
+.pcard.selected::after{content:'✓';position:absolute;top:10px;right:10px;width:18px;height:18px;background:#7c7cff;border-radius:50%;font-size:10px;color:#fff;line-height:18px;text-align:center}
+.p-emoji{font-size:24px;margin-bottom:6px}
+.p-name{font-size:12px;font-weight:700;color:#fff;margin-bottom:3px}
+.p-tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;margin-bottom:6px}
+.p-detail{font-size:10px;color:#555;line-height:1.6}
+.ctrl-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ctrl-group{display:flex;flex-direction:column;gap:5px}
+.ctrl-label{font-size:10px;color:#555;font-weight:500}
+.ctrl-select{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:8px;padding:8px 10px;color:#fff;font-size:12px;outline:none;cursor:pointer;transition:border .15s;font-family:inherit;width:100%}
+.ctrl-select:focus{border-color:#7c7cff}
+.lang-pills{display:flex;gap:6px;flex-wrap:wrap}
+.lpill{padding:6px 14px;border-radius:20px;border:1px solid #2a2a4a;background:#1a1a2e;color:#777;font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit}
+.lpill:hover{border-color:#7c7cff;color:#fff}
+.lpill.active{background:#7c7cff;border-color:#7c7cff;color:#fff;font-weight:600}
+.app-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.acard{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:9px;padding:10px;cursor:pointer;transition:all .15s;text-align:center}
+.acard:hover{border-color:#7c7cff}
+.acard.selected{border-color:#7c7cff;background:#1e1e3f}
+.a-icon{font-size:18px;margin-bottom:3px}
+.a-name{font-size:11px;color:#888}
+.acard.selected .a-name{color:#7c7cff;font-weight:600}
+.btn-save{width:100%;padding:13px;background:#7c7cff;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:6px;font-family:inherit}
+.btn-save:hover{background:#6060ff;transform:translateY(-1px)}
+.btn-save:active{transform:translateY(0)}
+.btn-save:disabled{background:#333;color:#555;cursor:not-allowed;transform:none}
+/* verbosity pills */
+.vb-pills{display:flex;gap:6px;margin-top:4px}
+.vb-pill{padding:5px 12px;border-radius:16px;border:1.5px solid #2a2a4a;background:#0f0f1a;color:#666;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+.vb-pill:hover{border-color:#7c7cff;color:#aaa}
+.vb-pill.active-low{background:#1e3a5f;border-color:#60a5fa;color:#60a5fa}
+.vb-pill.active-medium{background:#1e3a2a;border-color:#4ade80;color:#4ade80}
+.vb-pill.active-high{background:#3a1e1e;border-color:#f87171;color:#f87171}
+.preview-title{font-size:10px;font-weight:600;color:#444;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px}
+.pv-field{margin-bottom:10px}
+.pv-key{font-size:9px;color:#444;margin-bottom:2px;text-transform:uppercase;letter-spacing:1px}
+.pv-val{font-size:11px;color:#888;background:#0f0f1a;border-radius:6px;padding:5px 9px;word-break:break-all;font-family:monospace}
+.pv-val.hl{color:#7c7cff}
+.divider{border:none;border-top:1px solid #2a2a4a;margin:16px 0}
+.quick-btn{width:100%;margin-bottom:6px;padding:8px 10px;background:#0f0f1a;border:1px solid #2a2a4a;border-radius:8px;color:#888;font-size:11px;cursor:pointer;font-family:inherit;text-align:left;transition:all .15s}
+.quick-btn:hover{border-color:#7c7cff;color:#7c7cff}
+.toast{position:fixed;bottom:20px;right:20px;background:#22c55e;color:#fff;padding:10px 18px;border-radius:9px;font-size:12px;font-weight:600;opacity:0;transform:translateY(8px);transition:all .3s;z-index:200;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.err{background:#ef4444}
+.mob-drawer{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:300}
+.mob-drawer-bg{position:absolute;inset:0;background:rgba(0,0,0,.7)}
+.mob-drawer-panel{position:absolute;left:0;top:0;bottom:0;width:240px;background:#1a1a2e;padding:20px 14px;display:flex;flex-direction:column;gap:6px;overflow-y:auto}
+.mob-drawer.open{display:block}
+.hr{border:none;border-top:1px solid #2a2a4a;margin:20px 0}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .topnav{display:flex}
+  .preview{display:none}
+  .main{padding:16px}
+}
+@media(max-width:600px){
+  .ctrl-grid{grid-template-columns:1fr}
+  .svc-grid{grid-template-columns:1fr}
+  .persona-grid{grid-template-columns:1fr}
+  .ngrok-row{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <div class="topnav">
+    <div class="topnav-logo">⚙ Applicationator</div>
+    <button class="topnav-menu" onclick="openDrawer()">☰ Menu</button>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-logo">⚙ Applicationator</div>
+    <div class="sidebar-label">Tools</div>
+    <div class="nav-item active">🎛 Configurator</div>
+    <div class="nav-item dim">📱 App Preview</div>
+    <div class="nav-item dim">📋 App Briefs</div>
+    <div class="nav-item dim">📚 DPL Editor</div>
+    <div class="sidebar-spacer"></div>
+    <div class="sidebar-label">Open App</div>
+    <div class="nav-item" onclick="window.open('https://applicationator.vercel.app/finternet.html')">🌾 Finternet Demo</div>
+    <div class="nav-item" onclick="window.open('https://applicationator.vercel.app/index.html')">📲 index.html</div>
+    <div class="nav-item" onclick="window.open('https://supabase.com/dashboard')">🗄 Supabase</div>
+  </div>
+
+  <div class="main">
+    <div class="page-title">Configurator</div>
+    <div class="page-sub">Set persona + context. Changes push to mobile in real time.</div>
+
+    <div class="status-bar">
+      <div class="sdot" id="supa-dot"></div>
+      <div class="stext" id="supa-text">Connecting to Supabase...</div>
+      <div class="stime" id="supa-time"></div>
+    </div>
+
+    <!-- Services -->
+    <div class="section">
+      <div class="sec-title">🔌 Services</div>
+      <div class="svc-grid">
+        <div class="svc-card">
+          <div class="svc-ico">🌐</div>
+          <div class="svc-info"><div class="svc-name">Vercel</div><div class="svc-status">Always online</div></div>
+          <div class="svc-dot on"></div>
+        </div>
+        <div class="svc-card">
+          <div class="svc-ico">🗄</div>
+          <div class="svc-info"><div class="svc-name">Supabase</div><div class="svc-status" id="svc-supa-txt">Checking...</div></div>
+          <div class="svc-dot checking" id="svc-supa-dot"></div>
+        </div>
+        <div class="svc-card">
+          <div class="svc-ico">🔗</div>
+          <div class="svc-info"><div class="svc-name">ngrok Tunnel</div><div class="svc-status" id="svc-ngrok-txt">Not checked</div></div>
+          <div class="svc-dot" id="svc-ngrok-dot"></div>
+        </div>
+        <div class="svc-card">
+          <div class="svc-ico">⚙</div>
+          <div class="svc-info"><div class="svc-name">Express Server</div><div class="svc-status" id="svc-express-txt">Not checked</div></div>
+          <div class="svc-dot" id="svc-express-dot"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-svc" id="btn-ping" onclick="pingServices()">🔍 Check All Services</button>
+        <button class="btn-svc danger" id="btn-restart" onclick="restartServer()" disabled>↺ Restart Server</button>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <!-- ngrok -->
+    <div class="section">
+      <div class="sec-title">🔗 API Tunnel URL (ngrok)</div>
+      <div class="ngrok-row">
+        <input class="ngrok-input" id="ngrok-url" type="text" placeholder="https://xxxx.ngrok-free.app">
+        <button class="btn-small" onclick="saveNgrok()">Save URL</button>
+      </div>
+      <div style="font-size:10px;color:#333;margin-top:5px">Get from ngrok window. Update each session.</div>
+    </div>
+
+    <div class="hr"></div>
+
+    <!-- Persona -->
+    <div class="section">
+      <div class="sec-title">👤 User Persona</div>
+      <div class="persona-grid">
+        <div class="pcard" id="card-P1" onclick="selectPersona('P1')">
+          <div class="p-emoji">📱</div>
+          <div class="p-name">Mumbai GenZ</div>
+          <div><span class="p-tag" style="background:#1e3a5f;color:#60a5fa">P1</span></div>
+          <div class="p-detail">iPhone · 5G · Gestures<br>English · High agency</div>
+        </div>
+        <div class="pcard" id="card-P2" onclick="selectPersona('P2')">
+          <div class="p-emoji">👴</div>
+          <div class="p-name">Senior Citizen</div>
+          <div><span class="p-tag" style="background:#1e3a2a;color:#4ade80">P2</span></div>
+          <div class="p-detail">Android · 4G · Tap only<br>English + regional</div>
+        </div>
+        <div class="pcard" id="card-P3" onclick="selectPersona('P3')">
+          <div class="p-emoji">👩</div>
+          <div class="p-name">Migrant Worker</div>
+          <div><span class="p-tag" style="background:#3a1e1e;color:#f87171">P3</span></div>
+          <div class="p-detail">Android basic · 3G<br>Hindi colloquial</div>
+        </div>
+        <div class="pcard" id="card-P4" onclick="selectPersona('P4')">
+          <div class="p-emoji">👨🏾‍🌾</div>
+          <div class="p-name">Rajan, Farmer</div>
+          <div><span class="p-tag" style="background:#1e3530;color:#6ee7b7">P4</span></div>
+          <div class="p-detail">Android · 3G · Tap<br>Hindi · Vidarbha</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <!-- Language -->
+    <div class="section">
+      <div class="sec-title">🌐 Language</div>
+      <div class="lang-pills">
+        <button class="lpill active" data-lang="EN" onclick="selectLang(this,'EN')">EN English</button>
+        <button class="lpill" data-lang="HI" onclick="selectLang(this,'HI')">हि Hindi</button>
+        <button class="lpill" data-lang="KN" onclick="selectLang(this,'KN')">ಕ Kannada</button>
+        <button class="lpill" data-lang="TA" onclick="selectLang(this,'TA')">த Tamil</button>
+      </div>
+    </div>
+
+    <!-- Operational settings -->
+    <div class="section">
+      <div class="sec-title">⚙ Operational Settings</div>
+      <div class="ctrl-grid">
+        <div class="ctrl-group">
+          <div class="ctrl-label">Operational English Level</div>
+          <select class="ctrl-select" id="oe-level">
+            <option value="GRADE_4">Grade 4 (default)</option>
+            <option value="GRADE_8">Grade 8</option>
+            <option value="PROFESSIONAL">Professional</option>
+          </select>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">Digital Confidence</div>
+          <select class="ctrl-select" id="digital-confidence">
+            <option value="VERY_LOW">Very Low</option>
+            <option value="LOW">Low</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HIGH">High</option>
+          </select>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">Age Group</div>
+          <select class="ctrl-select" id="age-group">
+            <option value="18-25">18–25</option>
+            <option value="26-45">26–45</option>
+            <option value="46-60">46–60</option>
+            <option value="60+">60+</option>
+          </select>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">Literacy Level</div>
+          <select class="ctrl-select" id="literacy-level">
+            <option value="PRIMARY">Primary</option>
+            <option value="SECONDARY">Secondary</option>
+            <option value="GRADUATE">Graduate</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- KLH Verbosity -->
+    <div class="section">
+      <div class="sec-title">🎙 Kya Likha Hai Verbosity</div>
+      <div style="font-size:11px;color:#555;margin-bottom:8px">Controls how long the audio explanation is for the active persona.</div>
+      <div class="ctrl-grid" style="grid-template-columns:1fr">
+        <div class="ctrl-group">
+          <div class="ctrl-label">Verbosity Level</div>
+          <div class="vb-pills">
+            <button class="vb-pill" id="vb-LOW" onclick="selectVerbosity('LOW')">LOW · &lt;60 words</button>
+            <button class="vb-pill" id="vb-MEDIUM" onclick="selectVerbosity('MEDIUM')">MEDIUM · 60–100</button>
+            <button class="vb-pill" id="vb-HIGH" onclick="selectVerbosity('HIGH')">HIGH · 100–150</button>
+          </div>
+          <div style="font-size:10px;color:#444;margin-top:6px" id="vb-hint">Default per persona: P1=LOW, P2=MEDIUM, P3/P4=HIGH</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <!-- App selector -->
+    <div class="section">
+      <div class="sec-title">📲 Active App</div>
+      <div class="app-grid">
+        <div class="acard selected" id="app-finternet" onclick="selectApp('finternet',this)">
+          <div class="a-icon">🌾</div>
+          <div class="a-name">Finternet</div>
+        </div>
+        <div class="acard" id="app-ekyc" onclick="selectApp('ekyc',this)">
+          <div class="a-icon">🪪</div>
+          <div class="a-name">eKYC</div>
+        </div>
+        <div class="acard" id="app-upi" onclick="selectApp('upi',this)">
+          <div class="a-icon">💸</div>
+          <div class="a-name">UPI</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-save" id="btn-save" onclick="saveConfig()">
+      ⚡ Apply Configuration to Mobile
+    </button>
+    <div style="height:40px"></div>
+  </div>
+
+  <!-- Preview panel -->
+  <div class="preview">
+    <div class="preview-title">📡 Live Config</div>
+    <div class="pv-field"><div class="pv-key">Persona</div><div class="pv-val hl" id="pv-persona">—</div></div>
+    <div class="pv-field"><div class="pv-key">Language</div><div class="pv-val" id="pv-lang">EN</div></div>
+    <div class="pv-field"><div class="pv-key">OE Level</div><div class="pv-val" id="pv-oe">—</div></div>
+    <div class="pv-field"><div class="pv-key">Digital Confidence</div><div class="pv-val" id="pv-dc">—</div></div>
+    <div class="pv-field"><div class="pv-key">KLH Verbosity</div><div class="pv-val" id="pv-vb">—</div></div>
+    <div class="pv-field"><div class="pv-key">App</div><div class="pv-val" id="pv-app">—</div></div>
+    <div class="pv-field"><div class="pv-key">ngrok URL</div><div class="pv-val" id="pv-ngrok" style="font-size:9px">not set</div></div>
+    <hr class="divider">
+    <div class="preview-title">Last Saved</div>
+    <div class="pv-field"><div class="pv-val" id="pv-time" style="font-size:10px">—</div></div>
+    <hr class="divider">
+    <div class="preview-title">Quick Open</div>
+    <button class="quick-btn" onclick="window.open('https://applicationator.vercel.app/finternet.html','_blank')">🌾 finternet.html</button>
+    <button class="quick-btn" onclick="window.open('https://applicationator.vercel.app/index.html','_blank')">📲 index.html</button>
+    <hr class="divider">
+    <div class="preview-title">Services</div>
+    <div class="pv-field"><div class="pv-key">Express</div><div class="pv-val" id="pv-express" style="font-size:10px">—</div></div>
+    <div class="pv-field"><div class="pv-key">ngrok</div><div class="pv-val" id="pv-ngrok-svc" style="font-size:10px">—</div></div>
+  </div>
+</div>
+
+<!-- Mobile drawer -->
+<div class="mob-drawer" id="mob-drawer">
+  <div class="mob-drawer-bg" onclick="closeDrawer()"></div>
+  <div class="mob-drawer-panel">
+    <div style="font-size:12px;font-weight:700;color:#7c7cff;letter-spacing:2px;text-transform:uppercase;padding-bottom:14px;border-bottom:1px solid #2a2a4a;margin-bottom:8px">⚙ Applicationator</div>
+    <div class="nav-item active">🎛 Configurator</div>
+    <div class="nav-item dim">📱 App Preview</div>
+    <div style="flex:1;min-height:20px"></div>
+    <div style="font-size:10px;color:#444;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;margin-top:8px">Open App</div>
+    <div class="nav-item" onclick="window.open('https://applicationator.vercel.app/finternet.html');closeDrawer()">🌾 Finternet Demo</div>
+    <div class="nav-item" onclick="window.open('https://applicationator.vercel.app/index.html');closeDrawer()">📲 index.html</div>
+    <div class="nav-item" onclick="window.open('https://supabase.com/dashboard');closeDrawer()">🗄 Supabase</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://xbtmbolhfgyondgibhki.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhidG1ib2xoZmd5b25kZ2liaGtpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwMzcsImV4cCI6MjA5MTcyNDAzN30.UeyeyCyi1O74V7rJt7Ghu5b01Ot6l9uxsUgsI0FHHVM';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let state = {
+  persona_name: null, primary_language: 'EN',
+  operational_english_level: 'GRADE_4', digital_confidence: 'VERY_LOW',
+  age_group: '18-25', literacy_level: 'PRIMARY',
+  app_id: 'finternet', ngrok_url: '', klh_verbosity: 'MEDIUM'
+};
+
+// Per-persona defaults
+const PERSONAS = {
+  P1:{ persona_name:'P1_MUMBAI_GENZ', primary_language:'EN', operational_english_level:'PROFESSIONAL', digital_confidence:'HIGH', age_group:'18-25', literacy_level:'GRADUATE', klh_verbosity:'LOW' },
+  P2:{ persona_name:'P2_SENIOR', primary_language:'EN', operational_english_level:'GRADE_8', digital_confidence:'LOW', age_group:'60+', literacy_level:'SECONDARY', klh_verbosity:'MEDIUM' },
+  P3:{ persona_name:'P3_MIGRANT_WORKER', primary_language:'HI', operational_english_level:'GRADE_4', digital_confidence:'VERY_LOW', age_group:'26-45', literacy_level:'PRIMARY', klh_verbosity:'HIGH' },
+  P4:{ persona_name:'P4_FARMER_VIDARBHA', primary_language:'HI', operational_english_level:'GRADE_4', digital_confidence:'VERY_LOW', age_group:'46-60', literacy_level:'PRIMARY', klh_verbosity:'HIGH' }
+};
+
+const VB_CLASSES = { LOW:'active-low', MEDIUM:'active-medium', HIGH:'active-high' };
+
+async function init() {
+  try {
+    const { data, error } = await db.from('configurations').select('*').eq('id','active').single();
+    if (error) throw error;
+    if (data) { state = { ...state, ...data }; applyToUI(data); }
+    setSupaStatus('on', 'Supabase connected');
+    db.channel('cfg-echo').on('postgres_changes',{ event:'UPDATE', schema:'public', table:'configurations' }, p => {
+      setSupaStatus('on', 'Config pushed — mobile notified');
+      updatePreview(p.new);
+      document.getElementById('pv-time').textContent = new Date().toLocaleTimeString();
+    }).subscribe();
+  } catch(e) { setSupaStatus('err', 'Supabase error: ' + e.message); }
+  await pingServices();
+}
+
+function setSupaStatus(type, msg) {
+  document.getElementById('supa-dot').className = 'sdot ' + type;
+  document.getElementById('supa-text').textContent = msg;
+  document.getElementById('supa-time').textContent = new Date().toLocaleTimeString();
+}
+
+async function pingServices() {
+  const btn = document.getElementById('btn-ping');
+  btn.disabled = true; btn.textContent = '🔍 Checking...';
+  try {
+    await db.from('configurations').select('id').eq('id','active').single();
+    setSvc('supa','on','Connected');
+  } catch(e) { setSvc('supa','err','Error: '+e.message); }
+  const ngrok = document.getElementById('ngrok-url').value.trim() || state.ngrok_url;
+  if (ngrok) {
+    setSvc('ngrok','checking','Pinging...');
+    setSvc('express','checking','Pinging...');
+    try {
+      const r = await fetch(ngrok + '/api/health', { headers:{'ngrok-skip-browser-warning':'true'}, signal:AbortSignal.timeout(5000) });
+      if (r.ok) {
+        const d = await r.json();
+        setSvc('ngrok','on','Tunnel active');
+        setSvc('express','on','Up · '+d.uptime);
+        document.getElementById('pv-express').textContent = 'Up · '+d.uptime;
+        document.getElementById('pv-ngrok-svc').textContent = 'Active';
+        document.getElementById('btn-restart').disabled = false;
+      } else { setSvc('ngrok','on','Reachable'); setSvc('express','err','Server error '+r.status); }
+    } catch(e) { setSvc('ngrok','err','Unreachable'); setSvc('express','err','Cannot reach'); document.getElementById('btn-restart').disabled = true; }
+  } else { setSvc('ngrok','err','URL not set'); setSvc('express','err','URL not set'); }
+  btn.disabled = false; btn.textContent = '🔍 Check All Services';
+}
+
+function setSvc(id, status, txt) {
+  const dot = document.getElementById('svc-'+id+'-dot');
+  const label = document.getElementById('svc-'+id+'-txt');
+  if (dot) dot.className = 'svc-dot '+status;
+  if (label) label.textContent = txt;
+}
+
+async function restartServer() {
+  const ngrok = document.getElementById('ngrok-url').value.trim() || state.ngrok_url;
+  if (!ngrok) { showToast('ngrok URL not set', true); return; }
+  const btn = document.getElementById('btn-restart');
+  btn.disabled = true; btn.textContent = '↺ Restarting...';
+  setSvc('express','checking','Restarting...');
+  try { await fetch(ngrok+'/api/restart',{method:'POST',headers:{'ngrok-skip-browser-warning':'true'},signal:AbortSignal.timeout(4000)}); } catch(e){}
+  showToast('Server restarting via PM2...');
+  await new Promise(r => setTimeout(r, 4000));
+  await pingServices();
+  btn.disabled = false; btn.textContent = '↺ Restart Server';
+}
+
+function applyToUI(data) {
+  if (data.ngrok_url) document.getElementById('ngrok-url').value = data.ngrok_url;
+  if (data.persona_name) {
+    const pid = Object.keys(PERSONAS).find(k => PERSONAS[k].persona_name === data.persona_name);
+    if (pid) highlightPersona(pid);
+  }
+  if (data.primary_language) document.querySelectorAll('.lpill').forEach(p => p.classList.toggle('active', p.dataset.lang === data.primary_language));
+  if (data.operational_english_level) document.getElementById('oe-level').value = data.operational_english_level;
+  if (data.digital_confidence) document.getElementById('digital-confidence').value = data.digital_confidence;
+  if (data.age_group) document.getElementById('age-group').value = data.age_group;
+  if (data.literacy_level) document.getElementById('literacy-level').value = data.literacy_level;
+  if (data.klh_verbosity) highlightVerbosity(data.klh_verbosity);
+  if (data.app_id) {
+    document.querySelectorAll('.acard').forEach(c => c.classList.remove('selected'));
+    const el = document.getElementById('app-'+data.app_id);
+    if (el) el.classList.add('selected');
+  }
+  updatePreview(data);
+}
+
+function selectPersona(pid) {
+  const p = PERSONAS[pid];
+  state = { ...state, ...p };
+  highlightPersona(pid);
+  document.getElementById('oe-level').value = p.operational_english_level;
+  document.getElementById('digital-confidence').value = p.digital_confidence;
+  document.getElementById('age-group').value = p.age_group;
+  document.getElementById('literacy-level').value = p.literacy_level;
+  document.querySelectorAll('.lpill').forEach(pill => pill.classList.toggle('active', pill.dataset.lang === p.primary_language));
+  highlightVerbosity(p.klh_verbosity);
+  updatePreview(state);
+}
+
+function highlightPersona(pid) {
+  ['P1','P2','P3','P4'].forEach(id => document.getElementById('card-'+id).classList.toggle('selected', id === pid));
+}
+
+function selectVerbosity(v) {
+  state.klh_verbosity = v;
+  highlightVerbosity(v);
+  updatePreview(state);
+}
+
+function highlightVerbosity(v) {
+  state.klh_verbosity = v;
+  ['LOW','MEDIUM','HIGH'].forEach(k => {
+    const btn = document.getElementById('vb-'+k);
+    btn.className = 'vb-pill' + (k === v ? ' ' + VB_CLASSES[k] : '');
+  });
+}
+
+function selectLang(el, lang) {
+  document.querySelectorAll('.lpill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  state.primary_language = lang;
+  updatePreview(state);
+}
+
+function selectApp(appId, el) {
+  document.querySelectorAll('.acard').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  state.app_id = appId;
+  updatePreview(state);
+}
+
+async function saveNgrok() {
+  const url = document.getElementById('ngrok-url').value.trim();
+  if (!url.startsWith('https://')) { showToast('URL must start with https://', true); return; }
+  state.ngrok_url = url;
+  const { error } = await db.from('configurations').update({ ngrok_url:url, updated_at:new Date().toISOString() }).eq('id','active');
+  if (error) { showToast('Save failed', true); return; }
+  showToast('ngrok URL saved');
+  document.getElementById('pv-ngrok').textContent = url;
+  await pingServices();
+}
+
+async function saveConfig() {
+  const btn = document.getElementById('btn-save');
+  btn.disabled = true; btn.textContent = 'Saving...';
+  state.operational_english_level = document.getElementById('oe-level').value;
+  state.digital_confidence = document.getElementById('digital-confidence').value;
+  state.age_group = document.getElementById('age-group').value;
+  state.literacy_level = document.getElementById('literacy-level').value;
+  state.ngrok_url = document.getElementById('ngrok-url').value.trim();
+  state.updated_at = new Date().toISOString();
+  const { error } = await db.from('configurations').update(state).eq('id','active');
+  btn.disabled = false; btn.textContent = '⚡ Apply Configuration to Mobile';
+  if (error) { showToast('Failed: '+error.message, true); return; }
+  showToast('Config applied — mobile updating');
+  document.getElementById('pv-time').textContent = new Date().toLocaleTimeString();
+  updatePreview(state);
+}
+
+function updatePreview(data) {
+  document.getElementById('pv-persona').textContent = data.persona_name || '—';
+  document.getElementById('pv-lang').textContent = data.primary_language || 'EN';
+  document.getElementById('pv-oe').textContent = data.operational_english_level || '—';
+  document.getElementById('pv-dc').textContent = data.digital_confidence || '—';
+  document.getElementById('pv-vb').textContent = data.klh_verbosity || '—';
+  document.getElementById('pv-app').textContent = data.app_id || '—';
+  document.getElementById('pv-ngrok').textContent = data.ngrok_url || 'not set';
+}
+
+function showToast(msg, isErr) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isErr ? ' err' : '');
+  setTimeout(() => t.className = 'toast', 3000);
+}
+function openDrawer() { document.getElementById('mob-drawer').classList.add('open'); }
+function closeDrawer() { document.getElementById('mob-drawer').classList.remove('open'); }
+
+init();
+</script>
+</body>
+</html>

@@ -16,20 +16,27 @@ export default async function handler(req, res) {
   };
   const verbosityInstruction = verbosityMap[verbosity] || verbosityMap.MEDIUM;
 
+  // language field already contains script enforcement from the HTML caller
+  // e.g. "Hindi — USE DEVANAGARI SCRIPT ONLY, never Roman/Latin transliteration"
   const prompt = `You are KLH (Kya Likha Hai), an AI reading assistant for Indian citizens.
 
 A user is looking at this screen:
 ${screen_content}
 
 User profile: ${persona_profile}
-Language to respond in: ${language}
+Language instruction: ${language}
 Verbosity: ${verbosity}
 
-Write a plain-language narration script ${verbosityInstruction} that explains what this screen is asking the user to do, in simple spoken ${language}. 
-- Use the vocabulary and literacy level appropriate for the user profile.
+Write a plain-language narration script ${verbosityInstruction} that explains what this screen is asking the user to do.
+Rules:
+- STRICTLY follow the language instruction above including the script requirement.
+- If the instruction says DEVANAGARI, every Hindi word must be in Devanagari Unicode. Zero Roman/Latin letters for Hindi words.
+- If the instruction says KANNADA SCRIPT, write only in Kannada Unicode.
+- If the instruction says TAMIL SCRIPT, write only in Tamil Unicode.
+- Match vocabulary and literacy level to the user profile.
 - Focus on what the user must decide or do, and any risk or consequence.
-- Do NOT use bullet points. Write as natural spoken words.
-- Do NOT add any intro like "Here is the script" — just the script itself.`;
+- Write as natural spoken words. No bullet points.
+- Output ONLY the script. No preamble, no explanation, no quotes.`;
 
   try {
     const r = await fetch('https://api.anthropic.com/v1/messages', {

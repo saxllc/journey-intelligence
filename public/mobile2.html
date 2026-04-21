@@ -244,31 +244,34 @@ body {
 /* Aadhaar 3-group input */
 .aadhaar-inputs {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
 }
 .aadhaar-group {
   flex: 1;
+  min-width: 0;
   height: 48px;
   border: 1.5px solid #e8ebe6;
   border-radius: 12px;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
   font-family: 'Inter', monospace;
   font-feature-settings: "calt";
   text-align: center;
-  letter-spacing: 4px;
+  letter-spacing: 2px;
   color: #0e0f0c;
   background: #FFFFFF;
   outline: none;
   transition: border-color 0.15s;
+  padding: 0 4px;
 }
 .aadhaar-group:focus { border-color: #2563EB; }
-.aadhaar-group::placeholder { color: #D1D5DB; letter-spacing: 4px; }
+.aadhaar-group::placeholder { color: #D1D5DB; letter-spacing: 2px; }
 .aadhaar-sep {
-  font-size: 18px;
+  font-size: 14px;
   color: #D1D5DB;
   font-weight: 300;
+  flex-shrink: 0;
 }
 /* OTP 6-digit input */
 .otp-inputs {
@@ -276,11 +279,12 @@ body {
   gap: 6px;
 }
 .otp-digit {
-  width: 44px;
-  height: 52px;
+  flex: 1;
+  min-width: 0;
+  height: 50px;
   border: 1.5px solid #e8ebe6;
-  border-radius: 12px;
-  font-size: 22px;
+  border-radius: 10px;
+  font-size: 20px;
   font-weight: 700;
   font-family: 'Inter', monospace;
   font-feature-settings: "calt";
@@ -289,6 +293,7 @@ body {
   background: #FFFFFF;
   outline: none;
   transition: border-color 0.15s, background 0.15s;
+  padding: 0;
 }
 .otp-digit:focus { border-color: #2563EB; background: #F8FAFF; }
 .otp-digit.filled { border-color: #9fe870; background: #F7FDF4; }

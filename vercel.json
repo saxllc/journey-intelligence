@@ -1,1 +1,8 @@
-{"rewrites":[{"source":"/api/(.*)","destination":"/api/$1"}]}
+{
+  "version": 2,
+  "outputDirectory": "demo",
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/(.*)", "dest": "/$1" }
+  ]
+}

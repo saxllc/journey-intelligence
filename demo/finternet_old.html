@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finternet — DPIx Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&family=Noto+Sans+Kannada:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans','Noto Sans Devanagari',sans-serif;background:#0d0d1f;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px}
+.cfg-badge{position:fixed;top:16px;right:16px;background:#1a1a2e;color:#7c7cff;font-size:11px;padding:6px 12px;border-radius:20px;font-family:monospace;z-index:100;max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid #2a2a4a}
+.phone{width:393px;height:852px;background:#000;border-radius:55px;padding:12px;box-shadow:0 0 0 2px #333,0 0 0 4px #1a1a1a,0 40px 100px rgba(0,0,0,.9);position:relative;flex-shrink:0}
+.island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#000;border-radius:20px;z-index:10}
+.screen{width:100%;height:100%;background:#eef0f8;border-radius:44px;overflow:hidden;display:flex;flex-direction:column;position:relative}
+.cfg-strip{background:#1a237e;padding:5px 16px;display:flex;align-items:center;gap:6px;flex-shrink:0}
+.cfg-dot{width:6px;height:6px;border-radius:50%;background:#555;flex-shrink:0;transition:background .3s}
+.cfg-dot.on{background:#22c55e;box-shadow:0 0 4px #22c55e}
+.cfg-strip-text{font-size:9px;color:rgba(255,255,255,.5);font-family:monospace;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topbar{background:#1a237e;color:#fff;padding:44px 16px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0;position:relative}
+.topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:rgba(255,255,255,.1)}
+.back-btn{background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:2px 6px;line-height:1;border-radius:6px;transition:background .15s}
+.back-btn:active{background:rgba(255,255,255,.2)}
+.topbar-title{font-size:15px;font-weight:600;flex:1;letter-spacing:.2px}
+.topbar-right{font-size:13px;opacity:.8}
+.step-bar{display:flex;gap:5px;padding:10px 16px 8px;background:#fff;flex-shrink:0;border-bottom:1px solid #eee}
+.sdot{height:3px;border-radius:2px;flex:1;background:#e0e0e0;transition:all .3s}
+.sdot.done{background:#1a237e}
+.sdot.active{background:#ff8f00}
+.content{flex:1;overflow-y:auto;padding:14px;padding-bottom:100px;scroll-behavior:smooth}
+.content::-webkit-scrollbar{width:3px}
+.content::-webkit-scrollbar-track{background:transparent}
+.content::-webkit-scrollbar-thumb{background:#c5cae9;border-radius:3px}
+.content::-webkit-scrollbar{display:none}
+.hero{background:linear-gradient(135deg,#1a237e 0%,#283593 60%,#1565c0 100%);border-radius:20px;padding:18px;margin-bottom:14px;color:#fff;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-20px;right:-20px;width:120px;height:120px;background:rgba(255,255,255,.05);border-radius:50%}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.hero-name{font-size:19px;font-weight:700}
+.hero-loc{font-size:11px;opacity:.65;margin-top:2px}
+.pill{font-size:10px;font-weight:700;padding:3px 10px;border-radius:8px}
+.hero-asset{background:rgba(255,255,255,.13);border-radius:14px;padding:12px;display:flex;align-items:center;gap:12px}
+.asset-emoji{font-size:30px}
+.asset-label{font-size:9px;opacity:.6;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
+.asset-name{font-size:13px;font-weight:600}
+.asset-val{font-size:12px;opacity:.75;margin-top:2px}
+.hero-goal{font-size:11px;opacity:.55;margin-top:10px}
+.sec-label{font-size:10px;font-weight:700;color:#999;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;margin-top:4px}
+.tx-card{background:#fff;border-radius:14px;padding:13px 14px;margin-bottom:9px;display:flex;align-items:center;gap:11px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.05);transition:transform .15s,box-shadow .15s;border:1px solid transparent}
+.tx-card:active{transform:scale(.97);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.tx-card:hover{border-color:#e8eaff}
+.tx-ico{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.tx-ico.ok{background:#e8f5e9}
+.tx-ico.fail{background:#ffebee}
+.tx-info{flex:1;min-width:0}
+.tx-title{font-size:13px;font-weight:600;color:#212121;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-sub{font-size:10px;color:#aaa}
+.tx-arr{color:#ccc;font-size:20px;flex-shrink:0}
+.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.c-info{border-left:4px solid #0288d1}
+.c-nav{border-left:4px solid #388e3c}
+.c-tx{border-left:4px solid #f57c00}
+.c-con{border-left:4px solid #c62828}
+.card-step-tag{font-size:10px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.card-headline{font-size:17px;font-weight:700;color:#1a237e;margin-bottom:8px;line-height:1.3}
+.card-body{font-size:13px;line-height:1.7;color:#444}
+.next-box{background:#f8f9ff;border:1px solid #e8eaff;border-radius:12px;padding:12px;margin-bottom:10px}
+.next-label{font-size:9px;font-weight:700;color:#5c6bc0;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.next-text{font-size:12px;color:#555;line-height:1.5}
+.risk-box{background:#fff3e0;border:1px solid #ffb74d;border-radius:12px;padding:12px;margin-bottom:10px;display:flex;gap:10px}
+.risk-text{font-size:12px;color:#e65100;line-height:1.6}
+.nudge-box{background:#e3f2fd;border:1px solid #90caf9;border-radius:12px;padding:12px;margin-bottom:10px;display:flex;gap:10px}
+.nudge-text{font-size:12px;color:#1565c0;line-height:1.6}
+.contract-block{background:#0d1117;border-radius:12px;padding:14px;font-family:'Courier New',monospace;font-size:10px;color:#58a6ff;line-height:1.9;margin-bottom:10px;overflow-x:hidden}
+.contract-block span{color:#ff7b72}
+.sk{background:linear-gradient(90deg,#ececec 25%,#ddd 50%,#ececec 75%);background-size:200% 100%;animation:sh 1.5s infinite;border-radius:6px;display:block}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.btn{width:100%;padding:14px;border:none;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .2s,transform .1s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.5;cursor:wait}
+.btn-primary{background:#1a237e;color:#fff}
+.btn-success{background:#2e7d32;color:#fff}
+.btn-danger{background:#c62828;color:#fff}
+.btn-warn{background:#ff8f00;color:#fff}
+.btn-ghost{background:#fff;color:#1a237e;border:2px solid #1a237e}
+.view-toggle{display:flex;background:#eef0f8;border-radius:10px;padding:3px;margin-bottom:14px;gap:3px}
+.vbtn{flex:1;padding:7px;border:none;border-radius:8px;background:transparent;font-size:12px;font-weight:600;color:#999;cursor:pointer;font-family:inherit;transition:all .2s}
+.vbtn.active{background:#fff;color:#1a237e;box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f5f5f5}
+.detail-row:last-child{border-bottom:none}
+.dk{font-size:11px;color:#aaa}
+.dv{font-size:11px;color:#212121;font-weight:600;font-family:monospace;text-align:right;max-width:60%;word-break:break-all}
+.result-wrap{text-align:center;padding:8px 0 16px}
+.result-icon{font-size:54px;margin-bottom:10px}
+.result-title{font-size:20px;font-weight:700;margin-bottom:6px}
+.result-sub{font-size:13px;color:#666;line-height:1.6;padding:0 8px}
+.fab{position:absolute;bottom:82px;right:14px;width:50px;height:50px;border-radius:50%;background:#1a237e;color:#fff;border:none;font-size:20px;cursor:pointer;box-shadow:0 4px 16px rgba(26,35,126,.45);z-index:20;transition:all .2s}
+.fab:active{transform:scale(.9)}
+.fab.live{background:#ff8f00;animation:fab-pulse 1.2s infinite}
+@keyframes fab-pulse{0%,100%{box-shadow:0 4px 16px rgba(255,143,0,.4)}50%{box-shadow:0 8px 28px rgba(255,143,0,.75)}}
+.bsheet{position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:24px 24px 0 0;box-shadow:0 -6px 30px rgba(0,0,0,.13);transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);z-index:30;max-height:44%;display:flex;flex-direction:column}
+.bsheet.open{transform:translateY(0)}
+.sheet-handle{width:38px;height:4px;background:#ddd;border-radius:2px;margin:12px auto 4px}
+.sheet-body{padding:12px 16px 16px;overflow-y:auto;flex:1}
+.sheet-body::-webkit-scrollbar{display:none}
+.sheet-hed{font-size:10px;font-weight:700;color:#aaa;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
+.lang-row{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.lbtn{padding:6px 13px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#777;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s}
+.lbtn:active{transform:scale(.95)}
+.lbtn.active{background:#1a237e;border-color:#1a237e;color:#fff;font-weight:600}
+.klh-txt{font-size:13px;line-height:1.75;color:#333;min-height:50px;margin-bottom:12px;padding:10px;background:#f8f9ff;border-radius:10px}
+.play-btn{width:100%;padding:12px;background:#1a237e;color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .2s}
+.play-btn:disabled{opacity:.5}
+.play-btn.live{background:#ff8f00}
+</style>
+</head>
+<body>
+
+<div class="cfg-badge" id="cfg-badge">⚙ connecting...</div>
+
+<div class="phone">
+  <div class="island"></div>
+  <div class="screen">
+
+    <div class="cfg-strip">
+      <div class="cfg-dot" id="cfg-dot"></div>
+      <div class="cfg-strip-text" id="cfg-strip-text">Supabase se jud raha hai...</div>
+    </div>
+
+    <div class="topbar" id="topbar">
+      <button class="back-btn" id="back-btn" onclick="goBack()" style="visibility:hidden">←</button>
+      <div class="topbar-title" id="topbar-title">Finternet</div>
+      <div class="topbar-right" id="topbar-right"></div>
+    </div>
+
+    <div class="step-bar" id="step-bar" style="display:none">
+      <div class="sdot" id="sd0"></div>
+      <div class="sdot" id="sd1"></div>
+      <div class="sdot" id="sd2"></div>
+      <div class="sdot" id="sd3"></div>
+      <div class="sdot" id="sd4"></div>
+    </div>
+
+    <div class="content" id="content">
+      <div style="text-align:center;padding:40px 20px;color:#999;font-size:13px">
+        Config load ho rahi hai...
+      </div>
+    </div>
+
+    <button class="fab" id="fab" onclick="toggleSheet()">🔊</button>
+
+    <div class="bsheet" id="bsheet">
+<div style="display:flex;align-items:center;padding:10px 16px 0;gap:8px">
+        <div style="flex:1;height:4px;background:#e0e0e0;border-radius:2px;max-width:38px;margin:0 auto"></div>
+      </div>
+      <div style="display:flex;align-items:center;padding:8px 16px 0;gap:8px">
+        <button onclick="toggleSheet()" style="background:#f0f2f8;border:none;border-radius:50%;width:30px;height:30px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">↓</button>
+        <div style="flex:1;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1.5px;text-transform:uppercase">🎙 Kya Likha Hai</div>
+        <button onclick="closeSheet()" style="background:#fee2e2;border:none;border-radius:50%;width:30px;height:30px;font-size:14px;cursor:pointer;color:#c62828;display:flex;align-items:center;justify-content:center;font-weight:700">✕</button>
+      </div>
+      <div class="sheet-body">
+        <div class="sheet-hed" style="display:none"></div>
+        <div class="lang-row">
+          <button class="lbtn active" data-l="hi" onclick="setTtsLang('hi',this)">हि Hindi</button>
+          <button class="lbtn" data-l="en" onclick="setTtsLang('en',this)">EN Eng</button>
+          <button class="lbtn" data-l="kn" onclick="setTtsLang('kn',this)">ಕ Kan</button>
+          <button class="lbtn" data-l="ta" onclick="setTtsLang('ta',this)">த Tam</button>
+        </div>
+        <div class="klh-txt" id="klh-txt">Is kadam mein kya ho raha hai, yeh samajhne ke liye suniye.</div>
+        <button class="play-btn" id="play-btn" onclick="playKLH()">
+          <span id="play-ico">🔊</span>
+          <span id="play-lbl">Suniye / Listen</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── Supabase ─────────────────────────────────────────────
+const SUPA_URL = 'https://xbtmbolhfgyondgibhki.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhidG1ib2xoZmd5b25kZ2liaGtpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwMzcsImV4cCI6MjA5MTcyNDAzN30.UeyeyCyi1O74V7rJt7Ghu5b01Ot6l9uxsUgsI0FHHVM';
+const { createClient } = supabase;
+const db = createClient(SUPA_URL, SUPA_KEY);
+
+// ── State ────────────────────────────────────────────────
+const S = {
+  screen: 'dashboard',
+  config: { persona_name: null, primary_language: 'HI', ngrok_url: '', digital_confidence: 'VERY_LOW' },
+  txIndex: 0,
+  txView: 'user',
+  step: 0,
+  stepCache: {},
+  klhScript: 'Swagat hai. Apni sampatti tokenize karo aur loan lo.',
+  ttsLang: 'hi',
+  playing: false
+};
+
+// ── Persona Data ─────────────────────────────────────────
+const P = {
+  P1_MUMBAI_GENZ: {
+    name:'Arjun', loc:'Bandra, Mumbai', device:'iPhone 16 Pro · 5G',
+    asset:{ name:'Royal Enfield Bullet 2019', value:'₹8,000', emoji:'🏍️' },
+    goal:'Gaming PC ke liye quick loan',
+    profile:'tech-savvy urban youth, English-first, comfortable with digital flows',
+    pill:'P1', pc:'#1e3a5f', pt:'#60a5fa',
+    txs:[
+      { id:'TX-P1-001', title:'Hero Splendor Tokenization', status:'SUCCESS',
+        date:'12 Mar 2025', amount:'₹15,000', emoji:'🛵',
+        bd:{ token:'0x8F4A2B1C...', contract:'0xFIN3D4E...', block:'#1,847,523', gas:'₹0.12', hash:'0xAB34EF12...' },
+        ok:'Tera Hero Splendor ka token ban gaya bhai. Token ID safe rakh.',
+        fail:null },
+      { id:'TX-P1-002', title:'MacBook Pro Pledge', status:'FAILED',
+        date:'2 Jan 2025', amount:'₹45,000', emoji:'💻',
+        bd:{ token:'PENDING', contract:'0xFIN5F6G...', block:'#1,821,004', gas:'₹0.08', hash:'0xCD56GH78...', err:'KYC_INCOMPLETE' },
+        ok:null,
+        fail:'KYC incomplete tha. Aadhaar verify nahi hua.',
+        next:'Aadhaar details dobara daalo — OTP verify karna zaroori hai.' }
+    ]
+  },
+  P2_SENIOR: {
+    name:'Ramesh Iyer', loc:'Mysuru, Karnataka', device:'Samsung Galaxy A23 · 4G',
+    asset:{ name:'Omega Seamaster 1985', value:'₹10,000', emoji:'⌚' },
+    goal:'Medical emergency ke liye paisa',
+    profile:'senior citizen needing simple step-by-step guidance, tap-only, avoid jargon',
+    pill:'P2', pc:'#1e3a2a', pt:'#4ade80',
+    txs:[
+      { id:'TX-P2-001', title:'Gold Coins Tokenization', status:'SUCCESS',
+        date:'5 Feb 2025', amount:'₹22,000', emoji:'🥇',
+        bd:{ token:'0x7E3B4C2D...', contract:'0xFIN7H8I...', block:'#1,835,891', gas:'₹0.10', hash:'0xEF90IJ12...' },
+        ok:'Aapke sone ke sikkon ka token ban gaya. Yeh bilkul safe hai aur sirf aapka hai.',
+        fail:null },
+      { id:'TX-P2-002', title:'Fixed Deposit Pledge', status:'FAILED',
+        date:'18 Dec 2024', amount:'₹50,000', emoji:'🏦',
+        bd:{ token:'PENDING', contract:'0xFIN9J0K...', block:'#1,799,234', gas:'₹0.15', hash:'0xGH12KL34...', err:'DOCUMENT_MISMATCH' },
+        ok:null,
+        fail:'Bank ke kagaz match nahi hue. Document mismatch hua.',
+        next:'Original FD certificate lekar nazdiki bank branch mein jaayein.' }
+    ]
+  },
+  P3_MIGRANT_WORKER: {
+    name:'Sunita', loc:'Dharavi, Mumbai', device:'Redmi 9A · 3G',
+    asset:{ name:'Sone ke Kangan (22K, 40g)', value:'₹40,000', emoji:'💛' },
+    goal:'Bache ki school fees',
+    profile:'first-time user, grade 4 Hindi literacy, colloquial Hindi only, very low digital confidence, low agency — use simplest Hindi, avoid all English except proper nouns',
+    pill:'P3', pc:'#3a1e1e', pt:'#f87171',
+    txs:[
+      { id:'TX-P3-001', title:'Chandi ki Payal Token', status:'SUCCESS',
+        date:'20 Jan 2025', amount:'₹8,500', emoji:'🔗',
+        bd:{ token:'0x5C1A8D3E...', contract:'0xFIN1L2M...', block:'#1,851,002', gas:'₹0.09', hash:'0xIJ34MN56...' },
+        ok:'Aapki chandi ki payal ka number ban gaya. Yeh number bahut zaroori hai — sambhal ke rakho.',
+        fail:null },
+      { id:'TX-P3-002', title:'Gehne par Loan', status:'FAILED',
+        date:'10 Nov 2024', amount:'₹15,000', emoji:'💍',
+        bd:{ token:'PENDING', contract:'0xFIN3N4O...', block:'#1,778,445', gas:'₹0.07', hash:'0xKL56OP78...', err:'CONSENT_INCOMPLETE' },
+        ok:null,
+        fail:'Aapne "haan" nahi kaha tha. Sahmat nahi di gayi thi.',
+        next:'Apne saheb ya kisi bharosemand se poochho, phir dobara try karo.' }
+    ]
+  },
+  DEFAULT: {
+    name:'Rajan', loc:'Vidarbha, Maharashtra', device:'Redmi 8 · 3G',
+    asset:{ name:'2 Acres Agricultural Land', value:'₹2,00,000', emoji:'🌾' },
+    goal:'Bete ki padhai ke liye loan',
+    profile:'first-time user, Marathi-Hindi speaking farmer, low digital literacy',
+    pill:'DEMO', pc:'#2a2a45', pt:'#a78bfa',
+    txs:[
+      { id:'TX-D-001', title:'Land Survey Digitization', status:'SUCCESS',
+        date:'15 Feb 2025', amount:'₹2,00,000', emoji:'📋',
+        bd:{ token:'0x3A9C6B2D...', contract:'0xFIN5P6Q...', block:'#1,842,117', gas:'₹0.11', hash:'0xMN78QR90...' },
+        ok:'Aapki 2 acre zameen ka digital token ban gaya. Yeh safe hai aur sirf aapke naam par hai.',
+        fail:null },
+      { id:'TX-D-002', title:'Kisan Credit Card Pledge', status:'FAILED',
+        date:'3 Dec 2024', amount:'₹50,000', emoji:'💳',
+        bd:{ token:'PENDING', contract:'0xFIN7R8S...', block:'#1,788,334', gas:'₹0.13', hash:'0xOP90ST12...', err:'SMART_CONTRACT_FAILED' },
+        ok:null,
+        fail:'Smart contract execute nahi hua. System mein kuch gadbad thi.',
+        next:'2-3 din baad phir try karo, ya helpline pe call karo: 1800-XXX-XXXX.' }
+    ]
+  }
+};
+
+function persona() { return P[S.config.persona_name] || P.DEFAULT; }
+
+// ── Steps ────────────────────────────────────────────────
+function steps() {
+  const a = persona().asset;
+  return [
+    { id:'asset_dig', title:'Asset Digitization', sub:'Tokenizing the Asset', mat:'TRANSACTIONAL', icon:'📄',
+      obj:{ id:'asset_digitization', title:'Asset Digitization — Tokenizing the Asset',
+        description:`Document and digitize ${a.name} (${a.value}) for tokenization on the Finternet unified ledger. This creates a unique digital twin of the physical asset.`,
+        action:'Upload asset photograph or documents. Verify ownership.', asset:a.name, value:a.value } },
+    { id:'id_consent', title:'Identity & Consent', sub:'Aadhaar + Account Aggregator', mat:'CONSEQUENTIAL', icon:'🪪',
+      obj:{ id:'identity_consent', title:'Identity Verification & AA Consent',
+        description:'Verify identity using Aadhaar OTP. Grant Account Aggregator consent for the lending institution to access your financial history.',
+        action:'Enter Aadhaar OTP. Review and approve data sharing consent.',
+        legal:'Your financial data will be shared with the lending institution under AA framework.' } },
+    { id:'contract', title:'Smart Contract', sub:'Collateral Logic', mat:'CONSEQUENTIAL', icon:'📜',
+      obj:{ id:'smart_contract', title:'Smart Contract — Collateral Terms',
+        description:`A smart contract will lock ${a.name} (${a.value}) as collateral. Liquidation triggers if repayment is delayed beyond 90 days. Penalty APR: 18.5%`,
+        action:'Review collateral terms and accept.',
+        terms:{ condition:'LIQUIDATION_EVENT', trigger:'DELAY > 90 DAYS', action:'EXECUTE TRANSFER (33% ASSET_VAL)', penalty:'18.5% APR' } } },
+    { id:'klh', title:'Kya Likha Hai', sub:'DPIx Intervention', mat:'CONSEQUENTIAL', icon:'🎙',
+      obj:{ id:'kya_likha_hai', title:'The Kya Likha Hai Moment — DPIx Bridge',
+        description:'Before proceeding, understand exactly what you agreed to. GATO Agent translates Finternet legalese into plain language you can hear and understand.',
+        action:'Listen to the audio explanation. Confirm you understood.',
+        dpix:'GATO Agent active — translating smart contract to human language via audio' } },
+    { id:'settle', title:'Settlement', sub:'Atomic Swap', mat:'TRANSACTIONAL', icon:'⚡',
+      obj:{ id:'settlement', title:'Settlement — Atomic Swap',
+        description:`Loan amount transfers to your account simultaneously as ${a.name} is locked as collateral on the unified ledger. Both happen together or not at all.`,
+        action:'Confirm and complete the atomic swap.',
+        note:'Atomic: both transactions succeed together or both fail together — no partial states.' } }
+  ];
+}
+
+// ── Language ─────────────────────────────────────────────
+const LMAP = { EN:'en', HI:'hi', KN:'kn', TA:'ta' };
+function lang() { return LMAP[S.config.primary_language] || 'hi'; }
+function setTtsLang(l, el) {
+  S.ttsLang = l;
+  document.querySelectorAll('.lbtn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── Navigation ───────────────────────────────────────────
+function setTopbar(title, badge, showBack, showDots) {
+  document.getElementById('topbar-title').textContent = title;
+  document.getElementById('topbar-right').textContent = badge || '';
+  document.getElementById('back-btn').style.visibility = showBack ? 'visible' : 'hidden';
+  document.getElementById('step-bar').style.display = showDots ? 'flex' : 'none';
+}
+
+function goBack() {
+  if (S.screen === 'tx_detail') showDashboard();
+  else if (S.screen === 'step') { S.step > 0 ? showStep(S.step - 1) : showDashboard(); }
+  else showDashboard();
+}
+
+function showDashboard() {
+  S.screen = 'dashboard';
+  setTopbar('Finternet', '', false, false);
+  renderDashboard();
+}
+
+function openTx(i) {
+  S.screen = 'tx_detail';
+  S.txIndex = i;
+  S.txView = 'user';
+  const tx = persona().txs[i];
+  setTopbar(tx.title, tx.status === 'SUCCESS' ? '✅' : '❌', true, false);
+  renderTxDetail();
+}
+
+function switchView(v) { S.txView = v; renderTxDetail(); }
+
+function showStep(n) {
+  S.screen = 'step';
+  S.step = n;
+  const st = steps()[n];
+  setTopbar(st.title, `${n+1}/5`, true, true);
+  for (let i = 0; i < 5; i++) {
+    document.getElementById('sd'+i).className = 'sdot' + (i < n ? ' done' : i === n ? ' active' : '');
+  }
+  renderStep(n);
+}
+
+function showComplete() {
+  S.screen = 'complete';
+  setTopbar('Completed!', '🎉', false, false);
+  renderComplete();
+}
+
+// ── Render: Dashboard ────────────────────────────────────
+function renderDashboard() {
+  const p = persona();
+  setKLH(`${p.name} ka swagat hai Finternet mein. Apni sampatti tokenize karo aur loan lo. Dashboard pe aapke purane transactions bhi dikh rahe hain.`);
+  const txHtml = p.txs.map((tx, i) => `
+    <div class="tx-card" onclick="openTx(${i})">
+      <div class="tx-ico ${tx.status==='SUCCESS'?'ok':'fail'}">${tx.emoji}</div>
+      <div class="tx-info">
+        <div class="tx-title">${tx.status==='SUCCESS'?'✅':'❌'} ${tx.title}</div>
+        <div class="tx-sub">${tx.id} · ${tx.amount} · ${tx.date}</div>
+      </div>
+      <div class="tx-arr">›</div>
+    </div>`).join('');
+
+  document.getElementById('content').innerHTML = `
+    <div class="hero">
+      <div class="hero-top">
+        <div>
+          <div class="hero-name">${p.name}</div>
+          <div class="hero-loc">${p.loc} · ${p.device}</div>
+        </div>
+        <span class="pill" style="background:${p.pc};color:${p.pt}">${p.pill}</span>
+      </div>
+      <div class="hero-asset">
+        <div class="asset-emoji">${p.asset.emoji}</div>
+        <div>
+          <div class="asset-label">Tokenize karo</div>
+          <div class="asset-name">${p.asset.name}</div>
+          <div class="asset-val">${p.asset.value}</div>
+        </div>
+      </div>
+      <div class="hero-goal">🎯 Lakshya: ${p.goal}</div>
+    </div>
+    <div class="sec-label">Mere Transactions</div>
+    ${txHtml}
+    <div style="height:10px"></div>
+    <button class="btn btn-primary" onclick="S.stepCache={}; showStep(0)">
+      ${p.asset.emoji} Naya Token Banao
+    </button>
+    <div style="font-size:10px;color:#bbb;text-align:center;padding:6px 0 2px">Finternet × India Stack × DPIx</div>
+  `;
+}
+
+// ── Render: TX Detail ────────────────────────────────────
+function renderTxDetail() {
+  const tx = persona().txs[S.txIndex];
+  const ok = tx.status === 'SUCCESS';
+  const v = S.txView;
+
+  const backHtml = `
+    <div class="sec-label">Technical Details</div>
+    <div class="card">
+      ${[['Token ID', tx.bd.token],['Contract', tx.bd.contract],['Block', tx.bd.block],['Gas', tx.bd.gas],['Tx Hash', tx.bd.hash],[ok?'Status':'Error', ok?'✅ CONFIRMED':'❌ '+tx.bd.err]]
+        .map(([k,val]) => `<div class="detail-row"><span class="dk">${k}</span><span class="dv">${val}</span></div>`).join('')}
+    </div>`;
+
+  const userHtml = ok ? `
+    <div class="result-wrap">
+      <div class="result-icon">✅</div>
+      <div class="result-title" style="color:#2e7d32">Kaam Ho Gaya!</div>
+      <div class="result-sub">${tx.ok}</div>
+    </div>
+    <div class="card" style="border-left:4px solid #2e7d32">
+      ${[['Asset',tx.emoji+' '+tx.title],['Amount',tx.amount],['Date',tx.date]]
+        .map(([k,val]) => `<div class="detail-row"><span class="dk">${k}</span><span class="dv">${val}</span></div>`).join('')}
+    </div>` : `
+    <div class="result-wrap">
+      <div class="result-icon">😔</div>
+      <div class="result-title" style="color:#c62828">Kuch Gadbad Hui</div>
+      <div class="result-sub">${tx.fail}</div>
+    </div>
+    <div class="risk-box"><div>💡</div><div class="risk-text"><b>Aage kya karo:</b> ${tx.next}</div></div>
+    <button class="btn btn-primary" onclick="S.stepCache={}; showStep(0)">Dobara Try Karo</button>`;
+
+  setKLH(ok ? `Transaction safal raha. ${tx.ok}` : `Transaction fail ho gayi. ${tx.fail} ${tx.next||''}`);
+
+  document.getElementById('content').innerHTML = `
+    <div class="view-toggle">
+      <button class="vbtn ${v==='user'?'active':''}" onclick="switchView('user')">👤 User View</button>
+      <button class="vbtn ${v==='backend'?'active':''}" onclick="switchView('backend')">⚙ Backend View</button>
+    </div>
+    ${v === 'user' ? userHtml : backHtml}`;
+}
+
+// ── Render: Step ─────────────────────────────────────────
+async function renderStep(n) {
+  const st = steps()[n];
+  const content = document.getElementById('content');
+
+  if (S.stepCache[n]) { renderStepContent(n, S.stepCache[n]); return; }
+
+  content.innerHTML = `
+    <div class="card c-tx">
+      <div class="sk" style="height:12px;width:40%;margin-bottom:10px"></div>
+      <div class="sk" style="height:18px;width:75%;margin-bottom:10px"></div>
+      <div class="sk" style="height:13px;width:100%;margin-bottom:5px"></div>
+      <div class="sk" style="height:13px;width:85%;margin-bottom:5px"></div>
+      <div class="sk" style="height:13px;width:65%"></div>
+    </div>
+    <div style="text-align:center;color:#999;font-size:12px;margin-top:12px">✨ DPIx samajh raha hai...</div>`;
+
+  const ngrok = S.config.ngrok_url;
+  if (!ngrok) {
+    content.innerHTML = `
+      <div class="risk-box"><div>⚠️</div><div class="risk-text">ngrok URL set nahi hai. Configurator mein URL daalo aur "Save URL" dabao.</div></div>
+      <div class="card c-tx"><div class="card-headline">${st.title}</div><div class="card-body">${st.obj.description}</div></div>
+      <button class="btn btn-primary" onclick="renderStep(${n})">Refresh</button>`;
+    return;
+  }
+
+  try {
+   const r = await fetch(ngrok + '/api/rhetorical', {
+        method:'POST', headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'},
+      body: JSON.stringify({ step: st.obj, context: { language: lang(), userProfile: persona().profile, materiality: st.mat, appName: 'Finternet Asset Tokenization — DPIx Demo' } })
+    });
+    if (!r.ok) throw new Error('Server ' + r.status);
+    const data = await r.json();
+    S.stepCache[n] = data;
+    renderStepContent(n, data);
+  } catch (e) {
+    content.innerHTML = `
+      <div class="risk-box"><div>❌</div><div class="risk-text">Claude se error: ${e.message}</div></div>
+      <div class="card c-tx"><div class="card-headline">${st.title}</div><div class="card-body">${st.obj.description}</div></div>
+      <button class="btn btn-primary" onclick="renderStep(${n})">Dobara Try Karo</button>`;
+  }
+}
+
+function renderStepContent(n, d) {
+  const st = steps()[n];
+  const bc = { INFORMATIONAL:'c-info', NAVIGATIONAL:'c-nav', TRANSACTIONAL:'c-tx', CONSEQUENTIAL:'c-con' }[st.mat];
+  const isKLH = st.id === 'klh';
+  const isLast = n === 4;
+
+  setKLH(d.kya_likha_hai_script || st.obj.description);
+  if (isKLH) document.getElementById('bsheet').classList.add('open');
+
+  let extra = '';
+  if (st.id === 'contract' && st.obj.terms) {
+    const t = st.obj.terms;
+    const cid = '0x' + Math.random().toString(16).substr(2,8).toUpperCase();
+    extra = `<div class="contract-block">
+<span>SMART_CONTRACT_ID:</span> ${cid}...<br>
+<span>CONDITION:</span> ${t.condition}<br>
+<span>TRIGGER:</span> ${t.trigger}<br>
+<span>ACTION:</span> ${t.action}<br>
+<span>PENALTY_APR:</span> ${t.penalty}
+</div>`;
+  }
+
+  document.getElementById('content').innerHTML = `
+    <div class="card ${bc}">
+      <div class="card-step-tag">${st.icon} Step ${n+1} · ${st.mat}</div>
+      <div class="card-headline">${d.headline}</div>
+      <div class="card-body">${d.plain_explanation}</div>
+    </div>
+    ${extra}
+    ${d.risk_signal ? `<div class="risk-box"><div>⚠️</div><div class="risk-text">${d.risk_signal}</div></div>` : ''}
+    ${d.what_happens_next ? `<div class="next-box"><div class="next-label">Aage Kya Hoga</div><div class="next-text">${d.what_happens_next}</div></div>` : ''}
+    ${d.help_nudge ? `<div class="nudge-box"><div>💡</div><div class="nudge-text">${d.help_nudge}</div></div>` : ''}
+    ${isKLH ? `<button class="btn btn-warn" onclick="toggleSheet(); playKLH()">🔊 Kya Likha Hai — Abhi Suniye</button>` : ''}
+    <button class="btn ${isLast?'btn-success':'btn-primary'}" onclick="${isLast?'showComplete()':'showStep('+(n+1)+')'}">
+      ${isLast ? '✅ ' + (d.confidence_phrase||'Transaction Poori Karo') : '→ Aage Badhein'}
+    </button>
+    <div style="height:6px"></div>`;
+}
+
+// ── Render: Complete ─────────────────────────────────────
+function renderComplete() {
+  const p = persona();
+  const tid = '0x' + Math.random().toString(16).substr(2,8).toUpperCase() + Math.random().toString(16).substr(2,4).toUpperCase();
+  setKLH(`Badhai ho ${p.name}! Aapki ${p.asset.name} ka token ban gaya. Token ID hai ${tid}. Yeh number apne paas sambhal ke rakho.`);
+  document.getElementById('content').innerHTML = `
+    <div class="result-wrap" style="margin-top:10px">
+      <div class="result-icon">🎉</div>
+      <div class="result-title" style="color:#2e7d32">Badhai Ho, ${p.name}!</div>
+      <div class="result-sub">Aapki sampatti tokenize ho gayi aur loan process shuru ho gaya.</div>
+    </div>
+    <div class="card" style="border-left:4px solid #2e7d32">
+      ${[['Asset', p.asset.emoji+' '+p.asset.name],['Value', p.asset.value],['Token ID', tid],['Status','✅ CONFIRMED']]
+        .map(([k,v])=>`<div class="detail-row"><span class="dk">${k}</span><span class="dv" style="${k==='Status'?'color:#2e7d32':''}">${v}</span></div>`).join('')}
+    </div>
+    <div class="nudge-box"><div>📱</div><div class="nudge-text">Aapke registered number pe SMS aayega. Token ID screenshot lo — yeh bahut zaroori hai.</div></div>
+    <button class="btn btn-ghost" onclick="showDashboard()">← Dashboard</button>`;
+}
+
+// ── KLH / TTS ────────────────────────────────────────────
+function setKLH(text) {
+  S.klhScript = text;
+  document.getElementById('klh-txt').textContent = text;
+}
+
+function toggleSheet() {
+  const sheet = document.getElementById('bsheet');
+  const fab = document.getElementById('fab');
+  const isOpen = sheet.classList.contains('open');
+  if (isOpen) {
+    sheet.classList.remove('open');
+    fab.style.display = 'flex';
+  } else {
+    sheet.classList.add('open');
+    fab.style.display = 'none';
+  }
+}
+
+function closeSheet() {
+  document.getElementById('bsheet').classList.remove('open');
+  document.getElementById('fab').style.display = 'flex';
+}
+
+function chunkText(text, max = 200) {
+  const parts = text.match(/[^।\.!\?]+[।\.!\?]*/g) || [text];
+  const out = [];
+  let cur = '';
+  for (const s of parts) {
+    if (cur.length + s.length > max && cur) { out.push(cur.trim()); cur = s; }
+    else cur += ' ' + s;
+  }
+  if (cur.trim()) out.push(cur.trim());
+  return out.filter(c => c.length > 0);
+}
+
+let _actx = null;
+function getActx() {
+  if (!_actx) _actx = new (window.AudioContext || window.webkitAudioContext)();
+  return _actx;
+}
+
+async function playBase64(dataUri) {
+  const ctx = getActx();
+  await ctx.resume();
+  const b64 = dataUri.split(',')[1];
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  const buf = await ctx.decodeAudioData(bytes.buffer);
+  return new Promise((res, rej) => {
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    src.connect(ctx.destination);
+    src.onended = res;
+    src.start(0);
+  });
+}
+
+async function playKLH() {
+  if (S.playing) return;
+  const ngrok = S.config.ngrok_url;
+  if (!ngrok) { setKLH('⚠️ ngrok URL set nahi hai. Configurator mein daalo.'); return; }
+
+  // Unlock AudioContext on user gesture — must happen before any await
+  getActx().resume();
+
+  S.playing = true;
+  document.getElementById('fab').classList.add('live');
+  document.getElementById('play-btn').classList.add('live');
+  document.getElementById('play-btn').disabled = true;
+
+  const chunks = chunkText(S.klhScript);
+  try {
+    for (let i = 0; i < chunks.length; i++) {
+      document.getElementById('play-lbl').textContent = `${i+1}/${chunks.length} bol raha hai...`;
+     const r = await fetch(ngrok + '/api/kya-likha-hai', {
+        method:'POST', headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'},
+        body: JSON.stringify({ text: chunks[i], language: S.ttsLang })
+      });
+      if (!r.ok) throw new Error('TTS ' + r.status);
+      const data = await r.json();
+      if (data.data_uri) await playBase64(data.data_uri);
+    }
+  } catch(e) {
+    document.getElementById('klh-txt').textContent += ' [Error: ' + e.message + ']';
+  } finally {
+    S.playing = false;
+    document.getElementById('fab').classList.remove('live');
+    document.getElementById('play-btn').classList.remove('live');
+    document.getElementById('play-btn').disabled = false;
+    document.getElementById('play-lbl').textContent = 'Suniye / Listen';
+  }
+}
+
+// ── Config ───────────────────────────────────────────────
+function applyConfig(cfg) {
+  const prevPersona = S.config.persona_name;
+  S.config = { ...S.config, ...cfg };
+  S.ttsLang = LMAP[cfg.primary_language] || 'hi';
+
+  document.querySelectorAll('.lbtn').forEach(b => b.classList.toggle('active', b.dataset.l === S.ttsLang));
+  document.getElementById('cfg-badge').textContent = `⚙ ${cfg.persona_name||'DEFAULT'} · ${cfg.primary_language||'HI'} · ${cfg.ngrok_url?'🔗':'⚠️ no ngrok'}`;
+  document.getElementById('cfg-strip-text').textContent = `${cfg.persona_name||'DEMO'} · ${cfg.primary_language||'HI'} · ${cfg.ngrok_url?'API OK':'no ngrok'}`;
+
+  if (prevPersona !== cfg.persona_name) {
+    S.stepCache = {};
+    if (S.screen === 'step' || S.screen === 'complete') showDashboard();
+    else if (S.screen === 'dashboard') renderDashboard();
+    else if (S.screen === 'tx_detail') renderTxDetail();
+  }
+}
+
+// ── Init ─────────────────────────────────────────────────
+async function init() {
+  try {
+    const { data, error } = await db.from('configurations').select('*').eq('id','active').single();
+    if (error) throw error;
+    if (data) applyConfig(data);
+    document.getElementById('cfg-dot').classList.add('on');
+    document.getElementById('cfg-strip-text').textContent = (data?.persona_name||'DEMO') + ' · connected';
+
+    db.channel('finternet')
+      .on('postgres_changes', { event:'UPDATE', schema:'public', table:'configurations' },
+        p => { applyConfig(p.new); })
+      .subscribe();
+  } catch(e) {
+    document.getElementById('cfg-dot').style.background = '#ef4444';
+    document.getElementById('cfg-strip-text').textContent = 'Config error: ' + e.message;
+  }
+  showDashboard();
+}
+
+init();
+</script>
+</body>
+</html>
