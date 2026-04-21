@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IGDS — Indian Government Design System · Proof of Concept</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink: #0B0C0C;
+  --ink-secondary: #505A5F;
+  --ink-tertiary: #6F777B;
+  --surface: #F3F2F1;
+  --surface-card: #FFFFFF;
+  --saffron: #F47738;
+  --saffron-light: #FBEBD5;
+  --blue: #1D70B8;
+  --blue-light: #EBF1F5;
+  --green: #00703C;
+  --green-light: #D9F2E0;
+  --red: #D4351C;
+  --red-light: #F4C5BD;
+  --yellow: #FFDD00;
+  --yellow-light: #FFF3BF;
+  --border: #DEE0E2;
+  --focus: #FFDD00;
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-hindi: 'Noto Sans Devanagari', sans-serif;
+  --font-mono: 'Fira Code', monospace;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--surface);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* === HERO === */
+.hero {
+  background: var(--ink);
+  color: #fff;
+  padding: 48px 32px 40px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(244,119,56,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  position: relative;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 14px;
+  background: rgba(244,119,56,0.15);
+  border: 1px solid rgba(244,119,56,0.3);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--saffron);
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 400;
+  line-height: 1.15;
+  margin-bottom: 12px;
+  max-width: 700px;
+}
+.hero h1 em {
+  font-style: normal;
+  color: var(--saffron);
+}
+.hero-sub {
+  font-size: 17px;
+  color: #B1B4B6;
+  max-width: 600px;
+  line-height: 1.6;
+}
+.hero-meta {
+  display: flex;
+  gap: 24px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+.hero-meta-item {
+  font-size: 12px;
+  color: #919598;
+  border-left: 2px solid rgba(255,255,255,0.1);
+  padding-left: 12px;
+}
+.hero-meta-item strong {
+  display: block;
+  font-size: 20px;
+  color: #fff;
+  font-weight: 700;
+}
+
+/* === SECTION CONTAINER === */
+.section {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 48px 32px;
+}
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--saffron);
+  margin-bottom: 8px;
+}
+.section h2 {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 400;
+  margin-bottom: 12px;
+}
+.section-desc {
+  font-size: 16px;
+  color: var(--ink-secondary);
+  max-width: 640px;
+  line-height: 1.7;
+  margin-bottom: 32px;
+}
+
+/* === DEMO SECTION === */
+.demo-section {
+  background: linear-gradient(180deg, var(--surface) 0%, #E8E9EB 100%);
+  padding: 48px 32px 64px;
+}
+.demo-wrapper {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+.demo-layout {
+  display: flex;
+  gap: 48px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.demo-phone-col {
+  flex: 0 0 380px;
+  position: sticky;
+  top: 24px;
+}
+.demo-explain-col {
+  flex: 1;
+  min-width: 300px;
+}
+
+/* === PHONE EMULATOR === */
+.phone-frame {
+  width: 360px;
+  height: 740px;
+  background: #000;
+  border-radius: 40px;
+  padding: 12px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.05);
+  position: relative;
+}
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  background: var(--saffron-light);
+  border-radius: 30px;
+  overflow: hidden;
+  position: relative;
+}
+.phone-notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 28px;
+  background: #000;
+  border-radius: 0 0 16px 16px;
+  z-index: 50;
+}
+.phone-statusbar {
+  height: 44px;
+  background: rgba(0,0,0,0.03);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 20px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* App Header */
+.app-header {
+  padding: 10px 16px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.app-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.app-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #96BFE6, #5694CA);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #fff;
+  font-weight: 700;
+}
+.app-add-profile {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: #fff;
+}
+.app-header-right {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.lang-toggle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  font-family: var(--font-hindi);
+}
+
+/* Aadhaar Card */
+.aadhaar-card {
+  margin: 12px;
+  background: linear-gradient(135deg, #FBEBD5 0%, #F9D6B0 40%, #F7BE89 100%);
+  border-radius: 16px;
+  padding: 16px 16px 12px;
+  text-align: center;
+  border: 1px solid rgba(244,119,56,0.2);
+  position: relative;
+  overflow: hidden;
+}
+.aadhaar-card::after {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+}
+.aadhaar-number {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  margin-bottom: 8px;
+}
+.aadhaar-number .eye-btn {
+  font-size: 16px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+.aadhaar-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  background: #fff;
+  margin: 8px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  font-size: 32px;
+}
+.aadhaar-name-hi {
+  font-size: 17px;
+  font-weight: 700;
+  font-family: var(--font-hindi);
+  color: var(--ink);
+}
+.aadhaar-name-en {
+  font-size: 13px;
+  color: var(--ink-secondary);
+  margin-top: 2px;
+}
+.aadhaar-details {
+  font-size: 11px;
+  color: var(--ink-tertiary);
+  margin-top: 4px;
+}
+
+/* KLH Section inside phone */
+.klh-section {
+  padding: 12px;
+}
+.klh-heading-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  border: 2px solid transparent;
+}
+.klh-heading-row:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.klh-heading-row.active {
+  border-color: var(--blue);
+}
+.klh-heading-row h3 {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-hindi);
+  line-height: 1.4;
+}
+.klh-ear-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: var(--surface);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  color: var(--ink-secondary);
+}
+.klh-ear-btn.ting { background: var(--saffron); color: #fff; transform: scale(1.15); }
+.klh-ear-btn.processing { background: var(--blue); color: #fff; animation: klhPulse 1.5s infinite; }
+.klh-ear-btn.speaking { background: var(--green); color: #fff; }
+
+/* KLH response area */
+.klh-response {
+  padding: 8px 12px 12px;
+  background: #fff;
+  border-radius: 0 0 10px 10px;
+  margin-top: -6px;
+  margin-bottom: 6px;
+  border: 1px solid var(--border);
+  border-top: none;
+  animation: slideDown 0.2s ease;
+}
+.klh-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.klh-badge.informational { background: var(--green-light); color: #005A30; }
+.klh-badge.caution { background: var(--yellow-light); color: #594D00; }
+.klh-badge.critical { background: var(--red-light); color: var(--red); }
+.klh-explanation {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ink);
+  font-family: var(--font-hindi);
+  padding: 8px 10px;
+  background: var(--surface);
+  border-radius: 6px;
+  border-left: 3px solid var(--blue);
+}
+.klh-processing-text {
+  font-size: 12px;
+  color: var(--blue);
+  font-style: italic;
+  font-family: var(--font-hindi);
+}
+
+/* Action row */
+.action-row {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 8px 16px;
+}
+.action-item {
+  text-align: center;
+}
+.action-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin: 0 auto 4px;
+}
+.action-label {
+  font-size: 10px;
+  color: var(--ink-secondary);
+}
+
+/* Bottom Nav */
+.bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #fff;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 10;
+  border-radius: 0 0 30px 30px;
+}
+.nav-item {
+  text-align: center;
+  font-size: 9px;
+  color: var(--ink-tertiary);
+  cursor: pointer;
+}
+.nav-item.active { color: var(--blue); }
+.nav-item-icon { font-size: 18px; margin-bottom: 1px; }
+.nav-spacer { width: 56px; }
+
+/* SCAN FAB */
+.scan-fab {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  border: 4px solid #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+  box-shadow: 0 4px 20px rgba(29,112,184,0.4);
+  transition: all 0.25s;
+}
+.scan-fab:hover { transform: translateX(-50%) scale(1.05); }
+.scan-fab.open { background: var(--ink); box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+
+/* Bottom Sheet */
+.bottom-sheet {
+  position: absolute;
+  bottom: 56px;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  padding: 16px;
+  z-index: 20;
+  box-shadow: 0 -8px 32px rgba(0,0,0,0.12);
+  animation: sheetUp 0.25s ease;
+}
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 0 auto 14px;
+}
+.sheet-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.sheet-option {
+  padding: 16px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s, background 0.15s;
+}
+.sheet-option:hover {
+  border-color: var(--blue);
+  background: var(--blue-light);
+}
+.sheet-option-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin: 0 auto 8px;
+}
+.sheet-option-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Overlays */
+.overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 30px;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.overlay-close {
+  position: absolute;
+  top: 52px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* QR Camera */
+.qr-camera {
+  background: #111;
+  align-items: center;
+  justify-content: center;
+}
+.qr-viewfinder {
+  width: 180px;
+  height: 180px;
+  position: relative;
+}
+.qr-corner {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+}
+.qr-corner.tl { top: 0; left: 0; border-top: 4px solid var(--green); border-left: 4px solid var(--green); border-radius: 6px 0 0 0; }
+.qr-corner.tr { top: 0; right: 0; border-top: 4px solid var(--green); border-right: 4px solid var(--green); border-radius: 0 6px 0 0; }
+.qr-corner.bl { bottom: 0; left: 0; border-bottom: 4px solid var(--green); border-left: 4px solid var(--green); border-radius: 0 0 0 6px; }
+.qr-corner.br { bottom: 0; right: 0; border-bottom: 4px solid var(--green); border-right: 4px solid var(--green); border-radius: 0 0 6px 0; }
+.qr-scanline {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  height: 2px;
+  background: var(--green);
+  box-shadow: 0 0 12px rgba(0,112,60,0.5);
+  transition: top 0.08s linear;
+}
+.qr-dummy-scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.15;
+}
+.qr-dummy-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 20px);
+  gap: 6px;
+}
+.qr-dummy-grid span {
+  width: 20px;
+  height: 20px;
+  background: rgba(255,255,255,0.4);
+  border-radius: 2px;
+}
+
+/* Face camera */
+.face-camera {
+  background: #111;
+  align-items: center;
+  justify-content: center;
+}
+.face-oval {
+  width: 170px;
+  height: 220px;
+  border: 3px solid rgba(255,255,255,0.35);
+  border-radius: 50%;
+  position: relative;
+  transition: border-color 0.3s;
+}
+.face-oval.verifying {
+  border-color: var(--saffron);
+  animation: facePulse 1.5s infinite;
+}
+.face-oval-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.2);
+  font-size: 48px;
+}
+.face-progress {
+  width: 170px;
+  height: 4px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 2px;
+  margin-top: 16px;
+  overflow: hidden;
+}
+.face-progress-bar {
+  height: 100%;
+  background: var(--saffron);
+  border-radius: 2px;
+  transition: width 0.06s linear;
+}
+
+/* Consent sheet */
+.consent-overlay {
+  background: rgba(0,0,0,0.5);
+  align-items: flex-end;
+}
+.consent-sheet {
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  padding: 24px 20px;
+  width: 100%;
+  animation: sheetUp 0.25s ease;
+}
+.consent-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.consent-shield {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--green);
+  font-size: 22px;
+}
+.consent-title {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-hindi);
+}
+.consent-body {
+  font-size: 13px;
+  color: var(--ink-secondary);
+  line-height: 1.6;
+  margin-bottom: 12px;
+  font-family: var(--font-hindi);
+}
+.consent-meta {
+  padding: 10px;
+  background: var(--surface);
+  border-radius: 8px;
+  font-size: 11px;
+  margin-bottom: 12px;
+}
+.consent-purpose { font-weight: 600; margin-bottom: 4px; }
+.consent-rights { color: var(--ink-secondary); }
+.consent-act { font-size: 10px; color: var(--ink-tertiary); margin-bottom: 16px; }
+.consent-buttons {
+  display: flex;
+  gap: 10px;
+}
+.consent-btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-hindi);
+}
+.consent-btn.deny { background: #fff; border: 1px solid var(--border); color: var(--ink); }
+.consent-btn.allow { background: var(--green); border: none; color: #fff; }
+
+/* Success overlay */
+.success-overlay {
+  background: rgba(0,112,60,0.95);
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.success-check {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  font-size: 32px;
+}
+.success-text {
+  font-size: 18px;
+  font-weight: 700;
+  font-family: var(--font-hindi);
+}
+.success-dismiss {
+  margin-top: 20px;
+  padding: 10px 36px;
+  border-radius: 8px;
+  border: 2px solid rgba(255,255,255,0.3);
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Voice guidance bar */
+.voice-bar {
+  padding: 8px 16px;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+  font-family: var(--font-hindi);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: auto;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  margin-left: 16px;
+  margin-right: 16px;
+}
+
+/* === EXPLANATION PANELS === */
+.explain-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.explain-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.explain-card p {
+  font-size: 14px;
+  color: var(--ink-secondary);
+  line-height: 1.7;
+}
+.explain-step {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.explain-step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.explain-step-text {
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.6;
+}
+.explain-step-text strong {
+  color: var(--blue);
+}
+
+/* === PROPOSAL SECTION === */
+.proposal-bg {
+  background: #fff;
+}
+.proposal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+.proposal-card {
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  transition: border-color 0.2s;
+}
+.proposal-card:hover { border-color: var(--saffron); }
+.proposal-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+.proposal-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.proposal-card p {
+  font-size: 13px;
+  color: var(--ink-secondary);
+  line-height: 1.6;
+}
+
+/* === ARCHITECTURE DIAGRAM === */
+.arch-diagram {
+  background: var(--ink);
+  border-radius: 12px;
+  padding: 40px 32px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+.arch-diagram::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px),
+              repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px);
+}
+.arch-inner { position: relative; z-index: 1; }
+.arch-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  margin-bottom: 32px;
+  text-align: center;
+  color: var(--saffron);
+}
+.arch-layers {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.arch-layer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.arch-layer-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.arch-layer-content {
+  flex: 1;
+}
+.arch-layer-name {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+.arch-layer-desc {
+  font-size: 12px;
+  color: #B1B4B6;
+  line-height: 1.5;
+}
+.arch-layer-tag {
+  font-size: 10px;
+  padding: 2px 10px;
+  border-radius: 3px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.arch-arrow {
+  text-align: center;
+  color: rgba(255,255,255,0.3);
+  font-size: 18px;
+  margin: -4px 0;
+  letter-spacing: 4px;
+}
+.arch-consumers {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.arch-consumer {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #B1B4B6;
+}
+
+/* === QUOTE / CALLOUT === */
+.callout {
+  padding: 24px 28px;
+  border-radius: 8px;
+  position: relative;
+  margin-bottom: 32px;
+}
+.callout.saffron { background: var(--saffron-light); border-left: 5px solid var(--saffron); }
+.callout.blue { background: var(--blue-light); border-left: 5px solid var(--blue); }
+.callout.green { background: var(--green-light); border-left: 5px solid var(--green); }
+.callout p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ink);
+}
+.callout strong { color: var(--ink); }
+.callout .source {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--ink-tertiary);
+}
+
+/* === FOOTER === */
+.poc-footer {
+  background: var(--ink);
+  color: #B1B4B6;
+  padding: 32px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.poc-footer strong { color: #fff; }
+
+/* === ANIMATIONS === */
+@keyframes klhPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.92); } }
+@keyframes facePulse { 0%, 100% { border-color: rgba(244,119,56,0.3); } 50% { border-color: var(--saffron); } }
+@keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes slideDown { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 300px; } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in { animation: fadeIn 0.5s ease both; }
+.fade-in-d1 { animation-delay: 0.1s; }
+.fade-in-d2 { animation-delay: 0.2s; }
+.fade-in-d3 { animation-delay: 0.3s; }
+.fade-in-d4 { animation-delay: 0.4s; }
+
+@media (max-width: 860px) {
+  .demo-layout { flex-direction: column; align-items: center; }
+  .demo-phone-col { position: static; flex: none; }
+  .demo-explain-col { width: 100%; }
+  .phone-frame { width: 340px; height: 700px; }
+}
+@media (max-width: 440px) {
+  .phone-frame { width: 300px; height: 640px; }
+  .section { padding: 32px 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- HERO -->
+<!-- ============================================================ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1"/></svg>
+      Proof of Concept · February 2026
+    </div>
+    <h1>Indian Government <em>Design System</em></h1>
+    <p class="hero-sub">
+      A shared, accessible, multilingual design infrastructure for all Indian government digital services —
+      seeded by UIDAI, deployed as a public good. This PoC demonstrates two novel interaction patterns
+      built on the proposed token architecture.
+    </p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><strong>14</strong>Languages</div>
+      <div class="hero-meta-item"><strong>13</strong>Scripts</div>
+      <div class="hero-meta-item"><strong>1.4B</strong>Citizens served</div>
+      <div class="hero-meta-item"><strong>56px</strong>Touch target (govIn)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- INTERACTIVE DEMO -->
+<!-- ============================================================ -->
+<div class="demo-section">
+  <div class="demo-wrapper">
+    <div class="section-label">Interactive Demonstration</div>
+    <h2 style="font-family: var(--font-display); font-size: 32px; margin-bottom: 8px;">Two patterns. One principle.</h2>
+    <p class="section-desc">The burden of legibility falls on the system, not the person. The interface speaks before the citizen must read. The camera receives identity before the citizen must type.</p>
+
+    <div class="demo-layout">
+      <!-- PHONE -->
+      <div class="demo-phone-col">
+        <div class="phone-frame" id="phoneFrame">
+          <div class="phone-screen" id="phoneScreen">
+            <div class="phone-notch"></div>
+            <div class="phone-statusbar">
+              <span>9:41</span>
+              <span>●●● WiFi ▐▐▐▐</span>
+            </div>
+
+            <!-- App Header -->
+            <div class="app-header">
+              <div class="app-header-left">
+                <div class="app-avatar">AK</div>
+                <span class="app-add-profile">+ Add Profile</span>
+              </div>
+              <div class="app-header-right">
+                <span class="lang-toggle">अ<sub style="font-size:10px">A</sub></span>
+                <span style="font-size:16px; cursor:pointer;">🔔</span>
+              </div>
+            </div>
+
+            <!-- Aadhaar Card -->
+            <div class="aadhaar-card">
+              <div class="aadhaar-number">XXXX XXXX 9000 <button class="eye-btn" aria-label="Show Aadhaar number">👁</button></div>
+              <div class="aadhaar-photo">👤</div>
+              <div class="aadhaar-name-hi">अरुणेश्वर कुमार</div>
+              <div class="aadhaar-name-en">Aruneshwar Kumar</div>
+              <div class="aadhaar-details">जन्मतिथि / DOB: 17/09/1998 · पुरुष / Male</div>
+            </div>
+
+            <!-- KLH Headings -->
+            <div class="klh-section" id="klhSection">
+              <div class="klh-heading-row" id="klh-row-1" onclick="triggerKLH(1)">
+                <h3>आधार अपडेट करें</h3>
+                <button class="klh-ear-btn" id="klh-btn-1" aria-label="क्या लिखा है — समझाओ: आधार अपडेट करें">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C7.58 2 4 5.58 4 10c0 3.31 2.69 6 6 6h.5c.28 0 .5.22.5.5v3c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V18c2.76 0 5-2.24 5-5V10c0-4.42-3.58-8-8-8z" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="10" r="1.5" fill="currentColor"/></svg>
+                </button>
+              </div>
+              <div id="klh-response-1" style="display:none"></div>
+
+              <div class="klh-heading-row" id="klh-row-2" onclick="triggerKLH(2)">
+                <h3>बायोमेट्रिक लॉक सक्रिय</h3>
+                <button class="klh-ear-btn" id="klh-btn-2" aria-label="क्या लिखा है — समझाओ: बायोमेट्रिक लॉक सक्रिय">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C7.58 2 4 5.58 4 10c0 3.31 2.69 6 6 6h.5c.28 0 .5.22.5.5v3c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V18c2.76 0 5-2.24 5-5V10c0-4.42-3.58-8-8-8z" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="10" r="1.5" fill="currentColor"/></svg>
+                </button>
+              </div>
+              <div id="klh-response-2" style="display:none"></div>
+
+              <div class="klh-heading-row" id="klh-row-3" onclick="triggerKLH(3)">
+                <h3>⚠ संदिग्ध गतिविधि</h3>
+                <button class="klh-ear-btn" id="klh-btn-3" aria-label="क्या लिखा है — समझाओ: संदिग्ध गतिविधि">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C7.58 2 4 5.58 4 10c0 3.31 2.69 6 6 6h.5c.28 0 .5.22.5.5v3c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V18c2.76 0 5-2.24 5-5V10c0-4.42-3.58-8-8-8z" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="10" r="1.5" fill="currentColor"/></svg>
+                </button>
+              </div>
+              <div id="klh-response-3" style="display:none"></div>
+            </div>
+
+            <!-- Action Row -->
+            <div class="action-row">
+              <div class="action-item"><div class="action-icon">↗️</div><div class="action-label">शेयर</div></div>
+              <div class="action-item"><div class="action-icon">⬇️</div><div class="action-label">डाउनलोड</div></div>
+              <div class="action-item"><div class="action-icon">🔒</div><div class="action-label">लॉक</div></div>
+            </div>
+
+            <!-- Bottom Nav -->
+            <div class="bottom-nav">
+              <div class="nav-item active"><div class="nav-item-icon">🏠</div>Home</div>
+              <div class="nav-item"><div class="nav-item-icon">🔒</div>Security</div>
+              <div class="nav-spacer"></div>
+              <div class="nav-item"><div class="nav-item-icon">📋</div>Services</div>
+              <div class="nav-item"><div class="nav-item-icon">❓</div>Help</div>
+            </div>
+
+            <!-- SCAN FAB -->
+            <button class="scan-fab" id="scanFab" onclick="toggleScanSheet()" aria-label="स्कैन या सत्यापन" aria-haspopup="dialog">
+              <svg width="26" height="26" viewBox="0 0 28 28" fill="none" id="fabIconScan"><path d="M4 9V5a1 1 0 011-1h4M19 4h4a1 1 0 011 1v4M24 19v4a1 1 0 01-1 1h-4M9 24H5a1 1 0 01-1-1v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="8" y="8" width="5" height="5" rx="0.5" stroke="currentColor" stroke-width="1.5"/><rect x="15" y="8" width="5" height="5" rx="0.5" stroke="currentColor" stroke-width="1.5"/><rect x="8" y="15" width="5" height="5" rx="0.5" stroke="currentColor" stroke-width="1.5"/></svg>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" id="fabIconClose" style="display:none"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+
+            <!-- DYNAMIC OVERLAYS (inserted by JS) -->
+            <div id="overlayContainer"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXPLANATION -->
+      <div class="demo-explain-col">
+        <div class="explain-card fade-in">
+          <h3>👂 क्या लिखा है — "What does it say?"</h3>
+          <p style="margin-bottom: 14px;">Tap the ear icon next to any heading. The system confirms with a <em>ting</em>, classifies the content, plays a distinct tone, then speaks the explanation aloud.</p>
+          <div class="explain-step"><div class="explain-step-num">1</div><div class="explain-step-text"><strong>Ting</strong> (880Hz, 80ms) — auditory confirmation. "I heard you."</div></div>
+          <div class="explain-step"><div class="explain-step-num">2</div><div class="explain-step-text"><strong>Classification</strong> — Gemini infers informational / caution / critical. Distinct tone per class.</div></div>
+          <div class="explain-step"><div class="explain-step-num">3</div><div class="explain-step-text"><strong>Explanation</strong> — AI generates a plain-language summary. Sarvam Bulbul speaks it aloud in the active language.</div></div>
+          <div class="explain-step"><div class="explain-step-num">4</div><div class="explain-step-text"><strong>ARIA live region</strong> updates at each step — screen readers announce in parallel.</div></div>
+        </div>
+
+        <div class="explain-card fade-in fade-in-d1">
+          <h3>📷 Scan Button — Camera + Face Auth</h3>
+          <p style="margin-bottom: 14px;">The central FAB breaks the nav grid — spatial signal for primary action. Two paths through one button:</p>
+          <div class="explain-step"><div class="explain-step-num">A</div><div class="explain-step-text"><strong>QR / Document Scan</strong> — Camera opens immediately with viewfinder and voice guidance.</div></div>
+          <div class="explain-step"><div class="explain-step-num">B</div><div class="explain-step-text"><strong>Face Authentication</strong> — DPDP Act consent capture first, then camera with face oval guide and timed voice prompts.</div></div>
+        </div>
+
+        <div class="explain-card fade-in fade-in-d2" style="background: var(--saffron-light); border-color: var(--saffron);">
+          <h3>🔊 Voice Guidance Engine</h3>
+          <p>Shared service across both patterns. Queued announcements — never overlapping. Minimum 1.5s gap. <code>aria-live="polite"</code> throughout. Tones via Web Audio API (no files needed). TTS via Sarvam Bulbul for natural Indic speech.</p>
+        </div>
+
+        <div class="explain-card fade-in fade-in-d3" style="background: var(--green-light); border-color: var(--green);">
+          <h3 style="color: #003300;">Design Principle</h3>
+          <p style="font-size: 16px; font-weight: 600; color: #003300; font-style: italic;">The interface speaks before the citizen must read.<br>The camera receives identity before the citizen must type.<br>The burden of legibility falls on the system, not the person.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- THE PROPOSAL -->
+<!-- ============================================================ -->
+<div class="proposal-bg">
+  <div class="section">
+    <div class="section-label">The Proposal</div>
+    <h2>A Design System as Digital Public Infrastructure</h2>
+    <p class="section-desc">
+      India built identity infrastructure the world studies. India built payment infrastructure the world adopts.
+      India has never built <strong>experience infrastructure</strong> — the shared layer that makes interacting with the state
+      legible, consistent, and dignified across every touchpoint.
+    </p>
+
+    <div class="proposal-grid">
+      <div class="proposal-card fade-in">
+        <div class="proposal-card-icon" style="background: var(--saffron-light); color: var(--saffron);">🎯</div>
+        <h3>Token-Driven</h3>
+        <p>W3C Design Tokens format. Primitive → semantic → component layers. 
+           Style Dictionary compiles to CSS, iOS Swift, Android Compose from one source of truth.</p>
+      </div>
+      <div class="proposal-card fade-in fade-in-d1">
+        <div class="proposal-card-icon" style="background: var(--blue-light); color: var(--blue);">🌐</div>
+        <h3>14 Languages, 13 Scripts</h3>
+        <p>Per-script expansion factors, line-height multipliers, RTL support for Urdu.
+           The bhāṣā problem solved as a first-class token primitive.</p>
+      </div>
+      <div class="proposal-card fade-in fade-in-d2">
+        <div class="proposal-card-icon" style="background: var(--green-light); color: var(--green);">♿</div>
+        <h3>Population-Scale Access</h3>
+        <p>56px touch targets for calloused hands. 2G-functional. ₹6,000 device baseline.
+           WCAG 2.1 AA minimum, AAA target. AI-driven reading assistant for neo-literate users.</p>
+      </div>
+      <div class="proposal-card fade-in fade-in-d3">
+        <div class="proposal-card-icon" style="background: var(--yellow-light); color: #594D00;">📦</div>
+        <h3>Containerised Commons</h3>
+        <p>Docker container + npm package. Departments install, theme via brand tokens, ship.
+           Fork-and-extend model. Git-based governance. Observable adoption.</p>
+      </div>
+      <div class="proposal-card fade-in fade-in-d4">
+        <div class="proposal-card-icon" style="background: var(--red-light); color: var(--red);">🔐</div>
+        <h3>Three-Tier Governance</h3>
+        <p><strong>Canonical:</strong> UIDAI controls primitives. <strong>Extended:</strong> Departments create semantic tokens. 
+           <strong>Consumer:</strong> Self-service theming. Accessibility tokens never overridable.</p>
+      </div>
+      <div class="proposal-card fade-in fade-in-d4">
+        <div class="proposal-card-icon" style="background: #F3E8FF; color: #4C2C92;">🤖</div>
+        <h3>Generative-Ready</h3>
+        <p>The canonical token layer becomes the constraint grammar for AI-generated UIs.
+           Guardrails for generative public services. Future-proof by architecture, not by prediction.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- ARCHITECTURE DIAGRAM -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-label">Architecture</div>
+  <h2>How It Deploys — Design System as India Commons</h2>
+  <p class="section-desc">From UIDAI's master design system to every government digital service. The pattern follows India Stack's proven rail model: build once, offer as infrastructure, let adoption prove the case.</p>
+
+  <div class="arch-diagram">
+    <div class="arch-inner">
+      <div class="arch-title">IGDS Three-Layer Token Architecture</div>
+      <div class="arch-layers">
+        <!-- Layer 1 -->
+        <div class="arch-layer" style="background: rgba(212,53,28,0.1); border-color: rgba(212,53,28,0.3);">
+          <div class="arch-layer-num" style="background: var(--red); color: #fff;">1</div>
+          <div class="arch-layer-content">
+            <div class="arch-layer-name">Canonical Token Layer</div>
+            <div class="arch-layer-desc">Spacing, type scale, contrast ratios, touch targets, motion, Indic script parameters. Non-negotiable ergonomic facts. Governed by UIDAI.</div>
+          </div>
+          <div class="arch-layer-tag" style="background: rgba(212,53,28,0.2); color: #F4C5BD;">NEVER OVERRIDE</div>
+        </div>
+
+        <div class="arch-arrow">↕</div>
+
+        <!-- Layer 2 -->
+        <div class="arch-layer" style="background: rgba(244,119,56,0.1); border-color: rgba(244,119,56,0.3);">
+          <div class="arch-layer-num" style="background: var(--saffron); color: #fff;">2</div>
+          <div class="arch-layer-content">
+            <div class="arch-layer-name">Semantic Token Layer</div>
+            <div class="arch-layer-desc">color.primary, surface.page, feedback.success — the shared grammar. Departments map their identity onto these slots. Coherence without uniformity.</div>
+          </div>
+          <div class="arch-layer-tag" style="background: rgba(244,119,56,0.2); color: #F9D6B0;">DEPT. EXTENDS</div>
+        </div>
+
+        <div class="arch-arrow">↕</div>
+
+        <!-- Layer 3 -->
+        <div class="arch-layer" style="background: rgba(29,112,184,0.1); border-color: rgba(29,112,184,0.3);">
+          <div class="arch-layer-num" style="background: var(--blue); color: #fff;">3</div>
+          <div class="arch-layer-content">
+            <div class="arch-layer-name">Component + Pattern Layer</div>
+            <div class="arch-layer-desc">OTP input, language selector, consent capture, Kya Likha Hai, Scan FAB — shared UI patterns. Each department's service looks distinct but the citizen's journey feels familiar.</div>
+          </div>
+          <div class="arch-layer-tag" style="background: rgba(29,112,184,0.2); color: #BFD7EC;">COMPOSE & USE</div>
+        </div>
+
+        <div class="arch-arrow">↕</div>
+
+        <!-- Distribution -->
+        <div class="arch-layer" style="background: rgba(0,112,60,0.1); border-color: rgba(0,112,60,0.3);">
+          <div class="arch-layer-num" style="background: var(--green); color: #fff;">📦</div>
+          <div class="arch-layer-content">
+            <div class="arch-layer-name">Container + npm Distribution</div>
+            <div class="arch-layer-desc"><code style="color:#85D49A">npm install @gov-in/design-system</code> · Docker container · Storybook docs · Figma sync · CI/CD pipeline · Versioned, not mandated.</div>
+          </div>
+          <div class="arch-layer-tag" style="background: rgba(0,112,60,0.2); color: #B3E6C2;">PUBLIC GOOD</div>
+        </div>
+      </div>
+
+      <!-- Consumer departments -->
+      <div class="arch-consumers">
+        <div class="arch-consumer" style="border-color: var(--saffron); color: var(--saffron);">UIDAI / Aadhaar</div>
+        <div class="arch-consumer">DigiLocker</div>
+        <div class="arch-consumer">Ayushman Bharat</div>
+        <div class="arch-consumer">GST Portal</div>
+        <div class="arch-consumer">CoWIN</div>
+        <div class="arch-consumer">UMANG</div>
+        <div class="arch-consumer">Passport Seva</div>
+        <div class="arch-consumer">e-Courts</div>
+        <div class="arch-consumer">State Portals ×28</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- How this demo maps -->
+  <div class="callout saffron">
+    <p><strong>How this demo maps to the architecture:</strong>
+    The Kya Likha Hai and Scan FAB patterns demonstrated above live at <strong>Layer 3</strong> — composed patterns built from canonical tokens (touch targets, motion, typography) and semantic tokens (classification colours, state colours).
+    The Gemini AI classification and Sarvam Bulbul TTS are <strong>service integrations</strong> — the design system provides the UI contract; the AI services provide the intelligence. This separation means departments can swap inference providers without changing the interaction pattern.</p>
+  </div>
+
+  <div class="callout blue">
+    <p><strong>Economic case:</strong> 50+ central government portals, each spending ₹20–30 lakhs on foundational UI/UX that a shared system would obviate. Add state governments — the duplicated effort runs to crores annually. But the real value isn't cost savings. It's <strong>capability democratisation</strong>: a district-level NIC team in Mizoram ships the same quality as a ₹50 crore consultancy in Delhi.</p>
+  </div>
+
+  <div class="callout green">
+    <p><strong>Global South export:</strong> A design system that survives India's extremes — 14 languages, 13 scripts, ₹6,000 devices, 300M neo-literate users — is exportable to any developing nation. The method (one design authority + AI coding tools = population-scale system) becomes replicable infrastructure for Bangladesh, Nigeria, Indonesia. India leads by example, again.</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- FOOTER -->
+<!-- ============================================================ -->
+<div class="poc-footer">
+  <strong>IGDS — Indian Government Design System · Proof of Concept v0.2.0</strong><br>
+  Prepared by the Office of the Principal Design Advisor, UIDAI · February 2026<br>
+  Adapted from GOV.UK Design System (MIT License) · Built as Digital Public Infrastructure<br><br>
+  <span style="color: var(--saffron);">नींव पक्की तो इमारत पक्की</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- JAVASCRIPT — INTERACTIONS -->
+<!-- ============================================================ -->
+<script>
+// === WEB AUDIO TONE ENGINE ===
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+// === SARVAM TTS ===
+async function fetchAndDecode(text, speaker='anushka', language='hi-IN') {
+  const r = await fetch('/api/tts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text, language, speaker })
+  });
+  if (!r.ok) throw new Error('TTS ' + r.status);
+  const data = await r.json();
+  if (!data.data_uri) throw new Error('No audio');
+  const ctx = getAudioCtx();
+  await ctx.resume();
+  const b64 = data.data_uri.split(',')[1];
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return ctx.decodeAudioData(bytes.buffer);
+}
+
+async function speakText(text, speaker='anushka', language='hi-IN') {
+  try {
+    const ctx = getAudioCtx();
+    await ctx.resume();
+    const buf = await fetchAndDecode(text, speaker, language);
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    src.connect(ctx.destination);
+    src.start();
+  } catch(e) {
+    console.warn('TTS error:', e);
+  }
+}
+function playTone(freq, duration, type = 'sine', gain = 0.12) {
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    g.gain.setValueAtTime(gain, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration / 1000);
+    osc.connect(g); g.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + duration / 1000);
+  } catch(e) {}
+}
+function ting() { playTone(880, 80, 'sine', 0.1); }
+function toneInformational() { playTone(523, 200, 'sine', 0.08); }
+function toneCaution() { playTone(330, 150, 'triangle', 0.1); setTimeout(() => playTone(262, 200, 'triangle', 0.1), 180); }
+function toneCritical() { playTone(440, 100, 'square', 0.06); setTimeout(() => playTone(440, 100, 'square', 0.06), 150); setTimeout(() => playTone(440, 150, 'square', 0.06), 300); }
+function toneSuccess() { playTone(523, 120, 'sine', 0.08); setTimeout(() => playTone(659, 120, 'sine', 0.08), 140); setTimeout(() => playTone(784, 200, 'sine', 0.08), 280); }
+
+// === KLH DATA ===
+const klhData = {
+  1: { classification: 'informational', badge: 'ⓘ सूचना', explanation: 'यहाँ आप अपना नाम, पता, या जन्मतिथि जैसी जानकारी बदल सकते हैं। यह एक सामान्य सेवा है।', toneFn: toneInformational },
+  2: { classification: 'caution', badge: '△ सावधानी', explanation: 'आपका बायोमेट्रिक लॉक चालू है। कोई भी आपके फिंगरप्रिंट से सत्यापन नहीं कर सकता। अनलॉक करने के लिए सिक्योरिटी में जाएं।', toneFn: toneCaution },
+  3: { classification: 'critical', badge: '⚠ महत्वपूर्ण', explanation: 'आपके आधार से असामान्य गतिविधि जुड़ी है। कृपया तुरंत पहचान सत्यापित करें और हेल्पलाइन 1947 पर संपर्क करें।', toneFn: toneCritical },
+};
+let klhTimeouts = [];
+let activeKLH = null;
+
+function clearKLHTimeouts() { klhTimeouts.forEach(clearTimeout); klhTimeouts = []; }
+
+function resetKLH() {
+  clearKLHTimeouts();
+  [1,2,3].forEach(i => {
+    const btn = document.getElementById('klh-btn-' + i);
+    const row = document.getElementById('klh-row-' + i);
+    const resp = document.getElementById('klh-response-' + i);
+    btn.className = 'klh-ear-btn';
+    row.classList.remove('active');
+    resp.style.display = 'none';
+    resp.innerHTML = '';
+  });
+  activeKLH = null;
+}
+
+function triggerKLH(id) {
+  resetKLH();
+  activeKLH = id;
+  const data = klhData[id];
+  const btn = document.getElementById('klh-btn-' + id);
+  const row = document.getElementById('klh-row-' + id);
+  const resp = document.getElementById('klh-response-' + id);
+  row.classList.add('active');
+
+  // Step 1: Ting
+  btn.className = 'klh-ear-btn ting';
+  ting();
+
+  // Step 2: Processing
+  klhTimeouts.push(setTimeout(() => {
+    btn.className = 'klh-ear-btn processing';
+    resp.style.display = 'block';
+    resp.innerHTML = '<div class="klh-response"><div class="klh-processing-text">समझ रहा हूँ...</div></div>';
+  }, 400));
+
+  // Step 3: Classification
+  klhTimeouts.push(setTimeout(() => {
+    data.toneFn();
+    resp.innerHTML = `<div class="klh-response"><div class="klh-badge ${data.classification}">${data.badge}</div></div>`;
+  }, 2000));
+
+  // Step 4: Explanation + TTS
+  klhTimeouts.push(setTimeout(() => {
+    btn.className = 'klh-ear-btn speaking';
+    // Reveal with typing effect
+    const fullText = data.explanation;
+    let charIdx = 0;
+    resp.innerHTML = `<div class="klh-response"><div class="klh-badge ${data.classification}">${data.badge}</div><div class="klh-explanation" id="klh-type-${id}"></div></div>`;
+    const typeEl = document.getElementById('klh-type-' + id);
+    const typeInterval = setInterval(() => {
+      charIdx += 2;
+      typeEl.textContent = fullText.substring(0, charIdx);
+      if (charIdx >= fullText.length) clearInterval(typeInterval);
+    }, 20);
+    // Speak the explanation via Sarvam Bulbul
+    speakText(fullText, 'anushka', 'hi-IN');
+  }, 3000));
+
+  // Step 5: Done
+  klhTimeouts.push(setTimeout(() => {
+    btn.className = 'klh-ear-btn';
+  }, 7000));
+}
+
+// === SCAN FAB ===
+let scanState = 'closed';
+let scanTimeouts = [];
+function clearScanTimeouts() { scanTimeouts.forEach(clearTimeout); scanTimeouts = []; }
+
+function toggleScanSheet() {
+  if (scanState === 'closed') {
+    openSheet();
+  } else {
+    closeScan();
+  }
+}
+
+function updateFabIcon(isOpen) {
+  document.getElementById('fabIconScan').style.display = isOpen ? 'none' : 'block';
+  document.getElementById('fabIconClose').style.display = isOpen ? 'block' : 'none';
+  document.getElementById('scanFab').classList.toggle('open', isOpen);
+}
+
+function openSheet() {
+  scanState = 'sheet';
+  updateFabIcon(true);
+  document.getElementById('overlayContainer').innerHTML = `
+    <div class="bottom-sheet" role="dialog" aria-label="स्कैन विकल्प चुनें">
+      <div class="sheet-handle"></div>
+      <div class="sheet-options">
+        <div class="sheet-option" onclick="startQR()" tabindex="0" role="button" aria-label="QR / दस्तावेज़ स्कैन करें">
+          <div class="sheet-option-icon" style="background: var(--blue-light); color: var(--blue);">📷</div>
+          <div class="sheet-option-label">QR / दस्तावेज़ स्कैन</div>
+        </div>
+        <div class="sheet-option" onclick="startFaceAuth()" tabindex="0" role="button" aria-label="चेहरा प्रमाणीकरण">
+          <div class="sheet-option-icon" style="background: var(--saffron-light); color: var(--saffron);">🔐</div>
+          <div class="sheet-option-label">चेहरा प्रमाणीकरण</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function closeScan() {
+  clearScanTimeouts();
+  scanState = 'closed';
+  updateFabIcon(false);
+  document.getElementById('overlayContainer').innerHTML = '';
+}
+
+function startQR() {
+  scanState = 'qr';
+  let scanPos = 0;
+  document.getElementById('overlayContainer').innerHTML = `
+    <div class="overlay qr-camera">
+      <button class="overlay-close" onclick="closeScan()" aria-label="बंद करें">✕</button>
+      <div class="qr-dummy-scene"><div class="qr-dummy-grid">${'<span></span>'.repeat(36)}</div></div>
+      <div class="qr-viewfinder">
+        <div class="qr-corner tl"></div><div class="qr-corner tr"></div>
+        <div class="qr-corner bl"></div><div class="qr-corner br"></div>
+        <div class="qr-scanline" id="qrScanline" style="top:0%"></div>
+      </div>
+      <div class="voice-bar" role="status" aria-live="polite" id="qrVoice">🔊 कैमरा तैयार है।</div>
+    </div>`;
+
+  // Animate scan line
+  const scanInterval = setInterval(() => {
+    scanPos = (scanPos + 1.5) % 100;
+    const el = document.getElementById('qrScanline');
+    if (el) el.style.top = scanPos + '%';
+  }, 30);
+
+  // Voice guidance
+  scanTimeouts.push(setTimeout(() => {
+    const v = document.getElementById('qrVoice');
+    if (v) v.textContent = '🔊 QR कोड को फ्रेम में दिखाएं।';
+  }, 2000));
+
+  // Simulate success
+  scanTimeouts.push(setTimeout(() => {
+    clearInterval(scanInterval);
+    toneSuccess();
+    showSuccess();
+  }, 5000));
+}
+
+function startFaceAuth() {
+  scanState = 'consent';
+  document.getElementById('overlayContainer').innerHTML = `
+    <div class="overlay consent-overlay">
+      <div class="consent-sheet">
+        <div class="consent-header">
+          <div class="consent-shield">🛡️</div>
+          <div class="consent-title">चेहरा प्रमाणीकरण सहमति</div>
+        </div>
+        <div class="consent-body">DPDP अधिनियम 2023 के तहत चेहरे की पहचान सत्यापन के लिए कैमरा उपयोग किया जाएगा।</div>
+        <div class="consent-meta">
+          <div class="consent-purpose">उद्देश्य: आधार चेहरा प्रमाणीकरण द्वारा पहचान सत्यापन</div>
+          <div class="consent-rights">आप सेटिंग्स से कभी भी सहमति वापस ले सकते हैं।</div>
+        </div>
+        <div class="consent-act">DPDP Act 2023 · Section 6 · Data Principal Rights</div>
+        <div class="consent-buttons">
+          <button class="consent-btn deny" onclick="closeScan()">रद्द करें</button>
+          <button class="consent-btn allow" onclick="startFaceCamera()">अनुमति दें</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function startFaceCamera() {
+  scanState = 'face';
+  document.getElementById('overlayContainer').innerHTML = `
+    <div class="overlay face-camera">
+      <button class="overlay-close" onclick="closeScan()" aria-label="बंद करें">✕</button>
+      <div class="face-oval" id="faceOval">
+        <div class="face-oval-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none"><path d="M4 8V6a2 2 0 012-2h2M16 4h2a2 2 0 012 2v2M20 16v2a2 2 0 01-2 2h-2M8 20H6a2 2 0 01-2-2v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="15" cy="10" r="1" fill="currentColor"/><path d="M9 15c1 1.5 5 1.5 6 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <div class="face-progress" id="faceProgressWrap" style="display:none"><div class="face-progress-bar" id="faceProgressBar" style="width:0%"></div></div>
+      <div class="voice-bar" role="status" aria-live="polite" id="faceVoice">🔊 कैमरा तैयार है।</div>
+    </div>`;
+
+  // Voice sequence
+  scanTimeouts.push(setTimeout(() => {
+    const v = document.getElementById('faceVoice');
+    if (v) v.textContent = '🔊 कृपया अपना चेहरा अंडाकार में लाएं।';
+  }, 1500));
+
+  // Verifying
+  scanTimeouts.push(setTimeout(() => {
+    const oval = document.getElementById('faceOval');
+    const pw = document.getElementById('faceProgressWrap');
+    const v = document.getElementById('faceVoice');
+    if (oval) oval.classList.add('verifying');
+    if (pw) pw.style.display = 'block';
+    if (v) v.textContent = '🔊 स्थिर रहें... पहचान हो रही है।';
+
+    let prog = 0;
+    const progInterval = setInterval(() => {
+      prog += 2;
+      const bar = document.getElementById('faceProgressBar');
+      if (bar) bar.style.width = prog + '%';
+      if (prog >= 100) {
+        clearInterval(progInterval);
+        toneSuccess();
+        showSuccess();
+      }
+    }, 50);
+  }, 4000));
+}
+
+function showSuccess() {
+  scanState = 'success';
+  document.getElementById('overlayContainer').innerHTML = `
+    <div class="overlay success-overlay">
+      <div class="success-check">✓</div>
+      <div class="success-text">पहचान सफल</div>
+      <button class="success-dismiss" onclick="closeScan()">ठीक है</button>
+    </div>`;
+}
+</script>
+
+</body>
+</html>

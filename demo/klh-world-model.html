@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>KLH World Model</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f5f7;--card:#fff;--border:#e2e2e8;--text:#1a1a2e;--text2:#555;--text3:#888;
+  --sidebar:#1a1a2e;--accent:#6c5ce7;--accent-light:#a29bfe;
+  --L1:#2ecc71;--L2:#3498db;--L3:#f39c12;--L4:#e74c3c;
+  --green:#2ecc71;--red:#e74c3c;--amber:#f39c12;
+  --upi-blue:#1a237e;--sidebar-w:200px;
+}
+html{font-size:15px}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;display:flex}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--sidebar);color:#fff;position:fixed;left:0;top:0;bottom:0;z-index:100;display:flex;flex-direction:column;padding:28px 18px 18px}
+.sidebar h1{font-size:1rem;font-weight:600;letter-spacing:-.3px;line-height:1.3}
+.sidebar .sub{font-size:.68rem;color:#888;margin-top:4px;line-height:1.4}
+.sidebar-divider{height:1px;background:#333;margin:20px 0}
+.sidebar-section{font-size:.58rem;text-transform:uppercase;letter-spacing:.8px;color:#666;margin-bottom:8px;font-weight:500}
+.status-row{display:flex;align-items:center;gap:6px;font-size:.7rem;color:#aaa;margin-bottom:8px}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.dot-g{background:var(--green)}.dot-r{background:var(--red)}
+.sidebar-meta{margin-top:auto;font-size:.6rem;color:#555;line-height:1.5}
+.sidebar-meta span{color:#777}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column}
+
+/* TABS */
+.tabs{display:flex;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.tab-btn{padding:12px 24px;font-size:.8rem;font-weight:500;color:var(--text2);border-bottom:2px solid transparent;transition:all .15s}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.tab-panel{display:none;padding:20px 24px;flex:1}
+.tab-panel.active{display:flex;flex-direction:column}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px}
+.card-title{font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;font-weight:500}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.stat .val{font-size:1.4rem;font-weight:700}
+.stat .lbl{font-size:.62rem;color:var(--text3);margin-top:2px}
+
+/* HEATMAP */
+.hm-row{display:grid;grid-template-columns:1.2fr 40px 140px 32px 32px;align-items:center;padding:6px 0;border-bottom:1px solid #f0f0f3;font-size:.76rem;gap:6px}
+.hm-row:last-child{border-bottom:none}
+.hm-name{font-weight:500;cursor:pointer;color:var(--accent)}.hm-name:hover{text-decoration:underline}
+.hm-mat{font-size:.6rem;font-weight:600;padding:2px 5px;border-radius:4px;text-align:center;color:#fff}
+.hm-bar-wrap{height:8px;background:#eee;border-radius:4px;overflow:hidden}
+.hm-bar{height:100%;border-radius:4px;transition:width .4s}
+.hm-count{font-size:.7rem;text-align:center;color:var(--text2)}
+.hm-play{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;transition:background .15s}
+.hm-play.can-play{background:var(--accent);color:#fff}.hm-play.can-play:hover{background:#5a4bd1}
+.hm-play.no-play{background:#eee;color:#ccc;cursor:default}
+.threshold-line{border-top:2px dashed var(--red);margin:4px 0;position:relative}
+.threshold-label{position:absolute;right:0;top:-14px;font-size:.58rem;color:var(--red);font-weight:500}
+.screen-text{font-size:.76rem;line-height:1.7;padding:12px;background:#fafafa;border-radius:8px;border:1px solid var(--border)}
+.screen-text .dpl{padding:1px 4px;border-radius:3px;font-weight:600}
+.chip{display:inline-block;padding:2px 7px;border-radius:4px;font-size:.65rem;margin:2px;font-weight:500;color:#fff}
+
+/* KLH TWO-COL */
+.klh-layout{display:grid;grid-template-columns:300px 1fr;gap:20px;flex:1;min-height:0}
+.klh-phone-col{display:flex;flex-direction:column;align-items:center;padding-top:8px}
+.klh-controls-col{display:flex;flex-direction:column;overflow-y:auto;padding-right:4px}
+
+/* IPHONE */
+.iphone{width:280px;background:#0a0a0a;border-radius:40px;padding:12px;box-shadow:0 16px 48px rgba(0,0,0,.2);flex-shrink:0}
+.iphone-inner{background:#fff;border-radius:30px;overflow:hidden;position:relative;height:560px}
+.iphone-notch{width:100px;height:22px;background:#0a0a0a;border-radius:0 0 16px 16px;margin:0 auto;position:relative;z-index:5}
+.iphone-screen{height:calc(100% - 22px);overflow-y:auto;scroll-behavior:smooth}
+.iphone-screen::-webkit-scrollbar{width:3px}
+.iphone-screen::-webkit-scrollbar-track{background:transparent}
+.iphone-screen::-webkit-scrollbar-thumb{background:#c5cae9;border-radius:3px}
+.upi-header{background:var(--upi-blue);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:500;position:sticky;top:0;z-index:4}
+.upi-header .back{font-size:1rem}
+.upi-body{padding:12px 14px 80px}
+.upi-field{margin-bottom:10px}
+.upi-field label{font-size:.6rem;color:var(--text3);display:block;margin-bottom:2px;text-transform:uppercase;letter-spacing:.3px}
+.upi-field .val{font-size:.78rem;padding:7px 10px;background:#f5f5f7;border-radius:6px;border:1px solid var(--border)}
+.upi-warn{padding:7px 10px;border-radius:6px;margin:10px 0;font-size:.66rem;display:flex;align-items:center;gap:6px}
+.upi-actions{display:flex;gap:8px;margin-top:14px}
+.upi-btn{flex:1;padding:10px;border-radius:8px;font-size:.76rem;font-weight:600;transition:transform .1s}
+.upi-btn:active{transform:scale(.96)}
+.upi-btn.primary{background:var(--upi-blue);color:#fff}
+.upi-btn.secondary{background:#eee;color:var(--text)}
+
+/* DPL EXPLAINER ON SCREEN */
+.dpl-explain{margin:10px 0;padding:8px 10px;border-radius:6px;border-left:3px solid;font-size:.66rem;line-height:1.5}
+.dpl-explain .dpl-term-head{font-weight:700;margin-bottom:2px}
+.dpl-explain .dpl-term-def{color:#444}
+
+/* CONSEQUENCE PANEL — OUTSIDE PHONE */
+.consequence-panel{margin-top:10px;width:280px;opacity:0;max-height:0;overflow:hidden;transition:all .3s}
+.consequence-panel.show{opacity:1;max-height:300px}
+.consequence-inner{padding:10px;border-radius:8px;border:1px solid var(--border);background:#fff;font-size:.75rem}
+.risk-tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:.6rem;font-weight:600;color:#fff;margin-bottom:4px}
+
+/* IN-PHONE FAB */
+.phone-fab{position:absolute;bottom:14px;right:14px;width:44px;height:44px;border-radius:50%;background:#FF6B00;color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(255,107,0,.35);z-index:20;transition:transform .15s,opacity .2s}
+.phone-fab:hover{transform:scale(1.08)}
+.phone-fab:active{transform:scale(.95)}
+.phone-fab.hidden{opacity:0;pointer-events:none;transform:scale(.5)}
+
+/* IN-PHONE BOTTOM SHEET */
+.phone-sheet{position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -6px 30px rgba(0,0,0,.13);transform:translateY(100%);transition:transform .35s cubic-bezier(.32,.72,.24,1);z-index:25;max-height:52%;display:flex;flex-direction:column}
+.phone-sheet.open{transform:translateY(0)}
+.phone-sheet-handle{width:36px;height:4px;background:#d1d5db;border-radius:2px;margin:8px auto 0}
+.phone-sheet-hdr{display:flex;align-items:center;padding:6px 12px 0;gap:6px}
+.phone-sheet-hdr .sh-down{background:#f0f2f8;border:none;border-radius:50%;width:26px;height:26px;font-size:14px;display:flex;align-items:center;justify-content:center;color:#555}
+.phone-sheet-hdr .sh-title{flex:1;font-size:.6rem;font-weight:700;color:#aaa;letter-spacing:1.2px;text-transform:uppercase}
+.phone-sheet-hdr .sh-close{background:#fee2e2;border:none;border-radius:50%;width:26px;height:26px;font-size:12px;display:flex;align-items:center;justify-content:center;color:#c62828;font-weight:700}
+.phone-sheet-body{flex:1;overflow-y:auto;padding:8px 12px 12px}
+.phone-sheet-body::-webkit-scrollbar{width:2px}
+.phone-sheet-body::-webkit-scrollbar-thumb{background:#c5cae9;border-radius:2px}
+.sh-pills{display:flex;gap:4px;margin-bottom:6px}
+.sh-pill{padding:3px 8px;border-radius:10px;font-size:.62rem;font-weight:500;border:1px solid #ddd;color:#888;transition:all .15s}
+.sh-pill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.sh-script{background:#f5f5f7;border-radius:6px;padding:8px;font-size:.7rem;line-height:1.55;max-height:80px;overflow-y:auto;margin:6px 0;color:#333}
+.sh-play-btn{width:100%;padding:8px;border-radius:6px;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px}
+.sh-play-btn:disabled{opacity:.5;cursor:not-allowed}
+.sh-progress{font-size:.6rem;color:#888;margin-top:3px;text-align:center;min-height:12px}
+
+/* PILLS */
+.pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.pill{padding:4px 10px;border-radius:14px;font-size:.7rem;font-weight:500;border:1px solid var(--border);color:var(--text2);transition:all .15s}
+.pill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* NARRATION */
+.narration-box{padding:14px;border-radius:10px;font-size:.82rem;line-height:1.6;min-height:60px}
+.narration-box.has-content{background:linear-gradient(135deg,#2d1b69,#1a1a2e);color:#eee}
+.narration-box.no-content{background:#f5f5f7;color:var(--text2);text-align:center;padding:24px 14px}
+.word-count{font-size:.65rem;color:var(--text3);margin-top:4px}
+
+/* MOBILE */
+@media(max-width:900px){
+  .sidebar{width:100%;min-height:auto;position:relative;flex-direction:row;flex-wrap:wrap;padding:12px 16px;align-items:center;gap:8px}
+  .sidebar h1{font-size:.9rem}
+  .sidebar .sub,.sidebar-divider,.sidebar-section,.sidebar-meta{display:none}
+  .status-row{margin-bottom:0}
+  .main{margin-left:0}:root{--sidebar-w:0px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .klh-layout{grid-template-columns:1fr;gap:12px}
+  .klh-phone-col{order:1}.klh-controls-col{order:0}
+  .iphone{width:100%;max-width:300px;border-radius:32px;padding:10px}
+  .iphone-inner{height:520px}
+  .consequence-panel{width:100%;max-width:300px}
+  .hm-row{grid-template-columns:1fr 32px 80px 24px 24px;font-size:.7rem}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <h1>KLH consequence<br>world model</h1>
+  <p class="sub">When Bharat speaks digital</p>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section">Service Status</div>
+  <div class="status-row"><span class="dot dot-r" id="dotSupa"></span><span id="lblSupa">Supabase: checking…</span></div>
+  <div class="status-row"><span class="dot dot-r" id="dotNgrok"></span><span id="lblNgrok">ngrok: checking…</span></div>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section">Active Config</div>
+  <div class="status-row" id="cfgPersona">Persona: —</div>
+  <div class="status-row" id="cfgVerbosity">Verbosity: —</div>
+  <div class="status-row" id="cfgSpeaker">Speaker: —</div>
+  <div class="sidebar-meta"><span>DPL Terms</span>: <span id="dplCount">0</span><br><span>Journeys</span>: 13<br><span>Threshold</span>: 0.15</div>
+</aside>
+
+<div class="main">
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+    <button class="tab-btn" data-tab="klh">Kya Likha Hai</button>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="tab-panel active" id="tab-dashboard">
+    <div class="stats">
+      <div class="stat"><div class="val">13</div><div class="lbl">Total Journeys</div></div>
+      <div class="stat"><div class="val" id="statNarr">—</div><div class="lbl">Need Narration</div></div>
+      <div class="stat"><div class="val" id="statDens">—</div><div class="lbl">Selected Density</div></div>
+      <div class="stat"><div class="val" id="statMat">—</div><div class="lbl">Materiality</div></div>
+    </div>
+    <div class="card"><div class="card-title">Journey Heatmap — DPL Density</div><div id="heatmap"></div></div>
+    <div class="card">
+      <div class="card-title">DPL Breakdown — <span id="breakdownTitle">select a journey</span></div>
+      <div class="pills" id="breakdownPills"></div>
+      <div class="screen-text" id="screenTextBox" style="margin-bottom:8px">Select a journey from the heatmap above.</div>
+      <div id="dplChips"></div>
+    </div>
+  </div>
+
+  <!-- KLH -->
+  <div class="tab-panel" id="tab-klh">
+    <div class="klh-layout">
+      <div class="klh-phone-col">
+        <div class="iphone">
+          <div class="iphone-inner">
+            <div class="iphone-notch"></div>
+            <div class="iphone-screen" id="phoneScreen">
+              <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#bbb;font-size:.78rem;text-align:center;padding:20px">Select a journey to preview UPI screen</div>
+            </div>
+            <!-- IN-PHONE FAB -->
+            <button class="phone-fab" id="phoneFab" onclick="togglePhoneSheet()">🔊</button>
+            <!-- IN-PHONE BOTTOM SHEET -->
+            <div class="phone-sheet" id="phoneSheet">
+              <div class="phone-sheet-handle"></div>
+              <div class="phone-sheet-hdr">
+                <button class="sh-down" onclick="togglePhoneSheet()">↓</button>
+                <span class="sh-title">🎙 Kya Likha Hai</span>
+                <button class="sh-close" onclick="closePhoneSheet()">✕</button>
+              </div>
+              <div class="phone-sheet-body">
+                <div class="sh-pills" id="langPills"></div>
+                <div class="sh-script" id="sheetScript">Select a journey and persona to see KLH script.</div>
+                <button class="sh-play-btn" id="sheetPlay" disabled onclick="sheetPlay()">▶ Play</button>
+                <div class="sh-progress" id="sheetProgress"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="consequence-panel" id="conseqPanel"><div class="consequence-inner" id="conseqInner"></div></div>
+      </div>
+      <div class="klh-controls-col">
+        <div class="card"><div class="card-title">Journey</div><div class="pills" id="klhJourneyPills"></div></div>
+        <div class="card"><div class="card-title">Persona</div><div class="pills" id="personaPills"></div></div>
+        <div class="card"><div class="card-title">Verbosity</div><div class="pills" id="verbPills"></div></div>
+        <div class="card">
+          <div class="card-title">Narration Preview</div>
+          <div id="narrationOut"></div>
+          <div class="word-count" id="wordCount"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const S={selectedJourney:null,persona:'arjun',verbosity:'MEDIUM',ttsLang:'hi',supaOk:false,playing:false,speaker:null,actx:null,sheetOpen:false};
+const SUPA_URL='https://xbtmbolhfgyondgibhki.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhidG1ib2xoZmd5b25kZ2liaGtpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwMzcsImV4cCI6MjA5MTcyNDAzN30.UeyeyCyi1O74V7rJt7Ghu5b01Ot6l9uxsUgsI0FHHVM';
+
+async function loadConfig(){try{const r=await fetch(SUPA_URL+'/rest/v1/configurations?id=eq.active&select=*',{headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}});if(!r.ok)throw new Error(r.status);const rows=await r.json();if(rows.length>0){const c=rows[0];if(c.persona_name){const m={P1:'arjun',P2:'arjun',P3:'sunita',P4:'rajan'};if(m[c.persona_name])S.persona=m[c.persona_name];}if(c.klh_verbosity)S.verbosity=c.klh_verbosity;S.supaOk=true;}}catch(e){console.warn('Supabase load failed',e);}updateStatus();renderPersonaPills();renderVerbPills();updateSidebarConfig();}
+function subscribeRealtime(){try{const ws=new WebSocket(SUPA_URL.replace('https','wss')+'/realtime/v1/websocket?apikey='+SUPA_KEY+'&vsn=1.0.0');ws.onopen=()=>{ws.send(JSON.stringify({topic:'realtime:public:configurations',event:'phx_join',payload:{config:{broadcast:{self:false},presence:{key:''},postgres_changes:[{event:'*',schema:'public',table:'configurations'}]}},ref:'1'}));setInterval(()=>ws.send(JSON.stringify({topic:'phoenix',event:'heartbeat',payload:{},ref:'hb'})),30000);};ws.onmessage=(e)=>{try{const msg=JSON.parse(e.data);if(msg.event==='postgres_changes'&&msg.payload?.data?.record){const c=msg.payload.data.record;updateStatus();}}catch(ex){}};}catch(e){}}
+function updateStatus(){document.getElementById('dotSupa').className='dot '+(S.supaOk?'dot-g':'dot-r');document.getElementById('lblSupa').textContent=S.supaOk?'Supabase: connected':'Supabase: offline';document.getElementById('dotNgrok').className='dot dot-g';document.getElementById('lblNgrok').textContent='API: Vercel';}
+function updateSidebarConfig(){document.getElementById('cfgPersona').textContent='Persona: '+S.persona;document.getElementById('cfgVerbosity').textContent='Verbosity: '+S.verbosity;document.getElementById('cfgSpeaker').textContent='Speaker: '+S.speaker;}
+
+// ===== PHONE SHEET OPEN/CLOSE (finternet.html pattern) =====
+function togglePhoneSheet(){
+  const sheet=document.getElementById('phoneSheet');
+  const fab=document.getElementById('phoneFab');
+  if(S.sheetOpen){sheet.classList.remove('open');fab.classList.remove('hidden');S.sheetOpen=false;}
+  else{sheet.classList.add('open');fab.classList.add('hidden');S.sheetOpen=true;}
+}
+function closePhoneSheet(){
+  document.getElementById('phoneSheet').classList.remove('open');
+  document.getElementById('phoneFab').classList.remove('hidden');
+  S.sheetOpen=false;
+}
+
+// ===== DPL =====
+const DPL=[
+{term:'auto-debit',aliases:['auto debit','automatic debit','recurring debit'],cat:'PAYMENT',mat:4,fraud:'MEDIUM',explain:'Auto-debit means money will be taken from your account automatically without asking you each time.'},
+{term:'mandate',aliases:['NACH mandate','e-mandate','standing instruction'],cat:'CONSENT',mat:4,fraud:'HIGH',explain:'A mandate is a legal permission you give to someone to take money from your account regularly for a fixed period.'},
+{term:'irrevocable',aliases:['cannot be reversed','non-reversible','irreversible'],cat:'REVERSIBILITY',mat:4,fraud:'CRITICAL',explain:'Irrevocable means once done, it cannot be undone or reversed — not by you, not by the bank, not by anyone.'},
+{term:'consent',aliases:['I agree','I authorize','I hereby'],cat:'CONSENT',mat:3,fraud:'MEDIUM',explain:'Consent means you are giving permission. Once you consent, you are agreeing to the terms shown on screen.'},
+{term:'Aadhaar',aliases:['aadhaar number','UIDAI','12-digit'],cat:'IDENTITY',mat:4,fraud:'HIGH',explain:'Aadhaar is your 12-digit government identity number. Sharing it gives access to your name, address, photo, and date of birth.'},
+{term:'biometric',aliases:['fingerprint','iris scan','face scan'],cat:'IDENTITY',mat:4,fraud:'HIGH',explain:'Biometric means your fingerprint, eye scan, or face scan — unique body data that cannot be changed if stolen.'},
+{term:'OTP',aliases:['one-time password','verification code'],cat:'IDENTITY',mat:2,fraud:'LOW',explain:'OTP is a temporary code sent to your phone to verify it is really you making this request.'},
+{term:'UPI PIN',aliases:['MPIN','transaction PIN','enter PIN'],cat:'PAYMENT',mat:3,fraud:'LOW',explain:'UPI PIN is your secret 4-6 digit code that authorizes money transfers. Never share it with anyone.'},
+{term:'beneficiary',aliases:['payee','recipient','new beneficiary'],cat:'PAYMENT',mat:3,fraud:'MEDIUM',explain:'A beneficiary is someone you add to your payment list. Once added, you can send them money quickly without re-verifying.'},
+{term:'unknown',aliases:['first time','new contact','unverified'],cat:'PAYMENT',mat:3,fraud:'HIGH',explain:'Unknown means this person or account is not in your contacts and has never been verified by you or your bank.'},
+{term:'credit line',aliases:['pre-approved loan','instant credit','credit limit'],cat:'PAYMENT',mat:4,fraud:'HIGH',explain:'A credit line is a LOAN. You borrow money and must pay it back with interest. It is not free money.'},
+{term:'EMI',aliases:['equated monthly','installment','monthly payment'],cat:'PAYMENT',mat:3,fraud:'MEDIUM',explain:'EMI is a fixed monthly payment you must make to repay a loan. Missing an EMI leads to penalties and affects your credit score.'},
+{term:'token',aliases:['asset token','tokenize','digital asset'],cat:'FRONTIER',mat:4,fraud:'MEDIUM',explain:'A token is a digital certificate that represents ownership of a real asset like land or property on a digital ledger.'},
+{term:'lock',aliases:['freeze','asset freeze','token lock'],cat:'FRONTIER',mat:4,fraud:'HIGH',explain:'Lock means your asset is frozen — you cannot sell it, transfer it, or use it as security for a loan during the lock period.'},
+{term:'digital signature',aliases:['e-sign','Aadhaar sign','legally binding','electronic signature'],cat:'CONSENT',mat:4,fraud:'CRITICAL',explain:'A digital signature is legally the same as signing a paper document with your hand. It is binding in court.'},
+{term:'eKYC',aliases:['e-KYC','electronic KYC','know your customer'],cat:'IDENTITY',mat:4,fraud:'HIGH',explain:'eKYC shares your full Aadhaar identity with a company electronically. Once shared, the data cannot be taken back.'},
+{term:'digilocker',aliases:['DigiLocker','digital locker'],cat:'IDENTITY',mat:3,fraud:'MEDIUM',explain:'DigiLocker is a government service that stores your official documents digitally. Sharing gives access to your documents.'},
+{term:'collect request',aliases:['payment request','collect money','request money'],cat:'PAYMENT',mat:3,fraud:'CRITICAL',explain:'A collect request means someone is ASKING to take money FROM your account. If you approve, money leaves YOUR account — not theirs.'},
+{term:'merchant',aliases:['store','shop','vendor','seller'],cat:'PAYMENT',mat:1,fraud:'LOW',explain:'A merchant is a shop or business you are paying for goods or services.'},
+{term:'balance',aliases:['account balance','available balance','check balance'],cat:'SYSTEM_STATE',mat:1,fraud:'LOW',explain:'Balance check shows how much money is in your account. No money is moved.'},
+{term:'QR code',aliases:['scan QR','QR scan','scan to pay'],cat:'PAYMENT',mat:2,fraud:'MEDIUM',explain:'A QR code is a square pattern you scan with your phone to make a payment. Always verify the merchant name before paying.'},
+{term:'refund',aliases:['money back','reversal','cashback'],cat:'REVERSIBILITY',mat:2,fraud:'LOW',explain:'Refund means money comes back to your account. This may take a few days to process.'},
+{term:'dispute',aliases:['raise complaint','transaction failed'],cat:'REVERSIBILITY',mat:2,fraud:'LOW',explain:'A dispute is a formal complaint you file when a transaction goes wrong or you believe there was an error.'},
+{term:'autopay',aliases:['auto-pay','recurring payment','subscription'],cat:'PAYMENT',mat:4,fraud:'HIGH',explain:'AutoPay means a company will automatically take money from your account every month without asking for your PIN each time.'},
+{term:'ONDC',aliases:['open network','digital commerce'],cat:'FRONTIER',mat:3,fraud:'MEDIUM',explain:'ONDC is an open shopping network. Unlike Amazon or Flipkart, there is no single company handling disputes — you deal directly with the seller.'},
+{term:'Finternet',aliases:['finternet','unified ledger'],cat:'FRONTIER',mat:4,fraud:'MEDIUM',explain:'Finternet is a unified digital ledger where real-world assets like land and gold are represented as digital tokens.'},
+{term:'NBFC',aliases:['non-banking','lending partner'],cat:'PAYMENT',mat:3,fraud:'MEDIUM',explain:'NBFC is a non-banking financial company — a lender that is not a traditional bank. They follow different regulations.'},
+{term:'interest rate',aliases:['rate of interest','APR','annual percentage'],cat:'PAYMENT',mat:3,fraud:'LOW',explain:'Interest rate is the percentage extra you pay on top of borrowed money. 18% APR means for every ₹100 borrowed, you pay ₹18 per year.'},
+{term:'penalty',aliases:['late fee','overdue charge','fine'],cat:'PAYMENT',mat:3,fraud:'LOW',explain:'A penalty is extra money you must pay if you miss a payment or break a rule in the agreement.'},
+{term:'settlement',aliases:['final settlement','cleared','settled'],cat:'SYSTEM_STATE',mat:2,fraud:'LOW',explain:'Settlement means the transaction is fully processed and money has reached its destination.'},
+{term:'verified',aliases:['KYC verified','identity confirmed'],cat:'IDENTITY',mat:2,fraud:'LOW',explain:'Verified means the identity of this person or business has been confirmed by the bank or payment system.'},
+{term:'unverified',aliases:['not verified','pending verification'],cat:'IDENTITY',mat:3,fraud:'HIGH',explain:'Unverified means nobody has confirmed who this person or account really is. Sending money here carries higher risk.'}
+];
+function fraudBoost(f){return{LOW:0,MEDIUM:.25,HIGH:.5,CRITICAL:1}[f]||0;}
+function scoreText(text){const lower=text.toLowerCase(),tokens=lower.split(/\s+/);let tw=0;const found=[];for(const d of DPL){const all=[d.term,...d.aliases];for(const a of all){if(lower.includes(a.toLowerCase())){const w=d.mat*(1+fraudBoost(d.fraud));tw+=w;found.push({...d,matched:a,weight:w});break;}}}return{density:Math.round(tw/tokens.length*1000)/1000,terms:found,tokenCount:tokens.length};}
+
+// ===== JOURNEYS =====
+const JOURNEYS=[
+{id:'balance',name:'Balance Check',mat:1,upiTitle:'Check Balance',screen:'Check your account balance. Your available balance will be shown after UPI PIN verification. Balance enquiry is free. Enter UPI PIN to view balance.',actions:[{label:'Check Balance',type:'primary',consequence:'Your current bank balance is displayed on screen. No money is moved. Read-only operation.',risk:'none'},{label:'Cancel',type:'secondary',consequence:'Balance check cancelled.',risk:'none'}],fields:[{label:'Account',value:'SBI Savings ****4521'},{label:'Action',value:'Balance Enquiry'}],sample:'बैलेंस चेक करने से कोई पैसा नहीं कटता। बस आपका बैलेंस दिखेगा।'},
+{id:'p2p_small',name:'P2P Send <₹500',mat:2,upiTitle:'Send Money',screen:'Send ₹350 to Rahul Sharma via UPI. UPI ID: rahul@okaxis. Amount: ₹350. Enter UPI PIN to confirm payment. Refund possible if sent to wrong UPI ID — contact bank within 24 hours.',actions:[{label:'Pay ₹350',type:'primary',consequence:'₹350 debited and credited to rahul@okaxis instantly. Small amount, refund possible within 24 hours.',risk:'low'},{label:'Cancel',type:'secondary',consequence:'Payment cancelled.',risk:'none'}],fields:[{label:'To',value:'Rahul Sharma'},{label:'UPI ID',value:'rahul@okaxis'},{label:'Amount',value:'₹350'}],sample:'राहुल शर्मा को तीन सौ पचास रुपये भेजने वाले हो। छोटी रकम है।'},
+{id:'p2p_large_unknown',name:'P2P >₹5K Unknown',mat:3,upiTitle:'Send Money',screen:'Send ₹8,500 to unknown contact. UPI ID: merchant8847@ybl. First time transfer to this UPI ID. This recipient is unverified. Amount ₹8,500. Enter UPI PIN to authorize consent. Irrevocable once sent.',actions:[{label:'Pay ₹8,500',type:'primary',consequence:'₹8,500 permanently sent to unverified UPI ID. First-time unknown recipient. Irrevocable. High scam risk.',risk:'high'},{label:'Decline',type:'secondary',consequence:'Payment declined. Account safe.',risk:'none'}],fields:[{label:'To',value:'Unknown Contact'},{label:'UPI ID',value:'merchant8847@ybl'},{label:'Amount',value:'₹8,500'},{label:'Status',value:'⚠ First time · Unverified'}],sample:'रुको! ये अनजान UPI ID है। आठ हज़ार पाँच सौ एक बार गए तो वापस नहीं आएँगे।'},
+{id:'p2m_qr',name:'P2M QR Scan',mat:2,upiTitle:'Pay Merchant',screen:'Pay merchant via QR code. Merchant: Fresh Mart Store. Verified merchant. Amount: ₹1,200. Payment to verified merchant via QR scan. Enter UPI PIN to pay.',actions:[{label:'Pay ₹1,200',type:'primary',consequence:'₹1,200 paid to Fresh Mart Store, verified merchant.',risk:'low'},{label:'Cancel',type:'secondary',consequence:'Payment cancelled.',risk:'none'}],fields:[{label:'Merchant',value:'Fresh Mart Store ✓'},{label:'Amount',value:'₹1,200'},{label:'Method',value:'QR Code Scan'}],sample:'फ्रेश मार्ट को बारह सौ रुपये। वेरिफाइड दुकान है।'},
+{id:'collect_unknown',name:'Collect Request Unknown',mat:4,upiTitle:'Collect Request',screen:'Collect request received from unknown UPI ID: fraud_alert99@paytm. Amount: ₹15,000. This is a collect request — money will be debited from YOUR account if you approve. Sender is unverified. Never approve collect requests from unknown sources. Enter UPI PIN to authorize consent. Irrevocable.',actions:[{label:'Approve ₹15,000',type:'primary',consequence:'₹15,000 DEBITED from your account to unknown sender. #1 UPI fraud method. Irrevocable. CRITICAL.',risk:'critical'},{label:'Decline',type:'secondary',consequence:'Declined. No money leaves your account.',risk:'none'}],fields:[{label:'From',value:'⚠ fraud_alert99@paytm'},{label:'Amount',value:'₹15,000'},{label:'Type',value:'COLLECT (money leaves YOU)'},{label:'Status',value:'🚨 Unknown · Unverified'}],sample:'खतरा! ये collect request है — आपके खाते से पंद्रह हज़ार कटेंगे! approve मत करो!'},
+{id:'beneficiary_add',name:'Beneficiary Add',mat:3,upiTitle:'Add Beneficiary',screen:'Add new beneficiary. Name: Unknown Trader. Account: ****7823. IFSC: SBIN0001234. First time beneficiary addition. Once added, quick transfers enabled without re-verification. Consent required to add. Verify details carefully.',actions:[{label:'Add Beneficiary',type:'primary',consequence:'Unknown Trader permanently added. Future transfers skip verification.',risk:'medium'},{label:'Cancel',type:'secondary',consequence:'Not added.',risk:'none'}],fields:[{label:'Name',value:'Unknown Trader'},{label:'Account',value:'****7823'},{label:'IFSC',value:'SBIN0001234'},{label:'Status',value:'⚠ First time'}],sample:'नया बेनिफिशियरी जोड़ रहे हो। बिना वेरिफिकेशन पैसे भेज सकोगे।'},
+{id:'nach_mandate',name:'NACH Mandate Sign',mat:4,upiTitle:'NACH e-Mandate',screen:'Sign NACH e-Mandate. Creditor: QuickLoan NBFC. Amount: up to ₹25,000/month. Frequency: Monthly auto-debit. Duration: 3 years (36 months). This mandate authorizes automatic debit from your account every month for 3 years. Irrevocable for mandate period. Digital signature consent required. Enter UPI PIN to authorize.',actions:[{label:'Sign Mandate',type:'primary',consequence:'Legally binding 3-year auto-debit. Up to ₹25,000/month. Total ₹9,00,000 exposure. Irrevocable.',risk:'critical'},{label:'Decline',type:'secondary',consequence:'Mandate not signed. Account protected.',risk:'none'}],fields:[{label:'Creditor',value:'QuickLoan NBFC'},{label:'Amount',value:'Up to ₹25,000/month'},{label:'Duration',value:'3 years (36 months)'},{label:'Type',value:'NACH Auto-Debit'}],sample:'ये NACH mandate है — 3 साल हर महीने 25 हज़ार तक अपने-आप कट सकते हैं।'},
+{id:'autopay',name:'UPI AutoPay Setup',mat:4,upiTitle:'UPI AutoPay',screen:'Setup UPI AutoPay. Merchant: StreamFlix Premium. Amount: ₹599/month. Frequency: Monthly recurring. This enables recurring payment without UPI PIN after first authorization. Autopay will debit automatically every month. Consent to auto-debit. Cancel anytime from UPI app settings.',actions:[{label:'Enable AutoPay',type:'primary',consequence:'₹599 auto-debited monthly without PIN. Must manually cancel from settings.',risk:'high'},{label:'Skip',type:'secondary',consequence:'Not enabled. Pay manually.',risk:'none'}],fields:[{label:'Merchant',value:'StreamFlix Premium'},{label:'Amount',value:'₹599/month'},{label:'Type',value:'Recurring AutoPay'},{label:'PIN',value:'Only first time'}],sample:'AutoPay चालू करोगे तो हर महीने 599 बिना PIN के कट जाएँगे।'},
+{id:'ekyc',name:'eKYC Aadhaar',mat:4,upiTitle:'eKYC Verification',screen:'Complete eKYC with Aadhaar. Your Aadhaar number and biometric data will be shared with the service provider. eKYC is irrevocable — once shared, your identity data cannot be recalled. Aadhaar-based eKYC shares: full name, address, photo, date of birth, and Aadhaar number. Digital consent required. I authorize sharing my Aadhaar details.',actions:[{label:'Complete eKYC',type:'primary',consequence:'Full Aadhaar identity permanently shared. Irrevocable. Permanent identity exposure.',risk:'critical'},{label:'Cancel',type:'secondary',consequence:'Cancelled. No data shared.',risk:'none'}],fields:[{label:'Method',value:'Aadhaar eKYC'},{label:'Data Shared',value:'Name, Address, Photo, DOB, Aadhaar#'},{label:'Reversible',value:'❌ Irrevocable'}],sample:'eKYC करोगे तो आधार से सब जानकारी कंपनी को मिल जाएगी। वापस नहीं।'},
+{id:'credit_line',name:'Credit Line Activation',mat:4,upiTitle:'Activate Credit',screen:'Activate pre-approved credit line. Lender: QuickCash NBFC. Credit limit: ₹50,000. Interest rate: 18% APR. EMI auto-debit enabled. Late payment penalty: ₹500 + interest. By activating, you consent to loan terms, auto-debit mandate, and credit bureau reporting. Digital signature required.',actions:[{label:'Activate Credit',type:'primary',consequence:'₹50,000 loan at 18% APR. EMI auto-debited. ₹500 late penalty. Affects CIBIL.',risk:'critical'},{label:'Decline',type:'secondary',consequence:'Not activated. No loan.',risk:'none'}],fields:[{label:'Lender',value:'QuickCash NBFC'},{label:'Limit',value:'₹50,000'},{label:'Interest',value:'18% APR'},{label:'Penalty',value:'₹500 + interest/late'}],sample:'ये लोन है — 50 हज़ार, 18% ब्याज। EMI अपने-आप कटेगी। CIBIL पर असर।'},
+{id:'ondc',name:'ONDC Order',mat:3,upiTitle:'ONDC Order',screen:'Place order via ONDC open network. Seller: KisanDirect Farm. Item: Organic Rice 5kg. Price: ₹450. Delivery via ONDC logistics. Refund policy per seller terms. Payment via UPI. ONDC is an open network — dispute resolution differs from marketplace apps.',actions:[{label:'Pay ₹450',type:'primary',consequence:'₹450 to KisanDirect Farm via ONDC. No centralized marketplace protection.',risk:'medium'},{label:'Cancel',type:'secondary',consequence:'Order cancelled.',risk:'none'}],fields:[{label:'Seller',value:'KisanDirect Farm'},{label:'Item',value:'Organic Rice 5kg'},{label:'Price',value:'₹450'},{label:'Network',value:'ONDC (Open)'}],sample:'ONDC से ऑर्डर — Amazon जैसा नहीं, दिक्कत हुई तो seller से बात।'},
+{id:'token_lock',name:'Token Lock / Finternet',mat:4,upiTitle:'Finternet Token Lock',screen:'Lock digital asset token via Finternet unified ledger. Asset: Land Parcel Token #LPT-4421. Lock duration: 180 days. During lock period, this token cannot be transferred, sold, or used as collateral. Asset freeze is irrevocable for lock duration. Digital signature and consent required. Token lock registered on unified ledger.',actions:[{label:'Lock Token',type:'primary',consequence:'Land token frozen 180 days. Cannot sell, transfer, or collateralize. Irrevocable.',risk:'critical'},{label:'Cancel',type:'secondary',consequence:'Not locked. Asset free.',risk:'none'}],fields:[{label:'Asset',value:'Land Token #LPT-4421'},{label:'Lock',value:'180 days'},{label:'Restrictions',value:'No transfer/sale/collateral'},{label:'Reversible',value:'❌ Irrevocable'}],sample:'ज़मीन का टोकन 180 दिन लॉक। न बेच सकते, न गिरवी। 6 महीने नहीं खुलेगा।'},
+{id:'aadhaar_sign',name:'Aadhaar Digital Sign',mat:4,upiTitle:'Aadhaar e-Sign',screen:'Sign document with Aadhaar digital signature. Document: Property Sale Agreement. This creates a legally binding electronic signature equivalent to a physical signature. Aadhaar e-Sign is irrevocable and legally enforceable under IT Act 2000. Your Aadhaar identity will be permanently linked to this document. Consent and biometric verification required. I authorize this digital signature.',actions:[{label:'Sign Document',type:'primary',consequence:'Legally binding signature on Property Sale Agreement. Irrevocable. IT Act 2000 enforceable.',risk:'critical'},{label:'Decline',type:'secondary',consequence:'Not signed. No commitment.',risk:'none'}],fields:[{label:'Document',value:'Property Sale Agreement'},{label:'Method',value:'Aadhaar e-Sign'},{label:'Legal',value:'Binding (IT Act 2000)'},{label:'Reversible',value:'❌ Irrevocable'}],sample:'ये आधार से डिजिटल हस्ताक्षर — कानूनी, कोर्ट में मान्य, वापस नहीं।'}
+];
+JOURNEYS.forEach(j=>{const s=scoreText(j.screen);j.density=s.density;j.dplTerms=s.terms;j.tokenCount=s.tokenCount;});
+JOURNEYS.sort((a,b)=>b.density-a.density);
+const THRESHOLD=0.15;const aboveThreshold=JOURNEYS.filter(j=>j.density>=THRESHOLD);
+
+// ===== NARRATIONS (90 templates — expanded word counts) =====
+const NR={};function N(j,p,v,t){NR[j+'|'+p+'|'+v]=t;}
+
+// --- p2p_large_unknown ---
+N('p2p_large_unknown','arjun','LOW','Bro unknown ID hai, ₹8.5K irrevocable — pehle verify kar kaun hai.');
+N('p2p_large_unknown','arjun','MEDIUM','Dude, screen pe dikh raha hai — ₹8,500 jaa raha hai merchant8847@ybl pe. Yeh teri contacts mein nahi hai, first time transfer hai, aur "unverified" likha hai. Irrevocable ka matlab — ek baar gaya toh wapas nahi aayega, bank bhi help nahi kar sakta. Pehle call karke confirm kar yeh sahi insaan hai.');
+N('p2p_large_unknown','arjun','HIGH','Bro, screen pe dekh — ₹8,500 bhej raha hai merchant8847@ybl ko. Teen important cheezein notice kar: "First time transfer" likha hai — matlab tu isko pehle kabhi paise nahi bheja hai. "Unverified" likha hai — matlab bank ne confirm nahi kiya ki yeh kaun hai. Aur sabse neeche "Irrevocable once sent" likha hai — irrevocable ka matlab hai ek baar send kiya toh bank bhi wapas nahi la sakta, RBI complaint karke bhi nahi. ₹8,500 chhota amount nahi hai. Unknown IDs pe bade amounts bhejne se UPI scam hota hai — yeh #1 fraud method hai India mein. Mera suggestion: pehle phone call kar, confirm kar kaun hai, uski photo ID maang, tab bhej. Agar woh rush kar raha hai toh red flag hai.');
+N('p2p_large_unknown','rajan','LOW','अनजान आदमी को साढ़े आठ हज़ार — पहले पता करो कौन है, वापस नहीं आएगा।');
+N('p2p_large_unknown','rajan','MEDIUM','भाऊ, स्क्रीन पर देखो — ₹8,500 भेज रहे हो merchant8847@ybl को। ये तुम्हारी लिस्ट में नहीं है, "पहली बार" लिखा है। "Unverified" का मतलब — बैंक ने नहीं बताया ये कौन है। "Irrevocable" का मतलब — एक बार भेजा तो वापस नहीं आएगा। पहले फोन करो, पक्का करो कौन है।');
+N('p2p_large_unknown','rajan','HIGH','भाऊ, ध्यान से देखो स्क्रीन पर क्या लिखा है। ₹8,500 भेज रहे हो merchant8847@ybl को। अब तीन बातें समझो। पहली — "First time transfer" लिखा है, मतलब तुमने इस नंबर पर पहले कभी पैसे नहीं भेजे। दूसरी — "Unverified" लिखा है, मतलब बैंक ने नहीं जाँचा ये कौन है, कोई भी हो सकता है, ठग भी हो सकता है। तीसरी — नीचे "Irrevocable" लिखा है। ये बहुत ज़रूरी शब्द है — इसका मतलब है एक बार पैसे भेज दिए तो वापस नहीं आएँगे। बैंक में जाओगे, शिकायत करोगे, तब भी नहीं। साढ़े आठ हज़ार बड़ा पैसा है। अनजान लोगों को पैसे भेजना — ऐसे ही ठगी होती है। पहले फोन करो, सामने बैठकर बात करो, पक्का करो, तब भेजो।');
+N('p2p_large_unknown','sunita','LOW','अनजान नंबर है, साढ़े आठ हज़ार भेजोगी तो वापस नहीं आएगा। पहले पूछो।');
+N('p2p_large_unknown','sunita','MEDIUM','दीदी, स्क्रीन पर देखो — ₹8,500 भेज रही हो किसी अनजान को। "First time" लिखा है — पहले कभी नहीं भेजा। "Unverified" लिखा है — पता नहीं कौन है। "Irrevocable" का मतलब — एक बार गया तो वापस नहीं आएगा। पहले किसी से पूछो, फोन करो, तब भेजो।');
+N('p2p_large_unknown','sunita','HIGH','दीदी, ज़रा रुको और स्क्रीन पर क्या लिखा है ये समझो। ₹8,500 भेज रही हो merchant8847@ybl को। तीन बातें हैं। पहली — "First time" लिखा है, मतलब तुमने इस नंबर पर पहले कभी पैसे नहीं भेजे। कोई नया है, पहचान नहीं। दूसरी — "Unverified" लिखा है, मतलब बैंक ने भी नहीं जाँचा ये कौन है। तीसरी — "Irrevocable" लिखा है। ये बड़ा शब्द है — इसका सीधा मतलब है एक बार पैसे गए तो वापस नहीं आएँगे, कभी नहीं। बैंक में जाओगी, शिकायत करोगी, तब भी नहीं मिलेंगे। साढ़े आठ हज़ार बहुत पैसा है। ठगी ऐसे ही होती है — अनजान नंबर पे पैसे भेजवाते हैं, जल्दी करवाते हैं। पहले फोन करो, पूछो, किसी भरोसे वाले से बात करो, तब भेजो।');
+
+// --- collect_unknown ---
+N('collect_unknown','arjun','LOW','COLLECT request — approve karega toh TERA ₹15K jayega! Decline kar.');
+N('collect_unknown','arjun','MEDIUM','Dude, screen pe "Collect Request" likha hai — yeh normal payment nahi hai. Agar tu approve karta hai toh ₹15,000 TERE account se katega aur fraud_alert99@paytm ko jayega. "Unverified" hai sender, "Irrevocable" likha hai. Yeh UPI fraud ka #1 method hai. Decline kar abhi.');
+N('collect_unknown','arjun','HIGH','Bro, carefully padh screen — yeh "Collect Request" hai, normal payment nahi. Bahut log confuse ho jaate hain — lagta hai koi paise bhej raha hai, but actually ulta hai. Collect request mein agar tu "Approve" dabayega toh ₹15,000 TERE account se katega aur fraud_alert99@paytm ko chala jayega. Screen pe dekh: "money will be debited from YOUR account" clearly likha hai. Sender "unverified" hai — bank ne verify nahi kiya kaun hai. Naam "fraud_alert99" hai — yeh khud suspicious hai. "Irrevocable" likha hai — ek baar approve kiya toh paise wapas nahi aayenge. Yeh literally India mein UPI fraud ka sabse bada method hai — scammers collect request bhejte hain, victims ko lagta hai paise aa rahe hain, approve karte hain, aur paise chale jaate hain. Decline kar abhi. Agar koi bol raha hai "approve kar, paise aayenge" — woh jhooth bol raha hai.');
+N('collect_unknown','rajan','LOW','खतरा! ये collect request है — approve करोगे तो तुम्हारे खाते से ₹15,000 कटेगा!');
+N('collect_unknown','rajan','MEDIUM','भाऊ, स्क्रीन पर "Collect Request" लिखा है — ये सामान्य पेमेंट नहीं है। इसमें अगर तुम "Approve" दबाओगे तो ₹15,000 तुम्हारे खाते से कट जाएगा fraud_alert99 को। "Unverified" है — कौन है पता नहीं। "Irrevocable" — वापस नहीं आएगा। ये ठगी का सबसे बड़ा तरीका है। मना करो।');
+N('collect_unknown','rajan','HIGH','भाऊ, स्क्रीन पर ध्यान से पढ़ो। "Collect Request" लिखा है — ये सामान्य पेमेंट नहीं है। बहुत लोग यहाँ गलती करते हैं — लगता है कोई पैसे भेज रहा है, लेकिन असल में उल्टा है। Collect request में अगर तुम "Approve" दबाओगे तो ₹15,000 तुम्हारे खाते से कट जाएगा और fraud_alert99@paytm के पास चला जाएगा। स्क्रीन पर साफ लिखा है "money will be debited from YOUR account"। "Unverified" लिखा है — बैंक ने जाँचा नहीं ये कौन है। नाम भी "fraud_alert99" है — ये नाम ही शक पैदा करता है। "Irrevocable" लिखा है — एक बार approve किया तो पैसे वापस नहीं आएँगे, कभी नहीं। ये भारत में UPI ठगी का सबसे बड़ा तरीका है। ठग collect request भेजते हैं, बोलते हैं "approve करो, पैसे आएँगे" — लेकिन पैसे तुम्हारे जाते हैं। बिल्कुल Decline दबाओ।');
+N('collect_unknown','sunita','LOW','दीदी खतरा! ये तुम्हारा पैसा काटेगा — ₹15,000! बिल्कुल मना करो!');
+N('collect_unknown','sunita','MEDIUM','दीदी, स्क्रीन पर "Collect Request" लिखा है। ये पैसे आने वाला नहीं है — ये पैसे जाने वाला है। "Approve" दबाओगी तो ₹15,000 तुम्हारे खाते से कट जाएगा। भेजने वाला अनजान है, "Unverified" है। "Irrevocable" — वापस नहीं। ये ठगी है। "Decline" दबाओ।');
+N('collect_unknown','sunita','HIGH','दीदी, बहुत ध्यान से सुनो और स्क्रीन पर पढ़ो। "Collect Request" लिखा है — ये बड़ा ज़रूरी है। बहुत लोगों को लगता है कोई पैसे भेज रहा है — लेकिन ये उल्टा है। Collect request मतलब कोई तुमसे पैसे माँग रहा है। अगर तुम "Approve" दबाओगी तो ₹15,000 तुम्हारे खाते से कट जाएगा और fraud_alert99 के पास चला जाएगा। स्क्रीन पर लिखा है "money will be debited from YOUR account" — मतलब तुम्हारे पैसे जाएँगे। "Unverified" लिखा है — कोई नहीं जानता ये कौन है। "Irrevocable" लिखा है — एक बार गया तो वापस नहीं, कभी नहीं। ये ठगी का सबसे बड़ा तरीका है। कोई बोले "approve करो, पैसे आएँगे" — झूठ है। बस "Decline" दबाओ और कुछ मत करो।');
+
+// --- beneficiary_add ---
+N('beneficiary_add','arjun','LOW','New beneficiary "Unknown Trader" — add hone ke baad transfers skip verification.');
+N('beneficiary_add','arjun','MEDIUM','Screen pe dekh — "Unknown Trader" naam se beneficiary add kar raha hai. Account ****7823, IFSC SBIN0001234. "First time" likha hai. Ek baar add kiya toh aage se bina verification ke directly transfer ho jayega. Naam "Unknown Trader" sketchy lag raha — pehle verify kar yeh kiska account hai.');
+N('beneficiary_add','arjun','HIGH','Bro, screen pe dekh kya ho raha hai — "Add Beneficiary" screen hai. Naam "Unknown Trader" diya hai, account ****7823, IFSC SBIN0001234. "First time beneficiary addition" likha hai aur "Once added, quick transfers enabled without re-verification." Yeh last line important hai — iska matlab ek baar yeh add ho gaya toh next time jab tu paise bhejega toh bank dubara verify nahi karega. Seedha transfer ho jayega. Ab soch — naam "Unknown Trader" hai. Tu khud naam se samajh ja, yeh verified insaan nahi lagta. Agar yeh fraud account hai, toh tu basically ek fast lane bana raha hai apne paise udaane ke liye. Har baar bina verification ke direct transfer. Agar genuinely jaanta hai toh add kar — lekin agar kisi ne phone pe bolke yeh details diye hain toh pehle physically verify kar. Account number match kara, naam confirm kar, tab add kar.');
+N('beneficiary_add','rajan','LOW','नया बेनिफिशियरी "Unknown Trader" — जोड़ने के बाद बिना जाँच पैसे जाएँगे।');
+N('beneficiary_add','rajan','MEDIUM','भाऊ, स्क्रीन पर देखो — "Unknown Trader" नाम से बेनिफिशियरी जोड़ रहे हो। अकाउंट ****7823। "First time" लिखा है। "Once added, quick transfers without re-verification" — मतलब जोड़ दिया तो आगे बिना जाँच सीधे पैसे जाएँगे। नाम "Unknown Trader" सही नहीं लगता — पहले पक्का करो कौन है।');
+N('beneficiary_add','rajan','HIGH','भाऊ, स्क्रीन पर ध्यान दो। "Add Beneficiary" लिखा है — नया बेनिफिशियरी जोड़ रहे हो। नाम "Unknown Trader" है, अकाउंट नंबर ****7823, IFSC SBIN0001234। "First time beneficiary addition" लिखा है — पहली बार जोड़ रहे हो। अब सबसे ज़रूरी बात — "Once added, quick transfers enabled without re-verification" लिखा है। इसका मतलब समझो: एक बार ये नाम जोड़ दिया तो अगली बार जब पैसे भेजोगे, बैंक दुबारा नहीं पूछेगा। सीधे चला जाएगा। अब सोचो — नाम "Unknown Trader" है। ये कौन है? तुम जानते हो? अगर किसी ने फोन पर बोलकर ये डिटेल्स दिए हैं और जल्दी करवा रहा है — तो रुको। ये ठगी हो सकती है। पहले सामने बैठकर पूछो, अकाउंट नंबर मिलाओ, तब जोड़ो।');
+N('beneficiary_add','sunita','LOW','नया नाम "Unknown Trader" जोड़ रही हो — आगे बिना पूछे पैसे जाएँगे।');
+N('beneficiary_add','sunita','MEDIUM','दीदी, स्क्रीन पर देखो — "Unknown Trader" नाम से नया नंबर जोड़ रही हो। "First time" लिखा है। "Once added, transfers without verification" — मतलब जोड़ दिया तो आगे सीधे पैसे जाएँगे बिना पूछे। पता करो ये कौन है।');
+N('beneficiary_add','sunita','HIGH','दीदी, स्क्रीन पर पढ़ो। "Add Beneficiary" लिखा है — नया नाम जोड़ रही हो। नाम "Unknown Trader" है, अकाउंट ****7823। "First time" लिखा है — पहली बार है। सबसे ज़रूरी बात — "Once added, quick transfers without re-verification" लिखा है। इसका मतलब: जोड़ दिया तो अगली बार बिना कुछ पूछे सीधे पैसे चले जाएँगे। अब सोचो — "Unknown Trader" कौन है? तुम जानती हो? अगर किसी ने फोन पे बोलके ये नंबर दिया है और बोल रहा है जल्दी जोड़ो — तो रुको। ऐसे ही ठगी होती है। पहले किसी भरोसे वाले से पूछो, पक्का करो, तब जोड़ो।');
+
+// --- nach_mandate ---
+N('nach_mandate','arjun','LOW','3yr NACH mandate — ₹25K/month auto-debit, ₹9L total exposure, irrevocable.');
+N('nach_mandate','arjun','MEDIUM','Screen pe dekh — NACH e-Mandate sign kar raha hai QuickLoan NBFC ke liye. ₹25,000/month auto-debit for 3 years. "Irrevocable" likha hai — beech mein rok nahi sakta. "Digital signature consent" maang raha hai — legally binding hai. Total exposure ₹9,00,000. Soch ke sign kar.');
+N('nach_mandate','arjun','HIGH','Dude, carefully padh screen — yeh NACH e-Mandate hai. "NACH" ka matlab hai National Automated Clearing House — basically bank ko permanent permission dena ki har mahine apne-aap paise kaat le. Screen pe likha hai: creditor QuickLoan NBFC, amount up to ₹25,000/month, duration 3 years yani 36 months. Ab calculate kar — ₹25,000 × 36 = ₹9,00,000. Nine lakh rupees ki total exposure. "Auto-debit" ka matlab samjh — har mahine bina tujhse pooche paise kat jayenge. "Irrevocable for mandate period" likha hai — iska matlab 3 saal tak tu isko cancel nahi kar sakta normally. Formal dispute file karni padegi. "Digital signature consent" maang raha hai — yeh legally binding hai, court mein enforce ho sakta hai. Yeh sirf ek button click nahi hai — tu 3 saal ka financial commitment sign kar raha hai. Kya genuinely yeh loan chahiye? EMI afford kar payega? Miss kiya toh penalties alag. Soch ke kar.');
+N('nach_mandate','rajan','LOW','3 साल, हर महीने 25 हज़ार अपने-आप कटेगा — कुल 9 लाख तक, बंद नहीं कर पाओगे।');
+N('nach_mandate','rajan','MEDIUM','भाऊ, स्क्रीन पर देखो — NACH e-Mandate है QuickLoan NBFC का। हर महीने 25 हज़ार तक, 3 साल तक अपने-आप कटेगा। "Auto-debit" का मतलब — बिना पूछे कटेगा। "Irrevocable" — बीच में बंद नहीं कर सकते। "Digital signature" — कानूनी रूप से बाँध देगा। कुल 9 लाख। सोच-समझ कर।');
+N('nach_mandate','rajan','HIGH','भाऊ, स्क्रीन पर ध्यान से पढ़ो — ये NACH e-Mandate है। "NACH" का मतलब है बैंक को हमेशा के लिए परमिशन देना कि हर महीने अपने-आप पैसे काट ले। QuickLoan NBFC का नाम है — ये NBFC है, बैंक नहीं। "Amount: up to ₹25,000/month" लिखा है — हर महीने 25 हज़ार तक काट सकता है। "Duration: 3 years" लिखा है — 36 महीने तक। हिसाब लगाओ: 25,000 × 36 = 9,00,000 — नौ लाख रुपये। "Auto-debit" का मतलब — कोई नहीं पूछेगा, अपने-आप कट जाएगा। "Irrevocable for mandate period" — ये बहुत ज़रूरी है — इसका मतलब 3 साल तक बंद नहीं कर सकते, शिकायत दर्ज करनी पड़ेगी। "Digital signature consent" — ये कानूनी हस्ताक्षर है। एक बार sign किया तो कोर्ट में मान्य है। ये सिर्फ एक बटन नहीं है — 3 साल का कानूनी बंधन है। सोचो, किसी से सलाह लो, तब sign करो।');
+N('nach_mandate','sunita','LOW','3 साल हर महीने 25 हज़ार कटेगा — बंद नहीं कर पाओगी, कुल 9 लाख।');
+N('nach_mandate','sunita','MEDIUM','दीदी, स्क्रीन पर देखो — NACH Mandate है। QuickLoan NBFC हर महीने 25 हज़ार तक काटेगा, 3 साल तक। "Auto-debit" — बिना पूछे कटेगा। "Irrevocable" — बंद नहीं कर सकती। "Digital signature" — कानूनी है। कुल 9 लाख। सोच लो।');
+N('nach_mandate','sunita','HIGH','दीदी, बहुत ध्यान से सुनो और स्क्रीन पढ़ो। ये NACH e-Mandate है — इसका मतलब है बैंक को परमिशन देना कि हर महीने अपने-आप पैसे काट ले। QuickLoan NBFC लिखा है — ये बैंक नहीं है, लोन देने वाली कंपनी है। "₹25,000/month" — हर महीने 25 हज़ार तक। "3 years" — 36 महीने तक। कुल मिलाकर 9 लाख रुपये तक जा सकता है। "Auto-debit" लिखा है — इसका मतलब बिना कुछ पूछे कट जाएगा। "Irrevocable" लिखा है — बहुत ज़रूरी शब्द है ये — इसका मतलब बीच में बंद नहीं कर सकती। शिकायत दर्ज करनी पड़ेगी। "Digital signature consent" — ये कानूनी sign है। एक बार sign किया तो कोर्ट में मान्य है। ये बहुत बड़ा फैसला है — सोचो, किसी भरोसे वाले से बात करो, तब sign करो।');
+
+// --- autopay ---
+N('autopay','arjun','LOW','₹599/month autopay — no PIN after first time, manually cancel from settings.');
+N('autopay','arjun','MEDIUM','Screen pe dekh — StreamFlix ka UPI AutoPay setup hai. ₹599/month recurring. "Without UPI PIN after first authorization" — pehli baar ke baad PIN nahi maangega. "Autopay will debit automatically" — har month silently katega. Cancel karna hai toh UPI settings mein jaake manually karna padega.');
+N('autopay','arjun','HIGH','Bro, screen pe kya hai dekh — StreamFlix Premium ka UPI AutoPay setup hai. ₹599 per month, recurring. Ab important cheezein samjh. "Enables recurring payment without UPI PIN after first authorization" — iska matlab pehli baar PIN daalega, uske baad har mahine bina PIN ke ₹599 automatic kat jayega. Koi notification nahi, koi confirmation nahi, bas kat jayega. "Consent to auto-debit" likha hai — tu permission de raha hai. "Cancel anytime from UPI app settings" — yeh easy lagta hai but most log bhool jaate hain. Agar StreamFlix dekhna band kar diya lekin AutoPay cancel nahi kiya — charges silently lagte rahenge. 6 mahine bhool gaya toh ₹3,594 waste. Settings mein jaake manually cancel karna padega — app uninstall karne se AutoPay cancel nahi hota. Set it and forget it sounds cool, but yahan forget it = lose money.');
+N('autopay','rajan','LOW','599 हर महीने बिना पूछे कट जाएगा — बंद करने settings में जाना पड़ेगा।');
+N('autopay','rajan','MEDIUM','भाऊ, स्क्रीन पर देखो — StreamFlix का AutoPay है। ₹599/month। "Without UPI PIN" — पहली बार के बाद PIN नहीं माँगेगा। "Automatically" — हर महीने अपने-आप कटेगा। "Cancel from settings" — बंद करने settings में जाना पड़ेगा। भूल गए तो कटता रहेगा।');
+N('autopay','rajan','HIGH','भाऊ, स्क्रीन पर ध्यान से पढ़ो। StreamFlix Premium का UPI AutoPay सेटअप है। ₹599 हर महीने। अब ज़रूरी बातें समझो। "Without UPI PIN after first authorization" लिखा है — इसका मतलब पहली बार PIN डालोगे, उसके बाद हर महीने बिना PIN के अपने-आप ₹599 कट जाएगा। कोई message नहीं आएगा, कोई नहीं पूछेगा। "Consent to auto-debit" लिखा है — तुम परमिशन दे रहे हो। "Cancel anytime from UPI app settings" — ये बंद करने का तरीका है, लेकिन settings में जाकर करना पड़ेगा। अगर StreamFlix देखना बंद कर दिया लेकिन AutoPay बंद नहीं किया — तो पैसे कटते रहेंगे। 6 महीने भूल गए तो ₹3,594 चला जाएगा। App डिलीट करने से AutoPay बंद नहीं होता — settings में जाकर बंद करना पड़ेगा।');
+N('autopay','sunita','LOW','हर महीने 599 बिना पूछे कटेगा — बंद करना settings में।');
+N('autopay','sunita','MEDIUM','दीदी, स्क्रीन पर देखो — StreamFlix का AutoPay है। ₹599 हर महीने अपने-आप कटेगा, बिना PIN के। "Cancel from settings" — बंद करने settings में जाना पड़ेगा। भूल गई तो कटता रहेगा।');
+N('autopay','sunita','HIGH','दीदी, स्क्रीन पर पढ़ो। StreamFlix का AutoPay सेटअप है — ₹599 हर महीने। "Without UPI PIN" लिखा है — पहली बार PIN डालोगी, उसके बाद बिना पूछे अपने-आप कटेगा। कोई message नहीं आएगा। "Auto-debit" लिखा है — मतलब बैंक अपने-आप काट लेगा। "Cancel from UPI settings" — बंद करने का तरीका settings में है। लेकिन ये करना मुश्किल लगता है — अकेले नहीं कर पाओगी तो किसी से मदद लो। अगर StreamFlix देखना बंद कर दिया लेकिन AutoPay बंद नहीं किया तो पैसे कटते रहेंगे। App हटाने से बंद नहीं होता। किसी से मदद लो settings में जाने के लिए।');
+
+// --- ekyc ---
+N('ekyc','arjun','LOW','Full Aadhaar data shared permanently — irrevocable, no take-backs ever.');
+N('ekyc','arjun','MEDIUM','Screen pe dekh — eKYC with Aadhaar hai. Full name, address, photo, DOB, Aadhaar number — sab share hoga. "Irrevocable" likha hai — ek baar share hua toh wapas nahi le sakta, kabhi nahi. Company ki privacy policy pe depend karega kaise use karein. Genuinely zaroorat hai toh kar.');
+N('ekyc','arjun','HIGH','Bro, screen pe "eKYC with Aadhaar" likha hai. Samjh kya ho raha hai — tu apni complete identity share kar raha hai: full name, address, photo, date of birth, aur Aadhaar number. "Aadhaar-based eKYC shares" ke neeche poori list hai. Ab teen important cheezein. "Irrevocable" likha hai — iska matlab ek baar share kiya toh wapas NAHI le sakta. Company ko bolega "delete karo" — woh nahi karenge, legally bound nahi hain unless specific regulation hai. "Digital consent required" — tu permission de raha hai voluntarily. "I authorize sharing my Aadhaar details" — yeh consent statement hai. Ab risk samjh — agar is company ka data breach hua, toh tera naam, address, photo, DOB, Aadhaar — sab public ho jayega. Identity theft ho sakti hai. Aur yeh permanent hai — tu naya Aadhaar nahi le sakta. Genuinely zaroorat hai toh kar. Agar sirf "fast KYC" ke liye kar raha hai aur alternative hai (like document upload), toh woh safer hai.');
+N('ekyc','rajan','LOW','आधार से सब जानकारी कंपनी को जाएगी — एक बार दी तो वापस नहीं, कभी नहीं।');
+N('ekyc','rajan','MEDIUM','भाऊ, स्क्रीन पर "eKYC with Aadhaar" लिखा है। तुम्हारा नाम, पता, फोटो, जन्मतिथि, आधार नंबर — सब कंपनी को जाएगा। "Irrevocable" — एक बार दिया तो वापस नहीं। "Digital consent" — तुम परमिशन दे रहे हो। ज़रूरत है तभी करो।');
+N('ekyc','rajan','HIGH','भाऊ, स्क्रीन पर ध्यान से पढ़ो। "eKYC with Aadhaar" लिखा है — इसमें तुम अपनी पूरी पहचान दे रहे हो। "Aadhaar-based eKYC shares" के नीचे लिस्ट है — full name, address, photo, date of birth, Aadhaar number। ये सब कंपनी के पास चला जाएगा। "Irrevocable" लिखा है — ये बहुत ज़रूरी शब्द है। इसका मतलब एक बार जानकारी दे दी तो वापस नहीं ले सकते, कभी नहीं। कंपनी को बोलोगे "हटाओ" — वो नहीं हटाएँगे। "Digital consent required" — तुम अपनी मर्ज़ी से परमिशन दे रहे हो। "I authorize" लिखा है — ये तुम्हारी सहमति है। अब खतरा समझो — अगर इस कंपनी का डाटा चोरी हुआ तो तुम्हारा नाम, पता, फोटो, आधार नंबर — सब बाहर आ जाएगा। और नया आधार नहीं मिलता। ज़रूरत है तभी करो — अगर और कोई तरीका है जैसे कागज़ दिखाना, तो वो करो।');
+N('ekyc','sunita','LOW','आधार से सारी जानकारी कंपनी को जाएगी — वापस नहीं होगी, कभी नहीं।');
+N('ekyc','sunita','MEDIUM','दीदी, स्क्रीन पर "eKYC" लिखा है। तुम्हारा नाम, पता, फोटो, जन्मतिथि, आधार नंबर — सब कंपनी को मिल जाएगा। "Irrevocable" — एक बार दिया तो वापस नहीं। "Consent" — तुम खुद परमिशन दे रही हो। ज़रूरत हो तभी करो।');
+N('ekyc','sunita','HIGH','दीदी, स्क्रीन पर ध्यान से पढ़ो। "eKYC with Aadhaar" लिखा है। इसमें तुम्हारी पूरी पहचान — नाम, पता, फोटो, जन्मतिथि, आधार नंबर — सब कंपनी के पास चला जाएगा। "Irrevocable" लिखा है — इसका मतलब एक बार दे दिया तो कभी वापस नहीं ले सकती। कंपनी से बोलोगी "हटाओ" — वो नहीं हटाएँगे। "Digital consent required" — तुम अपनी मर्ज़ी से दे रही हो। "I authorize" — ये तुम्हारी सहमति है। खतरा ये है — अगर कंपनी का डाटा चोरी हुआ तो तुम्हारा सब कुछ बाहर आ जाएगा। नया आधार नहीं मिलता। ज़रूरत हो तभी करो। अगर कागज़ दिखाकर हो सकता है तो वो करो — किसी से पूछ लो।');
+
+// --- credit_line ---
+N('credit_line','arjun','LOW','₹50K LOAN at 18% APR — auto-debit EMI, CIBIL impact, ₹500 late penalty.');
+N('credit_line','arjun','MEDIUM','Screen pe "Activate Credit Line" likha hai — fancy lagta hai but yeh LOAN hai. ₹50,000 at 18% APR from QuickCash NBFC. "EMI auto-debit" — har month automatic katega. "Late penalty ₹500 + interest." "Credit bureau reporting" — CIBIL pe jayega. Free money nahi hai, karz hai.');
+N('credit_line','arjun','HIGH','Dude, screen pe "Pre-approved Credit Line" likha hai. "Pre-approved" sun ke lagta hai special offer hai — but samjh yeh LOAN hai. ₹50,000 milega QuickCash NBFC se at 18% APR. "APR" ka matlab Annual Percentage Rate — har saal udhaar pe 18% extra dena padega. "EMI auto-debit enabled" — har mahine EMI bina pooche kat jayegi. "Late payment penalty: ₹500 + interest" — ek EMI miss kiya toh ₹500 penalty aur upar se extra interest. "Credit bureau reporting" — yeh CIBIL score pe report hoga. Agar on-time bhara toh score badega, agar late kiya ya default kiya toh score girga — aur future mein koi loan, credit card, home loan — sab mushkil ho jayega. "Digital signature required" — legally binding contract hai. Yeh free paisa nahi hai — yeh karz hai, interest ke saath wapas karna padega. Calculate kar: ₹50K at 18% — 1 saal mein roughly ₹9,000 sirf interest. Afford kar sakta hai? Genuinely zaroorat hai? Tab hi activate kar.');
+N('credit_line','rajan','LOW','कर्ज है — 50 हज़ार, 18% ब्याज, EMI अपने-आप, CIBIL पर असर, लेट = 500 पेनल्टी।');
+N('credit_line','rajan','MEDIUM','भाऊ, स्क्रीन पर "Activate Credit" लिखा है — ये कर्ज है। 50 हज़ार, 18% ब्याज, QuickCash NBFC से। "EMI auto-debit" — हर महीने अपने-आप कटेगी। "Penalty ₹500" — लेट हुए तो। "Credit bureau" — CIBIL पर जाएगा। मुफ्त नहीं है।');
+N('credit_line','rajan','HIGH','भाऊ, स्क्रीन पर ध्यान से पढ़ो। "Pre-approved Credit Line" लिखा है — सुनने में अच्छा लगता है, लेकिन ये कर्ज है। QuickCash NBFC से 50 हज़ार रुपये मिलेंगे, 18% ब्याज पर। "18% APR" का मतलब — हर साल उधार पर 18 रुपये प्रति सौ ब्याज। "EMI auto-debit enabled" — हर महीने EMI बिना पूछे अपने-आप कट जाएगी। "Late payment penalty: ₹500 + interest" — एक भी EMI लेट हुई तो 500 रुपये पेनल्टी और ऊपर से ब्याज। "Credit bureau reporting" — ये CIBIL में चला जाएगा। अगर लेट किए या नहीं भरे तो आगे कोई लोन नहीं मिलेगा — घर का लोन, ट्रैक्टर का लोन, कुछ नहीं। "Digital signature" — कानूनी हस्ताक्षर है। ये मुफ्त का पैसा नहीं है — ये कर्ज है, ब्याज सहित वापस करना पड़ेगा। ज़रूरत हो तभी लो।');
+N('credit_line','sunita','LOW','ये कर्ज है — 50 हज़ार, 18% ब्याज लगेगा, CIBIL पर असर।');
+N('credit_line','sunita','MEDIUM','दीदी, स्क्रीन पर "Credit Line" लिखा है — ये कर्ज है, फ्री नहीं। 50 हज़ार, 18% ब्याज। "EMI auto-debit" — हर महीने अपने-आप कटेगी। "Penalty ₹500" — लेट हुई तो। CIBIL में जाएगा। सोच-समझ कर।');
+N('credit_line','sunita','HIGH','दीदी, स्क्रीन पर ध्यान से पढ़ो। "Pre-approved Credit Line" लिखा है — सुनने में लगता है मुफ्त पैसा मिल रहा है, लेकिन ये कर्ज है। QuickCash NBFC से 50 हज़ार मिलेगा, 18% ब्याज पर। "EMI auto-debit" लिखा है — हर महीने बिना पूछे अपने-आप कट जाएगी। "Late penalty ₹500" — एक भी EMI लेट हुई तो 500 रुपये पेनल्टी। "Credit bureau reporting" — CIBIL में चला जाएगा — आगे कोई लोन लेना हो तो मुश्किल होगी। "Digital signature" — कानूनी है। ये मुफ्त नहीं है — कर्ज है, ब्याज सहित वापस करना पड़ेगा। किसी भरोसे वाले से बात करो, सोचो, तब लो।');
+
+// --- token_lock ---
+N('token_lock','arjun','LOW','Land token locked 180 days — can\'t sell, transfer, or collateralize. Irrevocable.');
+N('token_lock','arjun','MEDIUM','Screen pe "Finternet Token Lock" hai. Land Parcel #LPT-4421 ko 180 days ke liye lock kar raha hai. "Cannot be transferred, sold, or used as collateral" — 6 months kuch nahi kar sakta. "Irrevocable" — undo nahi hoga. "Unified ledger" pe permanently register.');
+N('token_lock','arjun','HIGH','Bro, screen pe "Finternet Token Lock" likha hai. Samjh kya ho raha hai — tera Land Parcel Token #LPT-4421 ko 180 days ke liye completely freeze kar raha hai. "Token" ka matlab — yeh teri zameen ka digital certificate hai Finternet unified ledger pe. "Lock" ka matlab — freeze, band, use nahi kar sakta. Screen pe clearly likha hai: "cannot be transferred, sold, or used as collateral." Transfer nahi, bech nahi, kisi loan ke liye collateral nahi rakh sakta. "180 days" — yeh 6 mahine hai. "Irrevocable for lock duration" — sabse important line — iska matlab 6 mahine se pehle kisi bhi situation mein unlock nahi hoga. Emergency aayi, paise chahiye, property bechni hai — nahi hoga. Koi shortcut nahi. "Digital signature and consent required" — legally binding hai. "Registered on unified ledger" — permanent record. Soch le — 6 mahine tak teri property completely inaccessible rahegi. Kya genuinely lock karna zaroorat hai?');
+N('token_lock','rajan','LOW','ज़मीन का टोकन 180 दिन लॉक — न बेच सकोगे, न गिरवी, 6 महीने नहीं खुलेगा।');
+N('token_lock','rajan','MEDIUM','भाऊ, स्क्रीन पर "Finternet Token Lock" है। ज़मीन का टोकन #LPT-4421 को 180 दिन लॉक करना है। "Cannot be transferred, sold, or used as collateral" — न बेच सकते, न दे सकते, न गिरवी। "Irrevocable" — 6 महीने खुलेगा नहीं। "Digital signature" — कानूनी है।');
+N('token_lock','rajan','HIGH','भाऊ, स्क्रीन पर ध्यान से पढ़ो। "Finternet Token Lock" लिखा है। तुम्हारी ज़मीन का "Token" — ये ज़मीन का डिजिटल सर्टिफिकेट है — #LPT-4421। "Lock" का मतलब — पूरी तरह बंद, freeze। "180 days" — 6 महीने। स्क्रीन पर साफ लिखा है: "cannot be transferred, sold, or used as collateral" — मतलब इस दौरान न बेच सकते, न किसी को दे सकते, न लोन के लिए गिरवी रख सकते। "Irrevocable for lock duration" — ये सबसे ज़रूरी बात है — 6 महीने से पहले कोई भी हालत में नहीं खुलेगा। कोई भी ज़रूरत हो — पैसों की, बीमारी की, कुछ भी — ज़मीन का टोकन बंद रहेगा। "Digital signature and consent" — कानूनी हस्ताक्षर है। "Unified ledger" पर हमेशा के लिए दर्ज हो जाएगा। ये बहुत बड़ा फैसला है — 6 महीने तक ज़मीन पर कोई अधिकार नहीं रहेगा। सोचो, किसी से सलाह लो, तब करो।');
+N('token_lock','sunita','LOW','ज़मीन 6 महीने बंद — न बेच सकती, न गिरवी, न कुछ कर सकती।');
+N('token_lock','sunita','MEDIUM','दीदी, स्क्रीन पर "Token Lock" है। ज़मीन का टोकन 180 दिन बंद हो जाएगा। "Cannot be sold, transferred" — न बेच सकती, न दे सकती। "Irrevocable" — 6 महीने नहीं खुलेगा। "Digital signature" — कानूनी है।');
+N('token_lock','sunita','HIGH','दीदी, स्क्रीन पर ध्यान से पढ़ो। "Token Lock" लिखा है — तुम्हारी ज़मीन का डिजिटल सर्टिफिकेट 180 दिन, 6 महीने के लिए बंद हो जाएगा। "Token" का मतलब — ज़मीन का कागज़ जो डिजिटल है। "Lock" — बंद, freeze। स्क्रीन पर लिखा है "cannot be transferred, sold, or used as collateral" — मतलब न बेच सकती, न किसी को दे सकती, न लोन के लिए रख सकती। "Irrevocable" — ये बहुत ज़रूरी शब्द है — 6 महीने से पहले नहीं खुलेगा, चाहे कितनी भी ज़रूरत हो। पैसे चाहिए, बीमारी हो, कुछ भी — ज़मीन बंद रहेगी। "Digital signature" — कानूनी है। ये बहुत बड़ा फैसला है। किसी भरोसे वाले से बात करो, सोचो, तब करो।');
+
+// --- aadhaar_sign ---
+N('aadhaar_sign','arjun','LOW','Legal e-sign on Property Sale Agreement — irrevocable, court-enforceable, permanently linked.');
+N('aadhaar_sign','arjun','MEDIUM','Screen pe "Aadhaar e-Sign" hai — Property Sale Agreement sign kar raha hai. "Legally binding electronic signature equivalent to physical" — haath se sign jaisa. "IT Act 2000" — court mein enforceable. "Irrevocable" — wapas nahi. Aadhaar permanently linked. Document properly padh.');
+N('aadhaar_sign','arjun','HIGH','Dude, screen pe "Aadhaar e-Sign" likha hai — yeh sabse serious screen hai. Tu Property Sale Agreement sign kar raha hai. Samjh kya matlab hai: "legally binding electronic signature equivalent to a physical signature" — matlab yeh exactly wahi hai jaise tu kisi kagaz pe pen se sign karta hai. Court mein same weightage hai. "IT Act 2000" ke under enforceable — challenge karna nearly impossible. "Irrevocable" likha hai — ek baar sign kiya toh kabhi undo nahi. "Aadhaar identity permanently linked to this document" — tera Aadhaar number, naam, photo — sab is legal document se hamesha ke liye jud jayega. "Consent and biometric verification required" — fingerprint ya OTP se verify hoga — tera identity confirm ho jayega. Ab real risk — agar document mein galat details hain, fraud hai, ya terms samjhe bina sign kar diya — tu legally bound ho jayega. Property sale agreement mein zameen ka maalkaana hak transfer hota hai. Poora document line by line padh. Kisi lawyer se baat kar. Rush mat kar.');
+N('aadhaar_sign','rajan','LOW','कानूनी हस्ताक्षर — ज़मीन बेचने का काग़ज़, कोर्ट में मान्य, वापस नहीं।');
+N('aadhaar_sign','rajan','MEDIUM','भाऊ, स्क्रीन पर "Aadhaar e-Sign" है — Property Sale Agreement पर sign कर रहे हो। "Legally binding" — कानूनी, कागज़ पर sign जैसा। "IT Act 2000" — कोर्ट में मान्य। "Irrevocable" — वापस नहीं। आधार हमेशा के लिए जुड़ जाएगा। पूरा पढ़ो।');
+N('aadhaar_sign','rajan','HIGH','भाऊ, ये सबसे गंभीर स्क्रीन है — ध्यान से पढ़ो। "Aadhaar e-Sign" लिखा है — Property Sale Agreement पर डिजिटल हस्ताक्षर कर रहे हो। "Legally binding electronic signature equivalent to physical signature" — इसका सीधा मतलब है — ये बिल्कुल वैसा ही है जैसे कागज़ पर हाथ से sign करते हो। कोर्ट में वही वज़न है। "IT Act 2000" लिखा है — ये भारतीय कानून है जो इलेक्ट्रॉनिक sign को मान्यता देता है। "Irrevocable" — एक बार sign किया तो वापस नहीं ले सकते, कभी नहीं। "Aadhaar identity permanently linked" — तुम्हारा आधार नंबर, नाम, फोटो — सब इस काग़ज़ से हमेशा के लिए जुड़ जाएगा। Property Sale Agreement — ज़मीन बेचने का काग़ज़ है। अगर इसमें कुछ गलत है, कोई ठगी है, या बिना समझे sign कर दिया — तो कानूनी तौर पर बँध जाओगे। पूरा काग़ज़ पढ़ो, हर लाइन। किसी वकील से बात करो। जल्दी मत करो।');
+N('aadhaar_sign','sunita','LOW','कानूनी हस्ताक्षर — ज़मीन का काग़ज़, कोर्ट में चलेगा, वापस नहीं होगा।');
+N('aadhaar_sign','sunita','MEDIUM','दीदी, स्क्रीन पर "Aadhaar e-Sign" है — ज़मीन बेचने का काग़ज़ पर sign है। "Legally binding" — कागज़ पर sign जैसा। "IT Act 2000" — कोर्ट में मान्य। "Irrevocable" — वापस नहीं। आधार जुड़ जाएगा। पूरा पढ़ो, किसी से पूछो।');
+N('aadhaar_sign','sunita','HIGH','दीदी, ये सबसे ज़रूरी स्क्रीन है — बहुत ध्यान से सुनो। "Aadhaar e-Sign" लिखा है — ज़मीन बेचने के काग़ज़ पर डिजिटल sign कर रही हो। "Legally binding" लिखा है — कागज़ पर हाथ से sign जैसा ही है, कोर्ट में वही वज़न। "IT Act 2000" — भारतीय कानून के तहत मान्य। "Irrevocable" — एक बार sign किया तो कभी वापस नहीं। "Aadhaar permanently linked" — तुम्हारा आधार इस काग़ज़ से हमेशा के लिए जुड़ जाएगा। Property Sale Agreement — ज़मीन बेचने का काग़ज़। अगर इसमें कुछ गलत है, ठगी है, बिना समझे sign कर दिया — तो कानून के हिसाब से बँध जाओगी। पूरा काग़ज़ पढ़ो — हर लाइन। किसी भरोसे वाले को दिखाओ, वकील से बात करो। कोई जल्दी करवा रहा है तो — रुको।');
+
+// --- ondc ---
+N('ondc','arjun','LOW','ONDC order — no Amazon/Flipkart protection, seller handles disputes directly.');
+N('ondc','arjun','MEDIUM','Screen pe "ONDC Order" hai. KisanDirect Farm se ₹450 ka Organic Rice. "ONDC is open network" — marketplace protection nahi hai. "Dispute resolution differs from marketplace apps" — problem hui toh seller se directly deal karna padega. "Refund policy per seller terms" — standardized nahi hai.');
+N('ondc','arjun','HIGH','Bro, screen pe "ONDC Order" likha hai — KisanDirect Farm se Organic Rice 5kg for ₹450. Ab samjh ONDC kya hai aur yeh Amazon se kaise different hai. "ONDC is an open network" — yeh ek open decentralized network hai jahan sellers directly list karte hain. Amazon ya Flipkart mein agar product kharab aata hai toh marketplace handle karta hai — returns, refunds, customer service sab centralized hai. ONDC mein aisa nahi hai. "Dispute resolution differs from marketplace apps" — problem hui toh directly seller KisanDirect Farm se baat karni padegi. Koi centralized helpline nahi, koi one-click refund nahi. "Refund policy per seller terms" — refund milega ya nahi, kitne din mein, kya conditions — sab seller ke hisaab se. Standardized nahi hai. Good news — ₹450 chhota amount hai toh risk bhi limited hai. But jaanke rakh ki yeh Amazon jaisa seamless nahi hoga agar kuch galat hua.');
+N('ondc','rajan','LOW','ONDC — Amazon जैसा नहीं, दिक्कत हुई तो seller से बात करनी पड़ेगी।');
+N('ondc','rajan','MEDIUM','भाऊ, स्क्रीन पर "ONDC Order" है — KisanDirect Farm से ₹450 का चावल। "ONDC open network" — Amazon जैसा नहीं। "Dispute resolution differs" — दिक्कत हुई तो seller से सीधे बात। "Refund per seller terms" — रिफंड seller की मर्ज़ी से।');
+N('ondc','rajan','HIGH','भाऊ, स्क्रीन पर "ONDC Order" लिखा है — KisanDirect Farm से 5 किलो ऑर्गैनिक चावल ₹450 में। अब ONDC समझो। "ONDC is an open network" — ये Amazon या Flipkart जैसा नहीं है। Amazon में अगर सामान खराब आता है तो Amazon रिफंड देता है, कस्टमर सर्विस है। ONDC में ऐसा नहीं। "Dispute resolution differs" — कोई दिक्कत हुई तो सीधे KisanDirect Farm से बात करनी पड़ेगी। कोई हेल्पलाइन नहीं, कोई एक-क्लिक रिफंड नहीं। "Refund policy per seller terms" — रिफंड मिलेगा या नहीं, कब मिलेगा — ये seller की शर्तें हैं। रकम ₹450 है — बड़ी नहीं है, लेकिन जान लो कि अगर कुछ गलत हुआ तो Amazon जैसी सुविधा नहीं मिलेगी।');
+N('ondc','sunita','LOW','ONDC — Amazon जैसा नहीं, दिक्कत = दुकानदार से बात।');
+N('ondc','sunita','MEDIUM','दीदी, स्क्रीन पर "ONDC Order" है — KisanDirect Farm से ₹450 का चावल। "Open network" — Amazon जैसा नहीं। दिक्कत हुई तो दुकानदार से सीधे बात। रिफंड दुकानदार की मर्ज़ी।');
+N('ondc','sunita','HIGH','दीदी, स्क्रीन पर "ONDC Order" लिखा है — KisanDirect Farm से 5 किलो चावल ₹450 में। अब ONDC समझो — ये Amazon या Flipkart जैसा नहीं है। Amazon में अगर सामान नहीं आता या खराब आता है तो Amazon सीधे पैसे वापस करता है। ONDC में ऐसा नहीं होता। "Open network" लिखा है — ये खुला नेटवर्क है, कोई बड़ी कंपनी बीच में नहीं है। "Dispute resolution differs" — कोई दिक्कत हुई तो सीधे KisanDirect Farm से बात करनी पड़ेगी। "Refund per seller terms" — पैसे वापस मिलेंगे या नहीं — ये दुकानदार पर है। रकम ₹450 है — बड़ी नहीं है — लेकिन जान लो कि Amazon जैसी सुविधा नहीं मिलेगी।');
+
+// ===== TTS =====
+const SPEAKERS=['anushka','abhilash','manisha','vidya','arya','karun','hitesh'];
+S.speaker=SPEAKERS[Math.floor(Math.random()*SPEAKERS.length)];
+function getActx(){if(!S.actx)S.actx=new(window.AudioContext||window.webkitAudioContext)();return S.actx;}
+let currentSource=null,stopFlag=false;
+function chunkText(text,max=200){const parts=text.match(/[^।\.!\?]+[।\.!\?]*/g)||[text];const out=[];let cur='';for(const s of parts){if(cur.length+s.length>max&&cur){out.push(cur.trim());cur=s;}else cur+=' '+s;}if(cur.trim())out.push(cur.trim());return out.filter(c=>c.length>0);}
+async function fetchAndDecode(text,speaker){const langMap={hi:'hi-IN',en:'en-IN',kn:'kn-IN',ta:'ta-IN'};const r=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,language:langMap[S.ttsLang]||'hi-IN',speaker})});if(!r.ok)throw new Error('TTS '+r.status);const data=await r.json();if(!data.data_uri)throw new Error('No audio');const ctx=getActx();await ctx.resume();const b64=data.data_uri.split(',')[1];const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return ctx.decodeAudioData(bytes.buffer);}
+function playBuffer(buf){return new Promise(resolve=>{const ctx=getActx(),src=ctx.createBufferSource();src.buffer=buf;src.connect(ctx.destination);currentSource=src;src.onended=()=>{currentSource=null;resolve();};src.start();});}
+function stopPlayback(){stopFlag=true;if(currentSource){try{currentSource.stop();}catch(e){}currentSource=null;}S.playing=false;updatePlayBtn();}
+async function quickPlay(text,btnEl){if(S.playing){stopPlayback();return;}const ctx=getActx();await ctx.resume();S.playing=true;btnEl.textContent='⏸';try{const buf=await fetchAndDecode(text,S.speaker);if(!S.playing)return;await playBuffer(buf);}catch(e){console.error('Quick play',e);}S.playing=false;btnEl.textContent='▶';}
+async function sheetPlay(){const scriptEl=document.getElementById('sheetScript');const text=scriptEl.textContent;if(!text||text.startsWith('Select'))return;if(S.playing){stopPlayback();return;}const ctx=getActx();await ctx.resume();S.playing=true;stopFlag=false;updatePlayBtn();const chunks=chunkText(text);const progress=document.getElementById('sheetProgress');let buffers=new Array(chunks.length).fill(null);const pf0=fetchAndDecode(chunks[0],S.speaker).then(b=>buffers[0]=b).catch(()=>null);if(chunks.length>1)fetchAndDecode(chunks[1],S.speaker).then(b=>buffers[1]=b).catch(()=>null);await pf0;for(let i=0;i<chunks.length;i++){if(stopFlag)break;progress.textContent=(i+1)+'/'+chunks.length+' bol raha hai...';if(i+2<chunks.length&&!buffers[i+2])fetchAndDecode(chunks[i+2],S.speaker).then(b=>buffers[i+2]=b).catch(()=>null);if(!buffers[i]){try{buffers[i]=await fetchAndDecode(chunks[i],S.speaker);}catch(e){continue;}}if(stopFlag)break;await playBuffer(buffers[i]);}S.playing=false;stopFlag=false;progress.textContent='';updatePlayBtn();}
+function updatePlayBtn(){document.getElementById('sheetPlay').textContent=S.playing?'⏹ Stop':'▶ Play';}
+
+// ===== RENDER =====
+function matColor(m){return[null,'var(--L1)','var(--L2)','var(--L3)','var(--L4)'][m]||'#888';}
+function matLabel(m){return'L'+m;}
+function riskColor(r){return{none:'#aaa',low:'var(--L1)',medium:'var(--L3)',high:'var(--L4)',critical:'#8b0000'}[r]||'#888';}
+function escapeAttr(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');}
+
+function renderHeatmap(){const el=document.getElementById('heatmap');const maxD=Math.max(...JOURNEYS.map(j=>j.density));let html='',drawnLine=false;for(let i=0;i<JOURNEYS.length;i++){const j=JOURNEYS[i];if(!drawnLine&&j.density<THRESHOLD){html+='<div class="threshold-line"><span class="threshold-label">threshold 0.15</span></div>';drawnLine=true;}const pct=maxD>0?(j.density/maxD*100):0;const cp=j.density>=THRESHOLD;html+='<div class="hm-row"><span class="hm-name" onclick="selectJourney(\''+j.id+'\')">'+j.name+'</span><span class="hm-mat" style="background:'+matColor(j.mat)+'">'+matLabel(j.mat)+'</span><div class="hm-bar-wrap"><div class="hm-bar" style="width:'+pct+'%;background:'+matColor(j.mat)+'"></div></div><span class="hm-count">'+j.dplTerms.length+'</span>';if(cp)html+='<button class="hm-play can-play" onclick="quickPlay(\''+escapeAttr(j.sample)+'\',this)">▶</button>';else html+='<span class="hm-play no-play">—</span>';html+='</div>';}if(!drawnLine)html+='<div class="threshold-line"><span class="threshold-label">threshold 0.15</span></div>';el.innerHTML=html;}
+
+function renderBreakdown(j){document.getElementById('breakdownTitle').textContent=j.name;let txt=j.screen;const sorted=[...j.dplTerms].sort((a,b)=>b.matched.length-a.matched.length);const bgMap={'var(--L1)':'#d5f5e3','var(--L2)':'#d6eaf8','var(--L3)':'#fdebd0','var(--L4)':'#fadbd8'};for(const t of sorted){const re=new RegExp('('+t.matched.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');const bg=bgMap[matColor(t.mat)]||'#eee';txt=txt.replace(re,'<span class="dpl" style="background:'+bg+'">$1</span>');}document.getElementById('screenTextBox').innerHTML=txt;let chips='';for(const t of j.dplTerms)chips+='<span class="chip" style="background:'+matColor(t.mat)+'">'+t.term+' <small>('+t.cat+')</small></span>';document.getElementById('dplChips').innerHTML=chips;document.getElementById('statDens').textContent=j.density.toFixed(3);document.getElementById('statMat').textContent=matLabel(j.mat);}
+
+function renderPredictor(j){
+  const screen=document.getElementById('phoneScreen');
+  let html='<div class="upi-header"><span class="back">←</span> '+j.upiTitle+'</div><div class="upi-body">';
+  for(const f of j.fields)html+='<div class="upi-field"><label>'+f.label+'</label><div class="val">'+f.value+'</div></div>';
+  if(j.mat>=3){const bgc=j.mat===4?'#fadbd8':'#fdebd0';const txtc=j.mat===4?'#922':'#7d5a00';html+='<div class="upi-warn" style="background:'+bgc+';color:'+txtc+'">⚠ DPL Density: '+j.density.toFixed(3)+' — '+matLabel(j.mat)+' Materiality</div>';}
+  // DPL term explainers on screen — show top 3 most material
+  const topTerms=[...j.dplTerms].sort((a,b)=>b.weight-a.weight).slice(0,3);
+  if(topTerms.length>0){
+    for(const t of topTerms){
+      const mc=matColor(t.mat);const bgMap={'var(--L1)':'#eafaf1','var(--L2)':'#ebf5fb','var(--L3)':'#fef9e7','var(--L4)':'#fdedec'};
+      html+='<div class="dpl-explain" style="border-color:'+mc+';background:'+(bgMap[mc]||'#f9f9f9')+'"><div class="dpl-term-head" style="color:'+mc+'">'+t.term+' <small style="font-weight:400;color:#888">('+t.cat+')</small></div><div class="dpl-term-def">'+t.explain+'</div></div>';
+    }
+  }
+  html+='<div class="upi-actions">';
+  for(const a of j.actions)html+='<button class="upi-btn '+a.type+'" onclick="showConsequence(\''+j.id+'\',\''+a.type+'\')">'+a.label+'</button>';
+  html+='</div></div>';
+  screen.innerHTML=html;
+  document.getElementById('conseqPanel').classList.remove('show');
+}
+
+function showConsequence(jid,atype){const j=JOURNEYS.find(x=>x.id===jid),a=j.actions.find(x=>x.type===atype);const panel=document.getElementById('conseqPanel'),inner=document.getElementById('conseqInner');inner.innerHTML='<span class="risk-tag" style="background:'+riskColor(a.risk)+'">'+a.risk.toUpperCase()+'</span><p style="font-size:.78rem;line-height:1.5;margin-top:6px">'+a.consequence+'</p>';panel.classList.add('show');}
+
+function renderDecoder(j){if(!j||j.density<THRESHOLD){document.getElementById('narrationOut').innerHTML='<div class="narration-box no-content">No narration needed — density '+(j?j.density.toFixed(3):'0')+' below 0.15.</div>';document.getElementById('wordCount').textContent='';return;}const key=j.id+'|'+S.persona+'|'+S.verbosity;const text=NR[key]||'Template not available.';const words=text.split(/\s+/).length;document.getElementById('narrationOut').innerHTML='<div class="narration-box has-content">'+text+'</div>';document.getElementById('wordCount').textContent=words+' words · '+S.persona+' · '+S.verbosity;document.getElementById('sheetScript').textContent=text;}
+
+function renderJourneyPills(id){const el=document.getElementById(id);if(!el)return;let h='';for(const j of JOURNEYS){const c=(S.selectedJourney&&S.selectedJourney.id===j.id)?'pill active':'pill';h+='<button class="'+c+'" onclick="selectJourney(\''+j.id+'\')">'+j.name+'</button>';}el.innerHTML=h;}
+function renderPersonaPills(){const el=document.getElementById('personaPills');let h='';[{id:'arjun',l:'Arjun (GenZ)'},{id:'rajan',l:'Rajan (Farmer)'},{id:'sunita',l:'Sunita (Migrant)'}].forEach(p=>{h+='<button class="pill '+(S.persona===p.id?'active':'')+'" onclick="setPersona(\''+p.id+'\')">'+p.l+'</button>';});el.innerHTML=h;}
+function renderVerbPills(){const el=document.getElementById('verbPills');let h='';['LOW','MEDIUM','HIGH'].forEach(v=>{h+='<button class="pill '+(S.verbosity===v?'active':'')+'" onclick="setVerbosity(\''+v+'\')">'+v+'</button>';});el.innerHTML=h;}
+function renderLangPills(){const el=document.getElementById('langPills');let h='';[{id:'hi',l:'हि Hindi'},{id:'en',l:'EN Eng'},{id:'kn',l:'ಕ Kan'},{id:'ta',l:'த Tam'}].forEach(l=>{h+='<button class="sh-pill '+(S.ttsLang===l.id?'active':'')+'" onclick="setLang(\''+l.id+'\')">'+l.l+'</button>';});el.innerHTML=h;}
+
+function selectJourney(id){const j=JOURNEYS.find(x=>x.id===id);if(!j)return;S.selectedJourney=j;renderBreakdown(j);renderJourneyPills('breakdownPills');renderJourneyPills('klhJourneyPills');renderPredictor(j);renderDecoder(j);}
+function setPersona(p){S.persona=p;renderPersonaPills();updateSidebarConfig();if(S.selectedJourney)renderDecoder(S.selectedJourney);}
+function setVerbosity(v){S.verbosity=v;renderVerbPills();updateSidebarConfig();if(S.selectedJourney)renderDecoder(S.selectedJourney);}
+function setLang(l){S.ttsLang=l;renderLangPills();if(S.selectedJourney&&S.selectedJourney.density>=THRESHOLD){const ln={hi:'Hindi',en:'English',kn:'Kannada',ta:'Tamil'};const pp={arjun:'GenZ, Hinglish, casual',rajan:'Farmer, Hindi, grade 4, Vidarbha',sunita:'Migrant, colloquial Hindi, simple'};fetch('/api/klh-script',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({screen_content:S.selectedJourney.screen,persona_profile:pp[S.persona],language:ln[l],verbosity:S.verbosity})}).then(r=>r.json()).then(d=>{if(d.script)document.getElementById('sheetScript').textContent=d.script;}).catch(()=>{});}}
+
+document.querySelectorAll('.tab-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));btn.classList.add('active');document.getElementById('tab-'+btn.dataset.tab).classList.add('active');});});
+
+function init(){
+  document.getElementById('dplCount').textContent=DPL.length;
+  renderHeatmap();renderJourneyPills('breakdownPills');renderJourneyPills('klhJourneyPills');
+  renderPersonaPills();renderVerbPills();renderLangPills();
+  document.getElementById('statNarr').textContent=aboveThreshold.length;
+  updateSidebarConfig();
+  const obs=new MutationObserver(()=>{const t=document.getElementById('sheetScript').textContent;document.getElementById('sheetPlay').disabled=!t||t.startsWith('Select')||t.includes('not available');});
+  obs.observe(document.getElementById('sheetScript'),{childList:true,characterData:true,subtree:true});
+  selectJourney(JOURNEYS[0].id);
+  loadConfig();subscribeRealtime();
+}
+init();
+</script>
+</body>
+</html>
