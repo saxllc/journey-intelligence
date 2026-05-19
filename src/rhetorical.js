@@ -55,11 +55,17 @@ For risk_signal: set to a one-line warning string only if materiality is CONSEQU
   const raw = response.content[0].text.trim();
 
   try {
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    parsed.kya_likha_hai_script = parsed.kya_likha_hai_script || parsed.plain_explanation || "";
+    parsed.confidence_phrase = parsed.confidence_phrase || "";
+    return parsed;
   } catch {
     const cleaned = raw.replace(/^```json\n?/, '').replace(/\n?```$/, '').trim();
     try {
-      return JSON.parse(cleaned);
+      const parsed2 = JSON.parse(cleaned);
+      parsed2.kya_likha_hai_script = parsed2.kya_likha_hai_script || parsed2.plain_explanation || "";
+      parsed2.confidence_phrase = parsed2.confidence_phrase || "";
+      return parsed2;
     } catch (e) {
       throw new Error(`Rhetorical layer parse failed: ${e.message}\nRaw: ${raw}`);
     }
