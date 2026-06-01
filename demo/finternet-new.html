@@ -216,7 +216,7 @@ const db = createClient(SUPA_URL, SUPA_KEY);
 // ── State ────────────────────────────────────────────────
 const S = {
   screen: 'dashboard',
-  config: { persona_name: null, primary_language: 'HI', ngrok_url: '', digital_confidence: 'VERY_LOW', klh_verbosity: 'MEDIUM' },
+  config: { persona_name: null, primary_language: 'HI', digital_confidence: 'VERY_LOW', klh_verbosity: 'MEDIUM' },
   txIndex: 0,
   txView: 'user',
   step: 0,
@@ -750,18 +750,9 @@ async function renderStep(n) {
     </div>
     <div style="text-align:center;color:#999;font-size:12px;margin-top:12px">✨ DPIx samajh raha hai...</div>`;
 
-  const ngrok = S.config.ngrok_url;
-  if (!ngrok) {
-    content.innerHTML = `
-      <div class="risk-box"><div>⚠️</div><div class="risk-text">ngrok URL set nahi hai. Configurator mein URL daalo aur "Save URL" dabao.</div></div>
-      <div class="card c-tx"><div class="card-headline">${st.title}</div><div class="card-body">${st.obj.description}</div></div>
-      <button class="btn btn-primary" onclick="renderStep(${n})">Refresh</button>`;
-    return;
-  }
-
   try {
-    const r = await fetch(ngrok + '/api/rhetorical', {
-      method:'POST', headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'},
+    const r = await fetch('/api/rhetorical', {
+      method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ step: st.obj, context: { language: lang(), userProfile: persona().profile, materiality: st.mat, appName: 'Finternet Asset Tokenization — DPIx Demo' } })
     });
     if (!r.ok) throw new Error('Server ' + r.status);
@@ -867,17 +858,10 @@ async function generateAndSetKLH(screenContent) {
   if (genEl) genEl.style.display = 'block';
   if (playBtn) { playBtn.disabled = true; playBtn.className = 'play-btn'; }
 
-  const ngrok = S.config.ngrok_url;
-  if (!ngrok) {
-    if (genEl) genEl.style.display = 'none';
-    klhEl.textContent = 'ngrok URL set nahi hai. Configurator mein daalo.';
-    if (playBtn) playBtn.disabled = false;
-    return;
-  }
   try {
-    const r = await fetch(ngrok + '/api/klh-script', {
+    const r = await fetch('/api/klh-script', {
       method:'POST',
-      headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'},
+      headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
         screen_content: screenContent,
         persona_profile: persona().profile,
@@ -967,8 +951,6 @@ async function togglePlay() {
 }
 
 async function startPlayback() {
-  const ngrok = S.config.ngrok_url;
-  if (!ngrok) { document.getElementById('klh-txt').textContent = '⚠️ ngrok URL set nahi hai.'; return; }
   if (!S.klhScript) return;
   getActx().resume();
   S.playing = true;
@@ -984,7 +966,7 @@ async function startPlayback() {
 
   function prefetch(i) {
     if (i >= chunks.length || cache.has(i) || !S.playing) return;
-    cache.set(i, fetchAndDecode(chunks[i], speaker, ngrok));
+    cache.set(i, fetchAndDecode(chunks[i], speaker));
   }
 
   // Immediately prefetch first two chunks
@@ -1032,10 +1014,10 @@ async function startPlayback() {
   }
 }
 
-async function fetchAndDecode(text, speaker, ngrok) {
-  const r = await fetch(ngrok + '/api/tts', {
+async function fetchAndDecode(text, speaker) {
+  const r = await fetch('/api/tts', {
     method:'POST',
-    headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'},
+    headers:{'Content-Type':'application/json'},
     body: JSON.stringify({ text, language: S.ttsLang, speaker })
   });
   if (!r.ok) throw new Error('TTS ' + r.status);
@@ -1058,8 +1040,8 @@ function applyConfig(cfg) {
   S.ttsLang = LMAP[cfg.primary_language] || 'hi';
   if (cfg.klh_verbosity) S.config.klh_verbosity = cfg.klh_verbosity;
   document.querySelectorAll('.lbtn').forEach(b => b.classList.toggle('active', b.dataset.l === S.ttsLang));
-  document.getElementById('cfg-badge').textContent = `⚙ ${cfg.persona_name||'DEFAULT'} · ${cfg.primary_language||'HI'} · ${cfg.ngrok_url?'🔗':'⚠️ no ngrok'}`;
-  document.getElementById('cfg-strip-text').textContent = `${cfg.persona_name||'DEMO'} · ${cfg.primary_language||'HI'} · ${cfg.ngrok_url?'API OK':'no ngrok'}`;
+  document.getElementById('cfg-badge').textContent = `⚙ ${cfg.persona_name||'DEFAULT'} · ${cfg.primary_language||'HI'} · 🔗 Vercel`;
+  document.getElementById('cfg-strip-text').textContent = `${cfg.persona_name||'DEMO'} · ${cfg.primary_language||'HI'} · API OK`;
   if (prevPersona !== cfg.persona_name) {
     stopAudio();
     S.stepCache = {};

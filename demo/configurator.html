@@ -171,32 +171,16 @@ body{font-family:'Inter',sans-serif;background:#0f0f1a;color:#e0e0e0;min-height:
         </div>
         <div class="svc-card">
           <div class="svc-ico">🔗</div>
-          <div class="svc-info"><div class="svc-name">ngrok Tunnel</div><div class="svc-status" id="svc-ngrok-txt">Not checked</div></div>
+          <div class="svc-info"><div class="svc-name">Vercel API</div><div class="svc-status" id="svc-ngrok-txt">Not checked</div></div>
           <div class="svc-dot" id="svc-ngrok-dot"></div>
-        </div>
-        <div class="svc-card">
-          <div class="svc-ico">⚙</div>
-          <div class="svc-info"><div class="svc-name">Express Server</div><div class="svc-status" id="svc-express-txt">Not checked</div></div>
-          <div class="svc-dot" id="svc-express-dot"></div>
         </div>
       </div>
       <div style="display:flex;gap:8px">
         <button class="btn-svc" id="btn-ping" onclick="pingServices()">🔍 Check All Services</button>
-        <button class="btn-svc danger" id="btn-restart" onclick="restartServer()" disabled>↺ Restart Server</button>
       </div>
     </div>
 
     <div class="hr"></div>
-
-    <!-- ngrok -->
-    <div class="section">
-      <div class="sec-title">🔗 API Tunnel URL (ngrok)</div>
-      <div class="ngrok-row">
-        <input class="ngrok-input" id="ngrok-url" type="text" placeholder="https://xxxx.ngrok-free.app">
-        <button class="btn-small" onclick="saveNgrok()">Save URL</button>
-      </div>
-      <div style="font-size:10px;color:#333;margin-top:5px">Get from ngrok window. Update each session.</div>
-    </div>
 
     <div class="hr"></div>
 
@@ -338,7 +322,7 @@ body{font-family:'Inter',sans-serif;background:#0f0f1a;color:#e0e0e0;min-height:
     <div class="pv-field"><div class="pv-key">Digital Confidence</div><div class="pv-val" id="pv-dc">—</div></div>
     <div class="pv-field"><div class="pv-key">KLH Verbosity</div><div class="pv-val" id="pv-vb">—</div></div>
     <div class="pv-field"><div class="pv-key">App</div><div class="pv-val" id="pv-app">—</div></div>
-    <div class="pv-field"><div class="pv-key">ngrok URL</div><div class="pv-val" id="pv-ngrok" style="font-size:9px">not set</div></div>
+    <div class="pv-field"><div class="pv-key">API</div><div class="pv-val" id="pv-ngrok" style="font-size:9px">Vercel</div></div>
     <hr class="divider">
     <div class="preview-title">Last Saved</div>
     <div class="pv-field"><div class="pv-val" id="pv-time" style="font-size:10px">—</div></div>
@@ -348,8 +332,7 @@ body{font-family:'Inter',sans-serif;background:#0f0f1a;color:#e0e0e0;min-height:
     <button class="quick-btn" onclick="window.open('https://applicationator.vercel.app/index.html','_blank')">📲 index.html</button>
     <hr class="divider">
     <div class="preview-title">Services</div>
-    <div class="pv-field"><div class="pv-key">Express</div><div class="pv-val" id="pv-express" style="font-size:10px">—</div></div>
-    <div class="pv-field"><div class="pv-key">ngrok</div><div class="pv-val" id="pv-ngrok-svc" style="font-size:10px">—</div></div>
+    <div class="pv-field"><div class="pv-key">Vercel API</div><div class="pv-val" id="pv-ngrok-svc" style="font-size:10px">—</div></div>
   </div>
 </div>
 
@@ -380,7 +363,7 @@ let state = {
   persona_name: null, primary_language: 'EN',
   operational_english_level: 'GRADE_4', digital_confidence: 'VERY_LOW',
   age_group: '18-25', literacy_level: 'PRIMARY',
-  app_id: 'finternet', ngrok_url: '', klh_verbosity: 'MEDIUM'
+  app_id: 'finternet', klh_verbosity: 'MEDIUM'
 };
 
 // Per-persona defaults
@@ -421,22 +404,15 @@ async function pingServices() {
     await db.from('configurations').select('id').eq('id','active').single();
     setSvc('supa','on','Connected');
   } catch(e) { setSvc('supa','err','Error: '+e.message); }
-  const ngrok = document.getElementById('ngrok-url').value.trim() || state.ngrok_url;
-  if (ngrok) {
-    setSvc('ngrok','checking','Pinging...');
-    setSvc('express','checking','Pinging...');
-    try {
-      const r = await fetch(ngrok + '/api/health', { headers:{'ngrok-skip-browser-warning':'true'}, signal:AbortSignal.timeout(5000) });
-      if (r.ok) {
-        const d = await r.json();
-        setSvc('ngrok','on','Tunnel active');
-        setSvc('express','on','Up · '+d.uptime);
-        document.getElementById('pv-express').textContent = 'Up · '+d.uptime;
-        document.getElementById('pv-ngrok-svc').textContent = 'Active';
-        document.getElementById('btn-restart').disabled = false;
-      } else { setSvc('ngrok','on','Reachable'); setSvc('express','err','Server error '+r.status); }
-    } catch(e) { setSvc('ngrok','err','Unreachable'); setSvc('express','err','Cannot reach'); document.getElementById('btn-restart').disabled = true; }
-  } else { setSvc('ngrok','err','URL not set'); setSvc('express','err','URL not set'); }
+  // Vercel API health check
+  setSvc('ngrok','checking','Pinging...');
+  try {
+    const r = await fetch('/api/health', { signal:AbortSignal.timeout(5000) });
+    if (r.ok) {
+      const d = await r.json();
+      setSvc('ngrok','on','Vercel API up · '+d.uptime);
+    } else { setSvc('ngrok','err','API error '+r.status); }
+  } catch(e) { setSvc('ngrok','err','API unreachable'); }
   btn.disabled = false; btn.textContent = '🔍 Check All Services';
 }
 
@@ -447,21 +423,7 @@ function setSvc(id, status, txt) {
   if (label) label.textContent = txt;
 }
 
-async function restartServer() {
-  const ngrok = document.getElementById('ngrok-url').value.trim() || state.ngrok_url;
-  if (!ngrok) { showToast('ngrok URL not set', true); return; }
-  const btn = document.getElementById('btn-restart');
-  btn.disabled = true; btn.textContent = '↺ Restarting...';
-  setSvc('express','checking','Restarting...');
-  try { await fetch(ngrok+'/api/restart',{method:'POST',headers:{'ngrok-skip-browser-warning':'true'},signal:AbortSignal.timeout(4000)}); } catch(e){}
-  showToast('Server restarting via PM2...');
-  await new Promise(r => setTimeout(r, 4000));
-  await pingServices();
-  btn.disabled = false; btn.textContent = '↺ Restart Server';
-}
-
 function applyToUI(data) {
-  if (data.ngrok_url) document.getElementById('ngrok-url').value = data.ngrok_url;
   if (data.persona_name) {
     const pid = Object.keys(PERSONAS).find(k => PERSONAS[k].persona_name === data.persona_name);
     if (pid) highlightPersona(pid);
@@ -525,17 +487,6 @@ function selectApp(appId, el) {
   updatePreview(state);
 }
 
-async function saveNgrok() {
-  const url = document.getElementById('ngrok-url').value.trim();
-  if (!url.startsWith('https://')) { showToast('URL must start with https://', true); return; }
-  state.ngrok_url = url;
-  const { error } = await db.from('configurations').update({ ngrok_url:url, updated_at:new Date().toISOString() }).eq('id','active');
-  if (error) { showToast('Save failed', true); return; }
-  showToast('ngrok URL saved');
-  document.getElementById('pv-ngrok').textContent = url;
-  await pingServices();
-}
-
 async function saveConfig() {
   const btn = document.getElementById('btn-save');
   btn.disabled = true; btn.textContent = 'Saving...';
@@ -543,7 +494,6 @@ async function saveConfig() {
   state.digital_confidence = document.getElementById('digital-confidence').value;
   state.age_group = document.getElementById('age-group').value;
   state.literacy_level = document.getElementById('literacy-level').value;
-  state.ngrok_url = document.getElementById('ngrok-url').value.trim();
   state.updated_at = new Date().toISOString();
   const { error } = await db.from('configurations').update(state).eq('id','active');
   btn.disabled = false; btn.textContent = '⚡ Apply Configuration to Mobile';
@@ -560,7 +510,7 @@ function updatePreview(data) {
   document.getElementById('pv-dc').textContent = data.digital_confidence || '—';
   document.getElementById('pv-vb').textContent = data.klh_verbosity || '—';
   document.getElementById('pv-app').textContent = data.app_id || '—';
-  document.getElementById('pv-ngrok').textContent = data.ngrok_url || 'not set';
+  document.getElementById('pv-ngrok').textContent = 'Vercel';
 }
 
 function showToast(msg, isErr) {

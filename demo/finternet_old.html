@@ -186,7 +186,7 @@ const db = createClient(SUPA_URL, SUPA_KEY);
 // ── State ────────────────────────────────────────────────
 const S = {
   screen: 'dashboard',
-  config: { persona_name: null, primary_language: 'HI', ngrok_url: '', digital_confidence: 'VERY_LOW' },
+  config: { persona_name: null, primary_language: 'HI', digital_confidence: 'VERY_LOW' },
   txIndex: 0,
   txView: 'user',
   step: 0,
@@ -471,18 +471,9 @@ async function renderStep(n) {
     </div>
     <div style="text-align:center;color:#999;font-size:12px;margin-top:12px">✨ DPIx samajh raha hai...</div>`;
 
-  const ngrok = S.config.ngrok_url;
-  if (!ngrok) {
-    content.innerHTML = `
-      <div class="risk-box"><div>⚠️</div><div class="risk-text">ngrok URL set nahi hai. Configurator mein URL daalo aur "Save URL" dabao.</div></div>
-      <div class="card c-tx"><div class="card-headline">${st.title}</div><div class="card-body">${st.obj.description}</div></div>
-      <button class="btn btn-primary" onclick="renderStep(${n})">Refresh</button>`;
-    return;
-  }
-
   try {
-   const r = await fetch(ngrok + '/api/rhetorical', {
-        method:'POST', headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'},
+    const r = await fetch('/api/rhetorical', {
+      method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ step: st.obj, context: { language: lang(), userProfile: persona().profile, materiality: st.mat, appName: 'Finternet Asset Tokenization — DPIx Demo' } })
     });
     if (!r.ok) throw new Error('Server ' + r.status);
@@ -616,8 +607,6 @@ async function playBase64(dataUri) {
 
 async function playKLH() {
   if (S.playing) return;
-  const ngrok = S.config.ngrok_url;
-  if (!ngrok) { setKLH('⚠️ ngrok URL set nahi hai. Configurator mein daalo.'); return; }
 
   // Unlock AudioContext on user gesture — must happen before any await
   getActx().resume();
@@ -631,8 +620,8 @@ async function playKLH() {
   try {
     for (let i = 0; i < chunks.length; i++) {
       document.getElementById('play-lbl').textContent = `${i+1}/${chunks.length} bol raha hai...`;
-     const r = await fetch(ngrok + '/api/kya-likha-hai', {
-        method:'POST', headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'},
+      const r = await fetch('/api/kya-likha-hai', {
+        method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ text: chunks[i], language: S.ttsLang })
       });
       if (!r.ok) throw new Error('TTS ' + r.status);
@@ -657,8 +646,8 @@ function applyConfig(cfg) {
   S.ttsLang = LMAP[cfg.primary_language] || 'hi';
 
   document.querySelectorAll('.lbtn').forEach(b => b.classList.toggle('active', b.dataset.l === S.ttsLang));
-  document.getElementById('cfg-badge').textContent = `⚙ ${cfg.persona_name||'DEFAULT'} · ${cfg.primary_language||'HI'} · ${cfg.ngrok_url?'🔗':'⚠️ no ngrok'}`;
-  document.getElementById('cfg-strip-text').textContent = `${cfg.persona_name||'DEMO'} · ${cfg.primary_language||'HI'} · ${cfg.ngrok_url?'API OK':'no ngrok'}`;
+  document.getElementById('cfg-badge').textContent = `⚙ ${cfg.persona_name||'DEFAULT'} · ${cfg.primary_language||'HI'} · 🔗 Vercel`;
+  document.getElementById('cfg-strip-text').textContent = `${cfg.persona_name||'DEMO'} · ${cfg.primary_language||'HI'} · API OK`;
 
   if (prevPersona !== cfg.persona_name) {
     S.stepCache = {};
