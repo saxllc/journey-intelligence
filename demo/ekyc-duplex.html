@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KLH — eKYC Duplex Conversation</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:#0B0F1A;color:#E2E8F0;height:100vh;display:flex;flex-direction:column}
+.top-bar{background:#111827;border-bottom:1px solid #1E293B;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.top-bar h1{font-size:15px;font-weight:700;color:#F8FAFC}
+.top-bar .sub{font-size:10px;color:#64748B}
+.config{display:flex;gap:8px;align-items:center}
+.config select{background:#1E293B;border:1px solid #334155;color:#E2E8F0;padding:5px 8px;border-radius:6px;font-size:11px}
+.layout{display:grid;grid-template-columns:300px 1fr;flex:1;overflow:hidden}
+/* Left: eKYC screen mock */
+.screen-mock{background:#111827;border-right:1px solid #1E293B;padding:20px;overflow-y:auto}
+.phone-frame{background:#1a1a2e;border:2px solid #334155;border-radius:24px;padding:16px;max-width:280px;margin:0 auto}
+.phone-notch{width:80px;height:6px;background:#334155;border-radius:3px;margin:0 auto 12px}
+.screen-title{font-size:14px;font-weight:700;color:#F8FAFC;text-align:center;margin-bottom:12px}
+.screen-field{background:#0F172A;border:1px solid #1E293B;border-radius:8px;padding:10px;margin-bottom:8px;font-size:11px;color:#94A3B8}
+.screen-field strong{color:#E2E8F0;display:block;margin-bottom:2px;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+.screen-warn{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:10px;font-size:11px;color:#FCA5A5;text-align:center;margin:10px 0}
+.screen-consent{font-size:10px;color:#64748B;text-align:center;margin-top:10px;line-height:1.5}
+.screen-btn{display:block;width:100%;padding:12px;border-radius:10px;font-size:13px;font-weight:600;border:none;margin-top:8px;cursor:default}
+.btn-proceed{background:#059669;color:#FFF}
+.btn-cancel{background:#1E293B;color:#94A3B8;border:1px solid #334155}
+.intent-chips{margin-top:16px}
+.intent-chips-title{font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:600}
+.chip{display:inline-block;background:#1E293B;border:1px solid #334155;border-radius:16px;padding:5px 10px;font-size:10px;color:#94A3B8;margin:2px;cursor:pointer;transition:all .15s}
+.chip:hover{background:#334155;color:#E2E8F0}
+.chip.used{border-color:#059669;color:#34D399}
+/* Right: conversation */
+.conv-area{display:flex;flex-direction:column;height:100%}
+.messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:85%;padding:12px 16px;border-radius:14px;font-size:13px;line-height:1.6;position:relative}
+.msg.system{background:#1E293B;color:#94A3B8;align-self:center;max-width:90%;text-align:center;font-size:11px;border-radius:8px;padding:8px 14px}
+.msg.user{background:#4F46E5;color:#FFF;align-self:flex-end;border-bottom-right-radius:4px}
+.msg.gato{background:#1E293B;color:#E2E8F0;align-self:flex-start;border-bottom-left-radius:4px}
+.msg .meta{font-size:9px;color:rgba(255,255,255,.5);margin-top:6px}
+.msg.gato .meta{color:#475569}
+.msg .source-badge{display:inline-block;font-size:8px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:600}
+.source-badge.cache{background:rgba(52,211,153,.15);color:#34D399}
+.source-badge.live{background:rgba(251,191,36,.15);color:#FBBF24}
+.typing{display:flex;gap:4px;padding:12px 16px;align-self:flex-start}
+.typing span{width:8px;height:8px;background:#475569;border-radius:50%;animation:bounce .6s infinite alternate}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{to{transform:translateY(-6px);background:#94A3B8}}
+/* Input bar */
+.input-bar{background:#111827;border-top:1px solid #1E293B;padding:12px 20px;display:flex;gap:10px;align-items:center;flex-shrink:0}
+.mic-btn{width:52px;height:52px;border-radius:50%;border:2px solid #334155;background:#1E293B;color:#E2E8F0;font-size:22px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mic-btn:hover{border-color:#6366F1}
+.mic-btn.recording{background:#EF4444;border-color:#EF4444;animation:pulse-mic 1s infinite}
+.mic-btn.processing{background:#D97706;border-color:#D97706;cursor:wait}
+@keyframes pulse-mic{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.4)}50%{box-shadow:0 0 0 12px rgba(239,68,68,0)}}
+.text-input{flex:1;background:#1E293B;border:1px solid #334155;color:#E2E8F0;padding:12px 16px;border-radius:10px;font-size:13px;outline:none}
+.text-input:focus{border-color:#6366F1}
+.text-input::placeholder{color:#475569}
+.send-btn{background:#6366F1;border:none;color:#FFF;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer}
+.send-btn:hover{background:#4F46E5}
+.status-bar{font-size:10px;color:#475569;text-align:center;padding:4px;background:#0F172A;flex-shrink:0}
+@media(max-width:768px){.layout{grid-template-columns:1fr}.screen-mock{display:none}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div>
+    <h1>KLH — eKYC Duplex Conversation</h1>
+    <div class="sub">Voice-in · Voice-out · Cache-chunk reuse · Tier 2 fallback on novel questions</div>
+  </div>
+  <div class="config">
+    <select id="sel-persona" onchange="resetConvo()">
+      <option value="arjun">Arjun — GenZ</option>
+      <option value="rajan" selected>Rajan — Farmer</option>
+      <option value="sunita">Sunita — Migrant</option>
+    </select>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- Left: eKYC screen -->
+  <div class="screen-mock">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="screen-title">eKYC Verification</div>
+      <div class="screen-field"><strong>Method</strong>Aadhaar eKYC</div>
+      <div class="screen-field"><strong>Data Shared</strong>Name, Address, Photo, DOB, Aadhaar#</div>
+      <div class="screen-field"><strong>Reversible</strong>❌ Irrevocable</div>
+      <div class="screen-warn">⚠ Once shared, your identity data cannot be recalled</div>
+      <div class="screen-consent">By proceeding, I authorize sharing my Aadhaar details with the service provider via eKYC.</div>
+      <button class="screen-btn btn-proceed">Complete eKYC</button>
+      <button class="screen-btn btn-cancel">Cancel</button>
+    </div>
+    <div class="intent-chips">
+      <div class="intent-chips-title">Quick questions (tap or speak)</div>
+      <span class="chip" data-q="ये eKYC क्या है?" onclick="sendChip(this)">ये क्या है?</span>
+      <span class="chip" data-q="क्या data share होगा?" onclick="sendChip(this)">क्या share होगा?</span>
+      <span class="chip" data-q="क्या वापस ले सकते हैं?" onclick="sendChip(this)">वापस ले सकते?</span>
+      <span class="chip" data-q="biometric क्या है?" onclick="sendChip(this)">biometric?</span>
+      <span class="chip" data-q="ये safe है?" onclick="sendChip(this)">safe है?</span>
+      <span class="chip" data-q="क्या होगा अगर करूँ?" onclick="sendChip(this)">क्या होगा?</span>
+      <span class="chip" data-q="कौन लेगा data?" onclick="sendChip(this)">कौन लेगा?</span>
+      <span class="chip" data-q="कोई और तरीका है?" onclick="sendChip(this)">और तरीका?</span>
+      <span class="chip" data-q="क्या करूँ आगे?" onclick="sendChip(this)">क्या करूँ?</span>
+    </div>
+  </div>
+
+  <!-- Right: conversation -->
+  <div class="conv-area">
+    <div class="messages" id="messages">
+      <div class="msg system">GATO is listening. Ask about the eKYC screen — speak, type, or tap a chip.</div>
+    </div>
+    <div class="input-bar">
+      <button class="mic-btn" id="mic-btn" onclick="toggleMic()">🎤</button>
+      <input class="text-input" id="text-input" placeholder="Type a question in Hindi or English..." onkeydown="if(event.key==='Enter')sendText()">
+      <button class="send-btn" onclick="sendText()">Send</button>
+    </div>
+    <div class="status-bar" id="status-bar">Ready · Tap 🎤 to speak or type a question</div>
+  </div>
+</div>
+
+<script>
+let audioCtx = null;
+let currentSource = null;
+let mediaRecorder = null;
+let audioChunks = [];
+let isRecording = false;
+let conversationHistory = [];
+
+function getActx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function persona() { return document.getElementById('sel-persona').value; }
+
+function addMessage(type, text, meta) {
+  const el = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'msg ' + type;
+  let html = text;
+  if (meta) html += `<div class="meta">${meta}</div>`;
+  div.innerHTML = html;
+  el.appendChild(div);
+  el.scrollTop = el.scrollHeight;
+  return div;
+}
+
+function addTyping() {
+  const el = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'typing';
+  div.id = 'typing';
+  div.innerHTML = '<span></span><span></span><span></span>';
+  el.appendChild(div);
+  el.scrollTop = el.scrollHeight;
+}
+
+function removeTyping() {
+  const el = document.getElementById('typing');
+  if (el) el.remove();
+}
+
+function setStatus(text) {
+  document.getElementById('status-bar').textContent = text;
+}
+
+// ═══════ MIC RECORDING ═══════
+async function toggleMic() {
+  if (isRecording) {
+    stopRecording();
+  } else {
+    startRecording();
+  }
+}
+
+async function startRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
+    audioChunks = [];
+    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+    mediaRecorder.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      processRecording();
+    };
+    mediaRecorder.start();
+    isRecording = true;
+    document.getElementById('mic-btn').className = 'mic-btn recording';
+    setStatus('🔴 Recording... tap mic to stop');
+  } catch (e) {
+    setStatus('Mic error: ' + e.message);
+  }
+}
+
+function stopRecording() {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop();
+  }
+  isRecording = false;
+  document.getElementById('mic-btn').className = 'mic-btn processing';
+  setStatus('⏳ Transcribing...');
+}
+
+async function processRecording() {
+  const blob = new Blob(audioChunks, { type: 'audio/webm' });
+  try {
+    const r = await fetch('/api/stt', {
+      method: 'POST',
+      headers: { 'Content-Type': 'audio/webm' },
+      body: blob,
+    });
+    const data = await r.json();
+    document.getElementById('mic-btn').className = 'mic-btn';
+    if (data.transcript) {
+      setStatus('Transcribed: ' + data.transcript.slice(0, 50));
+      await handleUserQuery(data.transcript);
+    } else {
+      setStatus('Could not transcribe. Try again or type.');
+    }
+  } catch (e) {
+    document.getElementById('mic-btn').className = 'mic-btn';
+    setStatus('STT error: ' + e.message);
+  }
+}
+
+// ═══════ TEXT INPUT ═══════
+function sendText() {
+  const input = document.getElementById('text-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  handleUserQuery(text);
+}
+
+function sendChip(el) {
+  const q = el.dataset.q;
+  el.classList.add('used');
+  handleUserQuery(q);
+}
+
+// ═══════ CORE CONVERSATION LOOP ═══════
+async function handleUserQuery(text) {
+  // Show user message
+  addMessage('user', text);
+  conversationHistory.push({ role: 'user', text });
+
+  // Show typing indicator
+  addTyping();
+  setStatus('⚡ Finding answer...');
+
+  const t0 = Date.now();
+
+  try {
+    // Hit the ekyc-chunk endpoint
+    const r = await fetch('/api/ekyc-chunk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ transcript: text, persona: persona() }),
+    });
+    const data = await r.json();
+    const ms = Date.now() - t0;
+
+    removeTyping();
+
+    const sourceBadge = `<span class="source-badge ${data.source}">${data.source}</span>`;
+    const meta = `${data.intent || 'unknown'} · ${ms}ms ${sourceBadge}`;
+    const msgEl = addMessage('gato', data.script || 'No response', meta);
+
+    conversationHistory.push({ role: 'gato', text: data.script, source: data.source, intent: data.intent });
+
+    setStatus(`${data.source === 'cache' ? '⚡ Cache hit' : '🧠 Live generation'} · ${data.intent} · ${ms}ms`);
+
+    // Auto-play TTS
+    if (data.script) {
+      playTTS(data.script, msgEl);
+    }
+  } catch (e) {
+    removeTyping();
+    addMessage('system', 'Error: ' + e.message);
+    setStatus('Error');
+  }
+}
+
+// ═══════ TTS ═══════
+async function playTTS(text, msgEl) {
+  if (currentSource) { try { currentSource.stop(); } catch(e) {} currentSource = null; }
+
+  const ctx = getActx();
+  await ctx.resume();
+
+  try {
+    const r = await fetch('/api/tts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: text.slice(0, 500), language: 'hi-IN', speaker: 'anushka' }),
+    });
+    const data = await r.json();
+    if (!data.data_uri) return;
+
+    const b64 = data.data_uri.split(',')[1];
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    const buf = await ctx.decodeAudioData(bytes.buffer);
+
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    src.connect(ctx.destination);
+    currentSource = src;
+    src.onended = () => { currentSource = null; };
+    src.start(0);
+  } catch (e) {
+    console.error('TTS error:', e);
+  }
+}
+
+// ═══════ RESET ═══════
+function resetConvo() {
+  document.getElementById('messages').innerHTML = '<div class="msg system">GATO is listening. Ask about the eKYC screen — speak, type, or tap a chip.</div>';
+  conversationHistory = [];
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('used'));
+  setStatus('Persona changed. Ready.');
+}
+</script>
+</body>
+</html>
