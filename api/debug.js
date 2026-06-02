@@ -4,6 +4,10 @@ export default async function handler(req, res) {
     sarvam_length: process.env.SARVAM_API_KEY ? process.env.SARVAM_API_KEY.length : 0,
     anthropic_set: !!process.env.ANTHROPIC_API_KEY,
     anthropic_length: process.env.ANTHROPIC_API_KEY ? process.env.ANTHROPIC_API_KEY.length : 0,
+    upstash_url_set: !!process.env.UPSTASH_REDIS_REST_URL,
+    upstash_url_prefix: process.env.UPSTASH_REDIS_REST_URL ? process.env.UPSTASH_REDIS_REST_URL.slice(0, 30) : 'NOT SET',
+    upstash_token_set: !!process.env.UPSTASH_REDIS_REST_TOKEN,
+    upstash_token_length: process.env.UPSTASH_REDIS_REST_TOKEN ? process.env.UPSTASH_REDIS_REST_TOKEN.length : 0,
     node_env: process.env.NODE_ENV
   });
 }
