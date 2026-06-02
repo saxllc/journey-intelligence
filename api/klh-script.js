@@ -61,7 +61,10 @@ async function cacheGet(key) {
     if (!r.ok) return null;
     const data = await r.json();
     if (!data.result) return null;
-    return JSON.parse(data.result);
+    let parsed = JSON.parse(data.result);
+    // Handle double-encoded JSON from generation script
+    if (typeof parsed === 'string') parsed = JSON.parse(parsed);
+    return parsed;
   } catch { return null; }
 }
 
