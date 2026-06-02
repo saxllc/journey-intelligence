@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KLH — Materiality Router</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:#0B0F1A;color:#E2E8F0;min-height:100vh}
+.top-bar{background:#111827;border-bottom:1px solid #1E293B;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+.top-bar h1{font-size:17px;font-weight:700;color:#F8FAFC}
+.top-bar .sub{font-size:11px;color:#64748B}
+.config-strip{display:flex;gap:10px;align-items:center}
+.config-strip select{background:#1E293B;border:1px solid #334155;color:#E2E8F0;padding:6px 10px;border-radius:6px;font-size:12px;outline:none}
+.main{display:grid;grid-template-columns:320px 1fr;min-height:calc(100vh - 52px)}
+/* Journey list */
+.journey-list{background:#111827;border-right:1px solid #1E293B;overflow-y:auto;padding:12px}
+.mat-group{margin-bottom:16px}
+.mat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;padding:6px 10px;margin-bottom:6px;border-radius:6px}
+.mat-l1 .mat-label{color:#34D399;background:rgba(52,211,153,.08)}
+.mat-l2 .mat-label{color:#60A5FA;background:rgba(96,165,250,.08)}
+.mat-l3 .mat-label{color:#FBBF24;background:rgba(251,191,36,.08)}
+.mat-l4 .mat-label{color:#F87171;background:rgba(248,113,113,.08)}
+.j-card{background:#1E293B;border:1.5px solid #334155;border-radius:10px;padding:12px;margin-bottom:6px;cursor:pointer;transition:all .15s}
+.j-card:hover{border-color:#6366F1;background:#1E2A4A}
+.j-card.selected{border-color:#6366F1;background:#1E2A4A;box-shadow:0 0 0 1px #6366F1}
+.j-card .j-name{font-size:13px;font-weight:600;color:#F8FAFC;margin-bottom:3px}
+.j-card .j-meta{font-size:10px;color:#64748B}
+.j-card .j-mat{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:4px}
+.mat-l1 .j-mat{background:rgba(52,211,153,.15);color:#34D399}
+.mat-l2 .j-mat{background:rgba(96,165,250,.15);color:#60A5FA}
+.mat-l3 .j-mat{background:rgba(251,191,36,.15);color:#FBBF24}
+.mat-l4 .j-mat{background:rgba(248,113,113,.15);color:#F87171}
+/* Right panel */
+.right{padding:24px;overflow-y:auto}
+.empty-state{display:flex;align-items:center;justify-content:center;height:100%;color:#475569;font-size:15px;font-style:italic}
+/* Router viz */
+.router-viz{margin-bottom:20px}
+.route-steps{display:flex;gap:0;align-items:stretch}
+.route-step{flex:1;text-align:center;padding:14px 8px;position:relative;border:1.5px solid #1E293B;background:#111827;transition:all .4s}
+.route-step:first-child{border-radius:10px 0 0 10px}
+.route-step:last-child{border-radius:0 10px 10px 0}
+.route-step .step-icon{font-size:20px;margin-bottom:4px}
+.route-step .step-label{font-size:11px;font-weight:600;color:#94A3B8}
+.route-step .step-detail{font-size:9px;color:#475569;margin-top:2px}
+.route-step.active{background:#1E293B;border-color:#6366F1}
+.route-step.done{border-color:#059669;background:rgba(5,150,105,.08)}
+.route-step.done .step-label{color:#34D399}
+.route-step.gate-active{border-color:#EF4444;background:rgba(239,68,68,.08);animation:pulse-gate 1.5s ease infinite}
+@keyframes pulse-gate{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}50%{box-shadow:0 0 0 6px rgba(239,68,68,.15)}}
+.route-arrow{width:24px;display:flex;align-items:center;justify-content:center;color:#334155;font-size:16px;flex-shrink:0}
+/* Narration result */
+.result-area{background:#111827;border:1.5px solid #1E293B;border-radius:12px;overflow:hidden}
+.result-metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:#1E293B}
+.r-metric{background:#111827;padding:14px 10px;text-align:center}
+.r-metric-val{font-size:18px;font-weight:700;margin-bottom:2px}
+.r-metric-label{font-size:9px;color:#64748B;text-transform:uppercase;letter-spacing:.5px}
+.result-narration{padding:20px;font-size:14px;line-height:1.8;color:#CBD5E1;min-height:100px}
+.result-narration.loading{display:flex;align-items:center;justify-content:center;gap:8px;color:#64748B;font-style:italic}
+.spinner{width:16px;height:16px;border:2px solid #334155;border-top:2px solid #6366F1;border-radius:50%;animation:spin .8s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.result-footer{padding:12px 20px;border-top:1px solid #1E293B;display:flex;align-items:center;justify-content:space-between}
+.play-btn{background:#1E293B;border:1px solid #334155;color:#E2E8F0;padding:8px 16px;border-radius:6px;font-size:12px;cursor:pointer;transition:all .15s}
+.play-btn:hover{background:#334155}
+.play-btn:disabled{opacity:.4;cursor:not-allowed}
+.result-note{font-size:10px;color:#475569}
+/* CAS Gate overlay */
+.cas-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:100;align-items:center;justify-content:center}
+.cas-overlay.open{display:flex}
+.cas-modal{background:#111827;border:2px solid #EF4444;border-radius:16px;max-width:520px;width:90%;padding:0;overflow:hidden;animation:cas-in .3s ease}
+@keyframes cas-in{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.cas-header{background:linear-gradient(135deg,#7F1D1D,#991B1B);padding:20px;text-align:center}
+.cas-header h2{font-size:18px;font-weight:700;color:#FCA5A5;margin-bottom:4px}
+.cas-header p{font-size:12px;color:rgba(255,255,255,.7)}
+.cas-body{padding:20px}
+.cas-nodes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.cas-node{background:#1E293B;border-radius:8px;padding:10px;text-align:center;border:1px solid #334155}
+.cas-node .cn-icon{font-size:16px;margin-bottom:3px}
+.cas-node .cn-label{font-size:9px;color:#94A3B8;font-weight:600}
+.cas-node .cn-val{font-size:11px;font-weight:700;margin-top:2px}
+.cas-node.pass .cn-val{color:#34D399}
+.cas-node.warn .cn-val{color:#FBBF24}
+.cas-node.fail .cn-val{color:#F87171}
+.cas-consequence{background:#1C1917;border:1px solid #78350F;border-radius:8px;padding:14px;margin-bottom:16px}
+.cas-consequence .cc-title{font-size:11px;font-weight:700;color:#FBBF24;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+.cas-consequence .cc-text{font-size:13px;color:#E2E8F0;line-height:1.6}
+.cas-actions{display:flex;gap:10px}
+.cas-btn{flex:1;padding:12px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s}
+.cas-btn.proceed{background:#059669;color:#FFF}
+.cas-btn.proceed:hover{background:#047857}
+.cas-btn.decline{background:#1E293B;color:#F87171;border:1px solid #7F1D1D}
+.cas-btn.decline:hover{background:#2D1B1B}
+.cas-countdown{text-align:center;font-size:11px;color:#64748B;margin-bottom:10px}
+/* Colors by materiality */
+.mat-color-1{color:#34D399} .mat-color-2{color:#60A5FA} .mat-color-3{color:#FBBF24} .mat-color-4{color:#F87171}
+@media(max-width:900px){.main{grid-template-columns:1fr}.journey-list{max-height:250px}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div>
+    <h1>KLH — Materiality Router</h1>
+    <div class="sub">Route by transaction materiality: L1/L2 → cache · L3 → cache or live · L4 → max effort + CAS gate</div>
+  </div>
+  <div class="config-strip">
+    <select id="sel-persona">
+      <option value="arjun">Arjun — GenZ</option>
+      <option value="rajan" selected>Rajan — Farmer</option>
+      <option value="sunita">Sunita — Migrant</option>
+    </select>
+    <select id="sel-verbosity">
+      <option value="LOW">Low</option>
+      <option value="MEDIUM" selected>Medium</option>
+      <option value="HIGH">High</option>
+    </select>
+  </div>
+</div>
+
+<div class="main">
+  <div class="journey-list" id="journey-list"></div>
+  <div class="right" id="right-panel">
+    <div class="empty-state">← Select a journey to see the materiality router in action</div>
+  </div>
+</div>
+
+<!-- CAS Gate Modal -->
+<div class="cas-overlay" id="cas-overlay">
+  <div class="cas-modal">
+    <div class="cas-header">
+      <h2>⚠ CAS Gate — Consequence Check</h2>
+      <p>This action is irreversible. Review before proceeding.</p>
+    </div>
+    <div class="cas-body">
+      <div class="cas-nodes" id="cas-nodes"></div>
+      <div class="cas-consequence">
+        <div class="cc-title">What happens if you proceed</div>
+        <div class="cc-text" id="cas-consequence-text"></div>
+      </div>
+      <div class="cas-countdown" id="cas-countdown"></div>
+      <div class="cas-actions">
+        <button class="cas-btn decline" onclick="casDecline()">✕ Decline — Stay Safe</button>
+        <button class="cas-btn proceed" id="cas-proceed-btn" disabled onclick="casProceed()">Reviewing...</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════ DATA ═══════════
+const JOURNEYS = [
+  {id:'balance',name:'Balance Check',mat:1,risk:'none',screen:'Check your account balance. Your available balance will be shown after UPI PIN verification. Balance enquiry is free. Enter UPI PIN to view balance.',consequence:'Your current bank balance is displayed on screen. No money is moved. Read-only operation.'},
+  {id:'p2p_small',name:'P2P Send <₹500',mat:2,risk:'low',screen:'Send ₹350 to Rahul Sharma via UPI. UPI ID: rahul@okaxis. Amount: ₹350. Enter UPI PIN to confirm payment. Refund possible if sent to wrong UPI ID — contact bank within 24 hours.',consequence:'₹350 debited instantly. Small amount, refund possible within 24 hours.'},
+  {id:'p2m_qr',name:'P2M QR Scan',mat:2,risk:'low',screen:'Pay merchant via QR code. Merchant: Fresh Mart Store. Verified merchant. Amount: ₹1,200. Payment to verified merchant via QR scan. Enter UPI PIN to pay.',consequence:'₹1,200 paid to verified merchant. Standard purchase.'},
+  {id:'p2p_large_unknown',name:'P2P >₹5K Unknown',mat:3,risk:'high',screen:'Send ₹8,500 to unknown contact. UPI ID: merchant8847@ybl. First time transfer to this UPI ID. This recipient is unverified. Amount ₹8,500. Enter UPI PIN to authorize consent. Irrevocable once sent.',consequence:'₹8,500 permanently sent to unverified UPI ID. First-time unknown recipient. Irrevocable.'},
+  {id:'beneficiary_add',name:'Beneficiary Add',mat:3,risk:'medium',screen:'Add new beneficiary. Name: Unknown Trader. Account: ****7823. IFSC: SBIN0001234. First time beneficiary addition. Once added, quick transfers enabled without re-verification.',consequence:'Unknown Trader permanently added. Future transfers skip verification.'},
+  {id:'ondc',name:'ONDC Order',mat:3,risk:'medium',screen:'Place order via ONDC open network. Seller: KisanDirect Farm. Item: Organic Rice 5kg. Price: ₹450. ONDC is an open network — dispute resolution differs from marketplace apps.',consequence:'₹450 to KisanDirect Farm via ONDC. No centralized marketplace protection.'},
+  {id:'collect_unknown',name:'Collect Request Unknown',mat:4,risk:'critical',screen:'Collect request received from unknown UPI ID: fraud_alert99@paytm. Amount: ₹15,000. This is a collect request — money will be debited from YOUR account if you approve. Sender is unverified. Irrevocable.',consequence:'₹15,000 DEBITED from your account to unknown sender. #1 UPI fraud method. Irrevocable. CRITICAL.'},
+  {id:'nach_mandate',name:'NACH Mandate Sign',mat:4,risk:'critical',screen:'Sign NACH e-Mandate. Creditor: QuickLoan NBFC. Amount: up to ₹25,000/month. Duration: 3 years (36 months). Irrevocable for mandate period. Digital signature consent required.',consequence:'Legally binding 3-year auto-debit. Up to ₹25,000/month. Total ₹9,00,000 exposure. Irrevocable.'},
+  {id:'autopay',name:'UPI AutoPay Setup',mat:4,risk:'high',screen:'Setup UPI AutoPay. Merchant: StreamFlix Premium. Amount: ₹599/month. Recurring. This enables recurring payment without UPI PIN after first authorization.',consequence:'₹599 auto-debited monthly without PIN. Must manually cancel from settings.'},
+  {id:'ekyc',name:'eKYC Aadhaar',mat:4,risk:'critical',screen:'Complete eKYC with Aadhaar. Your Aadhaar number and biometric data will be shared with the service provider. eKYC is irrevocable — once shared, your identity data cannot be recalled.',consequence:'Full Aadhaar identity permanently shared. Irrevocable. Permanent identity exposure.'},
+  {id:'credit_line',name:'Credit Line Activation',mat:4,risk:'critical',screen:'Activate pre-approved credit line. Lender: QuickCash NBFC. Credit limit: ₹50,000. Interest rate: 18% APR. EMI auto-debit enabled. Late payment penalty: ₹500 + interest.',consequence:'₹50,000 loan at 18% APR. EMI auto-debited. ₹500 late penalty. Affects CIBIL.'},
+  {id:'token_lock',name:'Token Lock / Finternet',mat:4,risk:'critical',screen:'Lock digital asset token via Finternet unified ledger. Asset: Land Parcel Token #LPT-4421. Lock duration: 180 days. Cannot be transferred, sold, or used as collateral. Irrevocable.',consequence:'Land token frozen 180 days. Cannot sell, transfer, or collateralize. Irrevocable.'},
+  {id:'aadhaar_sign',name:'Aadhaar Digital Sign',mat:4,risk:'critical',screen:'Sign document with Aadhaar digital signature. Document: Property Sale Agreement. Legally binding. Irrevocable and enforceable under IT Act 2000.',consequence:'Legally binding signature on Property Sale Agreement. Irrevocable. IT Act 2000 enforceable.'},
+];
+
+const PERSONAS = {
+  arjun:'GenZ, Hinglish, casual',
+  rajan:'Farmer, Hindi, grade 4, Vidarbha',
+  sunita:'Migrant, colloquial Hindi, simple',
+};
+const LANG = 'Hindi — USE DEVANAGARI SCRIPT ONLY, never Roman/Latin transliteration';
+
+const MAT_CONFIG = {
+  1: {label:'L1 Informational',color:'#34D399',effort:'low',tier:'T0 only',route:'No narration needed',cost:'$0',needsNarration:false},
+  2: {label:'L2 Navigational',color:'#60A5FA',effort:'low',tier:'T0 → T1 Cache',route:'Cache lookup',cost:'~$0',needsNarration:true},
+  3: {label:'L3 Transactional',color:'#FBBF24',effort:'medium',tier:'T0 → T1/T2',route:'Cache, fallback live',cost:'$0–$0.01',needsNarration:true},
+  4: {label:'L4 Consequential',color:'#F87171',effort:'max',tier:'T0 → T1/T2 → CAS',route:'Max effort + CAS gate',cost:'~$0.01–$0.03',needsNarration:true,casGate:true},
+};
+
+// CAS 9-node cascade
+const CAS_NODES = [
+  {icon:'📖',label:'DPL Parse',check:j=>({status:'pass',val:'Parsed'})},
+  {icon:'⚖️',label:'Materiality',check:j=>({status:j.mat>=4?'warn':'pass',val:'L'+j.mat})},
+  {icon:'🔁',label:'Reversibility',check:j=>({status:j.risk==='critical'?'fail':'pass',val:j.risk==='critical'?'Irreversible':'Reversible'})},
+  {icon:'🎯',label:'Consequence',check:j=>({status:j.mat>=4?'warn':'pass',val:j.mat>=4?'High impact':'Low'})},
+  {icon:'👤',label:'Identity',check:j=>({status:j.screen.toLowerCase().includes('aadhaar')?'warn':'pass',val:j.screen.toLowerCase().includes('aadhaar')?'Aadhaar linked':'Standard'})},
+  {icon:'💰',label:'Financial',check:j=>({status:j.mat>=3?'warn':'pass',val:j.mat>=3?'Money at risk':'Safe'})},
+  {icon:'⏱️',label:'Time Pressure',check:j=>({status:'pass',val:'No urgency'})},
+  {icon:'🔍',label:'Fraud Signal',check:j=>({status:j.risk==='critical'?'fail':j.risk==='high'?'warn':'pass',val:j.risk==='critical'?'HIGH':j.risk==='high'?'Medium':'None'})},
+  {icon:'🛡️',label:'Agency Gate',check:j=>({status:j.mat>=4?'warn':'pass',val:j.mat>=4?'Thick agency':'Thin'})},
+];
+
+// ═══════════ STATE ═══════════
+let selected = null;
+let casResolve = null;
+let audioCtx = null;
+let currentSource = null;
+
+function getActx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+
+// ═══════════ RENDER JOURNEY LIST ═══════════
+function renderList(){
+  const el=document.getElementById('journey-list');
+  const groups={1:[],2:[],3:[],4:[]};
+  JOURNEYS.forEach(j=>groups[j.mat].push(j));
+  let html='';
+  for(const m of [1,2,3,4]){
+    const cfg=MAT_CONFIG[m];
+    html+=`<div class="mat-group mat-l${m}"><div class="mat-label">${cfg.label} — ${cfg.tier}</div>`;
+    groups[m].forEach(j=>{
+      html+=`<div class="j-card" id="jc-${j.id}" onclick="selectJourney('${j.id}')">
+        <div class="j-name">${j.name}<span class="j-mat">L${j.mat}</span></div>
+        <div class="j-meta">${cfg.route} · ${cfg.cost}</div>
+      </div>`;
+    });
+    html+='</div>';
+  }
+  el.innerHTML=html;
+}
+
+// ═══════════ SELECT & ROUTE ═══════════
+async function selectJourney(id){
+  // Highlight
+  document.querySelectorAll('.j-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('jc-'+id).classList.add('selected');
+
+  const j=JOURNEYS.find(x=>x.id===id);
+  selected=j;
+  const cfg=MAT_CONFIG[j.mat];
+  const persona=document.getElementById('sel-persona').value;
+  const verbosity=document.getElementById('sel-verbosity').value;
+
+  // Build right panel
+  const right=document.getElementById('right-panel');
+  right.innerHTML=`
+    <div class="router-viz">
+      <div style="margin-bottom:10px;font-size:13px;color:#94A3B8">
+        <strong style="color:#F8FAFC">${j.name}</strong> — routing through materiality engine
+      </div>
+      <div class="route-steps" id="route-steps">
+        <div class="route-step active" id="rs-classify">
+          <div class="step-icon">🏷️</div>
+          <div class="step-label">Classify</div>
+          <div class="step-detail">Materiality L${j.mat}</div>
+        </div>
+        <div class="route-arrow">→</div>
+        <div class="route-step" id="rs-route">
+          <div class="step-icon">🔀</div>
+          <div class="step-label">Route</div>
+          <div class="step-detail">${cfg.tier}</div>
+        </div>
+        <div class="route-arrow">→</div>
+        <div class="route-step" id="rs-generate">
+          <div class="step-icon">${cfg.needsNarration?'⚡':'✓'}</div>
+          <div class="step-label">${cfg.needsNarration?'Generate':'Done'}</div>
+          <div class="step-detail">Effort: ${cfg.effort}</div>
+        </div>
+        ${cfg.casGate?`<div class="route-arrow">→</div>
+        <div class="route-step" id="rs-cas">
+          <div class="step-icon">🛡️</div>
+          <div class="step-label">CAS Gate</div>
+          <div class="step-detail">9-node check</div>
+        </div>`:''}
+        <div class="route-arrow">→</div>
+        <div class="route-step" id="rs-done">
+          <div class="step-icon">✅</div>
+          <div class="step-label">Complete</div>
+          <div class="step-detail"></div>
+        </div>
+      </div>
+    </div>
+    <div class="result-area">
+      <div class="result-metrics" id="result-metrics">
+        <div class="r-metric"><div class="r-metric-val" id="rm-mat" style="color:${cfg.color}">L${j.mat}</div><div class="r-metric-label">Materiality</div></div>
+        <div class="r-metric"><div class="r-metric-val" id="rm-tier">—</div><div class="r-metric-label">Tier</div></div>
+        <div class="r-metric"><div class="r-metric-val" id="rm-effort" style="color:${cfg.color}">${cfg.effort}</div><div class="r-metric-label">Effort</div></div>
+        <div class="r-metric"><div class="r-metric-val" id="rm-latency">—</div><div class="r-metric-label">Latency</div></div>
+        <div class="r-metric"><div class="r-metric-val" id="rm-cost">—</div><div class="r-metric-label">Cost</div></div>
+      </div>
+      <div class="result-narration loading" id="result-narration"><div class="spinner"></div> Routing...</div>
+      <div class="result-footer">
+        <button class="play-btn" id="result-play" disabled onclick="playResult()">🔊 Play Audio</button>
+        <div class="result-note" id="result-note"></div>
+      </div>
+    </div>
+  `;
+
+  // Animate through steps
+  await sleep(300);
+  stepDone('rs-classify');
+  stepActive('rs-route');
+  await sleep(400);
+
+  if(!cfg.needsNarration){
+    // L1 — no narration needed
+    stepDone('rs-route');
+    stepDone('rs-done');
+    document.getElementById('rm-tier').textContent='T0';
+    document.getElementById('rm-latency').textContent='<5ms';
+    document.getElementById('rm-cost').textContent='$0';
+    document.getElementById('result-narration').className='result-narration';
+    document.getElementById('result-narration').textContent='L1 Informational — no comprehension narration needed. Balance check is read-only, no risk, no consequence. Tier 0 rules engine handles this entirely.';
+    document.getElementById('result-note').textContent='Tier 0 only · Rules engine · No AI cost';
+    return;
+  }
+
+  // Fetch narration
+  stepDone('rs-route');
+  stepActive('rs-generate');
+  document.getElementById('result-narration').innerHTML='<div class="spinner"></div> Generating narration...';
+
+  const t0=Date.now();
+  try{
+    const r=await fetch('/api/klh-script',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        screen_content:j.screen,
+        persona_profile:PERSONAS[persona],
+        language:LANG,
+        verbosity:verbosity,
+      }),
+    });
+    const data=await r.json();
+    const ms=Date.now()-t0;
+
+    stepDone('rs-generate');
+
+    document.getElementById('rm-tier').textContent=data.tier?'T'+data.tier:(data.source==='cache'?'T1':'T2');
+    document.getElementById('rm-latency').textContent=ms<1000?ms+'ms':(ms/1000).toFixed(1)+'s';
+    document.getElementById('rm-cost').textContent=data.source==='cache'?'~$0':'~$0.01';
+    document.getElementById('result-narration').className='result-narration';
+    document.getElementById('result-narration').textContent=data.script||'No script returned';
+    document.getElementById('result-note').textContent=`Source: ${data.source} · ${data.cache_key||'live generation'} · ${ms}ms`;
+    document.getElementById('result-play').disabled=false;
+    window._lastScript=data.script;
+
+    // CAS gate for L4
+    if(cfg.casGate){
+      stepActive('rs-cas');
+      document.getElementById('rs-cas').classList.add('gate-active');
+      const passed=await showCASGate(j);
+      document.getElementById('rs-cas').classList.remove('gate-active');
+      if(passed){
+        stepDone('rs-cas');
+        stepDone('rs-done');
+        document.getElementById('result-note').textContent+=` · CAS Gate: PASSED (user confirmed)`;
+      }else{
+        document.getElementById('rs-cas').style.borderColor='#EF4444';
+        document.getElementById('result-note').textContent+=` · CAS Gate: DECLINED (user protected)`;
+        document.getElementById('rs-done').querySelector('.step-icon').textContent='🛑';
+        document.getElementById('rs-done').querySelector('.step-label').textContent='Blocked';
+        stepDone('rs-done');
+      }
+    }else{
+      stepDone('rs-done');
+    }
+  }catch(e){
+    document.getElementById('result-narration').className='result-narration';
+    document.getElementById('result-narration').textContent='Error: '+e.message;
+    document.getElementById('result-note').textContent='Request failed';
+  }
+}
+
+// ═══════════ CAS GATE ═══════════
+function showCASGate(j){
+  return new Promise(resolve=>{
+    casResolve=resolve;
+    // Render nodes
+    const nodesEl=document.getElementById('cas-nodes');
+    nodesEl.innerHTML=CAS_NODES.map(n=>{
+      const r=n.check(j);
+      return `<div class="cas-node ${r.status}">
+        <div class="cn-icon">${n.icon}</div>
+        <div class="cn-label">${n.label}</div>
+        <div class="cn-val">${r.val}</div>
+      </div>`;
+    }).join('');
+
+    document.getElementById('cas-consequence-text').textContent=j.consequence;
+
+    // Countdown — force 5s review before proceed is enabled
+    const btn=document.getElementById('cas-proceed-btn');
+    btn.disabled=true;
+    const cdEl=document.getElementById('cas-countdown');
+    let sec=5;
+    cdEl.textContent=`Review required — proceed enabled in ${sec}s`;
+    const iv=setInterval(()=>{
+      sec--;
+      if(sec<=0){
+        clearInterval(iv);
+        cdEl.textContent='You may now proceed or decline.';
+        btn.disabled=false;
+        btn.textContent='⚠ I Understand — Proceed';
+      }else{
+        cdEl.textContent=`Review required — proceed enabled in ${sec}s`;
+      }
+    },1000);
+
+    document.getElementById('cas-overlay').classList.add('open');
+  });
+}
+
+function casProceed(){
+  document.getElementById('cas-overlay').classList.remove('open');
+  if(casResolve)casResolve(true);
+  casResolve=null;
+}
+function casDecline(){
+  document.getElementById('cas-overlay').classList.remove('open');
+  if(casResolve)casResolve(false);
+  casResolve=null;
+}
+
+// ═══════════ AUDIO ═══════════
+async function playResult(){
+  const text=window._lastScript;
+  if(!text)return;
+  const btn=document.getElementById('result-play');
+  if(currentSource){try{currentSource.stop();}catch(e){}currentSource=null;btn.textContent='🔊 Play Audio';return;}
+  btn.disabled=true;btn.textContent='⏳ Loading...';
+  const ctx=getActx();await ctx.resume();
+  try{
+    const r=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,500),language:'hi-IN',speaker:'anushka'})});
+    const data=await r.json();
+    if(!data.data_uri)throw new Error('No audio');
+    const b64=data.data_uri.split(',')[1];const bin=atob(b64);const bytes=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+    const buf=await ctx.decodeAudioData(bytes.buffer);
+    const src=ctx.createBufferSource();src.buffer=buf;src.connect(ctx.destination);currentSource=src;
+    btn.disabled=false;btn.textContent='⏸ Playing...';
+    src.onended=()=>{btn.textContent='🔊 Play Audio';currentSource=null;};
+    src.start(0);
+  }catch(e){btn.textContent='🔊 Play Audio';btn.disabled=false;}
+}
+
+// ═══════════ HELPERS ═══════════
+function stepActive(id){const el=document.getElementById(id);if(el)el.classList.add('active');}
+function stepDone(id){const el=document.getElementById(id);if(el){el.classList.remove('active');el.classList.add('done');}}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// ═══════════ INIT ═══════════
+renderList();
+</script>
+</body>
+</html>
