@@ -80,19 +80,19 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { screen_content, persona_profile, language, verbosity } = req.body;
+  const { screen_content, persona_profile, language, verbosity, nocache } = req.body;
 
   if (!screen_content || !persona_profile || !language) {
     return res.status(400).json({ error: 'Missing required fields: screen_content, persona_profile, language' });
   }
 
-  // ── Tier 1: cache lookup ───────────────────────────────────
+  // ── Tier 1: cache lookup (skip if nocache flag set) ────────
   const journeyId = resolveJourney(screen_content);
   const personaSlug = resolvePersona(persona_profile);
   const langCode = resolveLang(language);
   const vLevel = verbosity || 'MEDIUM';
 
-  if (journeyId && personaSlug && langCode) {
+  if (!nocache && journeyId && personaSlug && langCode) {
     const cacheKey = `klh:${journeyId}:${personaSlug}:${vLevel}:${langCode}`;
     const cached = await cacheGet(cacheKey);
     if (cached && cached.script) {

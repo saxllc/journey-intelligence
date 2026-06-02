@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KLH — Tier 1 vs Tier 2 Comparison</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:#0B0F1A;color:#E2E8F0;min-height:100vh;padding:24px}
+.header{text-align:center;margin-bottom:28px}
+.header h1{font-size:22px;font-weight:700;color:#F8FAFC;margin-bottom:6px}
+.header p{font-size:13px;color:#94A3B8;max-width:700px;margin:0 auto}
+.controls{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:24px}
+.ctrl-group{display:flex;align-items:center;gap:6px}
+.ctrl-label{font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:1px;font-weight:600}
+select{background:#1E293B;border:1px solid #334155;color:#E2E8F0;padding:8px 12px;border-radius:8px;font-size:13px;cursor:pointer;outline:none}
+select:focus{border-color:#6366F1}
+.btn-run{background:#6366F1;color:#FFF;border:none;padding:10px 28px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-run:hover{background:#4F46E5}
+.btn-run:disabled{opacity:.5;cursor:not-allowed}
+.arena{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:1200px;margin:0 auto}
+.panel{background:#111827;border-radius:14px;border:1.5px solid #1E293B;overflow:hidden;display:flex;flex-direction:column}
+.panel-header{padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+.panel.cache .panel-header{background:linear-gradient(135deg,#064E3B,#065F46);border-bottom:1px solid #047857}
+.panel.live .panel-header{background:linear-gradient(135deg,#78350F,#92400E);border-bottom:1px solid #B45309}
+.tier-badge{font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.panel.cache .tier-badge{color:#6EE7B7}
+.panel.live .tier-badge{color:#FCD34D}
+.tier-sub{font-size:11px;color:rgba(255,255,255,.7)}
+.panel-body{padding:20px;flex:1;display:flex;flex-direction:column;gap:14px}
+.metric-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.metric{background:#1E293B;border-radius:10px;padding:12px;text-align:center}
+.metric-val{font-size:22px;font-weight:700;margin-bottom:2px}
+.metric-label{font-size:10px;color:#64748B;text-transform:uppercase;letter-spacing:.5px}
+.panel.cache .metric-val{color:#34D399}
+.panel.live .metric-val{color:#FBBF24}
+.narration-box{background:#0F172A;border:1px solid #1E293B;border-radius:10px;padding:16px;min-height:120px;font-size:14px;line-height:1.7;color:#CBD5E1;position:relative}
+.narration-box.empty{display:flex;align-items:center;justify-content:center;color:#475569;font-style:italic}
+.play-btn{background:#1E293B;border:1px solid #334155;color:#E2E8F0;padding:10px;border-radius:8px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
+.play-btn:hover{background:#334155}
+.play-btn:disabled{opacity:.4;cursor:not-allowed}
+.status-line{font-size:11px;color:#475569;text-align:center;padding:8px}
+.loading{display:flex;align-items:center;justify-content:center;gap:8px;color:#94A3B8;font-size:13px;min-height:120px}
+.spinner{width:18px;height:18px;border:2px solid #334155;border-top:2px solid #6366F1;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.journey-info{background:#1E293B;border-radius:8px;padding:12px;font-size:12px;color:#94A3B8;line-height:1.5}
+.journey-info strong{color:#E2E8F0}
+.vs-divider{display:none}
+@media(max-width:768px){
+  .arena{grid-template-columns:1fr}
+  .metric-row{grid-template-columns:1fr 1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>KLH Architecture — Tier 1 vs Tier 2</h1>
+  <p>Same journey, same persona, same language. Left returns from precomputed cache in &lt;50ms at ~$0. Right forces live generation through Claude → shows real cost and latency. The architecture difference, demonstrated.</p>
+</div>
+
+<div class="controls">
+  <div class="ctrl-group">
+    <span class="ctrl-label">Journey</span>
+    <select id="sel-journey">
+      <option value="collect_unknown">Collect Request Unknown (L4)</option>
+      <option value="nach_mandate">NACH Mandate Sign (L4)</option>
+      <option value="autopay">UPI AutoPay Setup (L4)</option>
+      <option value="ekyc">eKYC Aadhaar (L4)</option>
+      <option value="credit_line">Credit Line Activation (L4)</option>
+    </select>
+  </div>
+  <div class="ctrl-group">
+    <span class="ctrl-label">Persona</span>
+    <select id="sel-persona">
+      <option value="arjun">Arjun — GenZ Mumbai</option>
+      <option value="rajan">Rajan — Farmer Vidarbha</option>
+      <option value="sunita">Sunita — Migrant Worker</option>
+    </select>
+  </div>
+  <div class="ctrl-group">
+    <span class="ctrl-label">Verbosity</span>
+    <select id="sel-verbosity">
+      <option value="LOW">Low</option>
+      <option value="MEDIUM" selected>Medium</option>
+      <option value="HIGH">High</option>
+    </select>
+  </div>
+  <button class="btn-run" id="btn-run" onclick="runComparison()">▶ Run Comparison</button>
+</div>
+
+<div class="arena">
+  <!-- LEFT: TIER 1 CACHE -->
+  <div class="panel cache" id="panel-cache">
+    <div class="panel-header">
+      <div>
+        <div class="tier-badge">Tier 1 — Cache</div>
+        <div class="tier-sub">Precomputed · Upstash Redis</div>
+      </div>
+      <div style="font-size:24px">⚡</div>
+    </div>
+    <div class="panel-body">
+      <div class="metric-row">
+        <div class="metric"><div class="metric-val" id="cache-latency">—</div><div class="metric-label">Latency</div></div>
+        <div class="metric"><div class="metric-val" id="cache-cost">—</div><div class="metric-label">Cost</div></div>
+        <div class="metric"><div class="metric-val" id="cache-source">—</div><div class="metric-label">Source</div></div>
+      </div>
+      <div class="narration-box empty" id="cache-narration">Select a journey and click Run</div>
+      <button class="play-btn" id="cache-play" disabled onclick="playAudio('cache')">🔊 Play Audio</button>
+      <div class="status-line" id="cache-status">Waiting</div>
+    </div>
+  </div>
+
+  <!-- RIGHT: TIER 2 LIVE -->
+  <div class="panel live" id="panel-live">
+    <div class="panel-header">
+      <div>
+        <div class="tier-badge">Tier 2 — Live</div>
+        <div class="tier-sub">Claude Sonnet 4.5 → Sarvam</div>
+      </div>
+      <div style="font-size:24px">🧠</div>
+    </div>
+    <div class="panel-body">
+      <div class="metric-row">
+        <div class="metric"><div class="metric-val" id="live-latency">—</div><div class="metric-label">Latency</div></div>
+        <div class="metric"><div class="metric-val" id="live-cost">—</div><div class="metric-label">Cost</div></div>
+        <div class="metric"><div class="metric-val" id="live-source">—</div><div class="metric-label">Source</div></div>
+      </div>
+      <div class="narration-box empty" id="live-narration">Select a journey and click Run</div>
+      <button class="play-btn" id="live-play" disabled onclick="playAudio('live')">🔊 Play Audio</button>
+      <div class="status-line" id="live-status">Waiting</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const JOURNEYS = {
+  collect_unknown: { screen: 'Collect request received from unknown UPI ID: fraud_alert99@paytm. Amount: ₹15,000. This is a collect request — money will be debited from YOUR account if you approve. Sender is unverified. Never approve collect requests from unknown sources. Enter UPI PIN to authorize consent. Irrevocable.', name: 'Collect Request Unknown', mat: 'L4 CRITICAL' },
+  nach_mandate: { screen: 'Sign NACH e-Mandate. Creditor: QuickLoan NBFC. Amount: up to ₹25,000/month. Frequency: Monthly auto-debit. Duration: 3 years (36 months). This mandate authorizes automatic debit from your account every month for 3 years. Irrevocable for mandate period. Digital signature consent required. Enter UPI PIN to authorize.', name: 'NACH Mandate Sign', mat: 'L4 CRITICAL' },
+  autopay: { screen: 'Setup UPI AutoPay. Merchant: StreamFlix Premium. Amount: ₹599/month. Frequency: Monthly recurring. This enables recurring payment without UPI PIN after first authorization. Autopay will debit automatically every month. Consent to auto-debit. Cancel anytime from UPI app settings.', name: 'UPI AutoPay Setup', mat: 'L4 HIGH' },
+  ekyc: { screen: 'Complete eKYC with Aadhaar. Your Aadhaar number and biometric data will be shared with the service provider. eKYC is irrevocable — once shared, your identity data cannot be recalled. Aadhaar-based eKYC shares: full name, address, photo, date of birth, and Aadhaar number. Digital consent required. I authorize sharing my Aadhaar details.', name: 'eKYC Aadhaar', mat: 'L4 CRITICAL' },
+  credit_line: { screen: 'Activate pre-approved credit line. Lender: QuickCash NBFC. Credit limit: ₹50,000. Interest rate: 18% APR. EMI auto-debit enabled. Late payment penalty: ₹500 + interest. By activating, you consent to loan terms, auto-debit mandate, and credit bureau reporting. Digital signature required.', name: 'Credit Line Activation', mat: 'L4 CRITICAL' },
+};
+
+const PERSONAS = {
+  arjun: 'GenZ, Hinglish, casual',
+  rajan: 'Farmer, Hindi, grade 4, Vidarbha',
+  sunita: 'Migrant, colloquial Hindi, simple',
+};
+
+const LANG = 'Hindi — USE DEVANAGARI SCRIPT ONLY, never Roman/Latin transliteration';
+
+// Audio state
+let audioCtx = null;
+let audioBuffers = { cache: null, live: null };
+let audioScripts = { cache: '', live: '' };
+let currentSource = null;
+
+function getActx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+async function runComparison() {
+  const btn = document.getElementById('btn-run');
+  btn.disabled = true;
+  btn.textContent = '⏳ Running...';
+
+  const journeyId = document.getElementById('sel-journey').value;
+  const personaId = document.getElementById('sel-persona').value;
+  const verbosity = document.getElementById('sel-verbosity').value;
+  const journey = JOURNEYS[journeyId];
+  const persona = PERSONAS[personaId];
+
+  // Reset
+  ['cache', 'live'].forEach(side => {
+    document.getElementById(side + '-latency').textContent = '—';
+    document.getElementById(side + '-cost').textContent = '—';
+    document.getElementById(side + '-source').textContent = '—';
+    document.getElementById(side + '-narration').className = 'narration-box';
+    document.getElementById(side + '-narration').innerHTML = '<div class="loading"><div class="spinner"></div>Generating...</div>';
+    document.getElementById(side + '-play').disabled = true;
+    document.getElementById(side + '-status').textContent = 'Requesting...';
+    audioBuffers[side] = null;
+    audioScripts[side] = '';
+  });
+
+  const payload = {
+    screen_content: journey.screen,
+    persona_profile: persona,
+    language: LANG,
+    verbosity: verbosity,
+  };
+
+  // Fire both simultaneously
+  const t0cache = Date.now();
+  const t0live = Date.now();
+
+  const cachePromise = fetch('/api/klh-script', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  }).then(async r => {
+    const elapsed = Date.now() - t0cache;
+    const data = await r.json();
+    return { ...data, client_ms: elapsed };
+  }).catch(e => ({ error: e.message, client_ms: Date.now() - t0cache }));
+
+  const livePromise = fetch('/api/klh-script', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...payload, nocache: true }),
+  }).then(async r => {
+    const elapsed = Date.now() - t0live;
+    const data = await r.json();
+    return { ...data, client_ms: elapsed };
+  }).catch(e => ({ error: e.message, client_ms: Date.now() - t0live }));
+
+  // Render as they complete
+  cachePromise.then(data => renderResult('cache', data));
+  livePromise.then(data => renderResult('live', data));
+
+  await Promise.all([cachePromise, livePromise]);
+
+  btn.disabled = false;
+  btn.textContent = '▶ Run Comparison';
+}
+
+function renderResult(side, data) {
+  const latencyEl = document.getElementById(side + '-latency');
+  const costEl = document.getElementById(side + '-cost');
+  const sourceEl = document.getElementById(side + '-source');
+  const narrEl = document.getElementById(side + '-narration');
+  const statusEl = document.getElementById(side + '-status');
+  const playBtn = document.getElementById(side + '-play');
+
+  if (data.error) {
+    latencyEl.textContent = '—';
+    costEl.textContent = '—';
+    sourceEl.textContent = 'ERR';
+    narrEl.className = 'narration-box';
+    narrEl.textContent = 'Error: ' + data.error;
+    statusEl.textContent = 'Failed';
+    return;
+  }
+
+  const ms = data.client_ms || data.latency_ms || 0;
+  latencyEl.textContent = ms < 1000 ? ms + 'ms' : (ms / 1000).toFixed(1) + 's';
+  costEl.textContent = data.source === 'cache' ? '~$0' : '~$0.01';
+  sourceEl.textContent = data.source === 'cache' ? 'Redis' : 'Claude';
+
+  narrEl.className = 'narration-box';
+  narrEl.textContent = data.script || 'No script returned';
+
+  audioScripts[side] = data.script || '';
+  playBtn.disabled = false;
+
+  const tier = data.tier || (data.source === 'cache' ? 1 : 2);
+  statusEl.textContent = `Tier ${tier} · ${ms}ms · ${data.cache_key || 'live generation'}`;
+}
+
+async function playAudio(side) {
+  const text = audioScripts[side];
+  if (!text) return;
+
+  const btn = document.getElementById(side + '-play');
+  const status = document.getElementById(side + '-status');
+
+  // Stop any current playback
+  if (currentSource) { try { currentSource.stop(); } catch(e) {} currentSource = null; }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Loading audio...';
+  status.textContent = 'Fetching TTS...';
+
+  const ctx = getActx();
+  await ctx.resume();
+
+  try {
+    const r = await fetch('/api/tts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text: text.slice(0, 500),
+        language: 'hi-IN',
+        speaker: 'anushka',
+      }),
+    });
+    const data = await r.json();
+    if (!data.data_uri) throw new Error('No audio returned');
+
+    const b64 = data.data_uri.split(',')[1];
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    const buf = await ctx.decodeAudioData(bytes.buffer);
+
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    src.connect(ctx.destination);
+    currentSource = src;
+
+    btn.textContent = '⏸ Playing...';
+    status.textContent = 'Playing audio...';
+
+    src.onended = () => {
+      btn.textContent = '🔊 Play Audio';
+      btn.disabled = false;
+      status.textContent = 'Playback complete';
+      currentSource = null;
+    };
+    src.start(0);
+  } catch(e) {
+    btn.textContent = '🔊 Play Audio';
+    btn.disabled = false;
+    status.textContent = 'Audio error: ' + e.message;
+  }
+}
+</script>
+</body>
+</html>
