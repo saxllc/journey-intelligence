@@ -245,11 +245,30 @@ let mediaRecorder = null;
 let audioChunks = [];
 let isRecording = false;
 let conversationHistory = [];
+let audioUnlocked = false;
 
 function getActx() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   return audioCtx;
 }
+
+// iOS requires AudioContext.resume() inside a direct user gesture.
+// We unlock once on the first tap, then all subsequent playback works.
+function unlockAudio() {
+  if (audioUnlocked) return;
+  const ctx = getActx();
+  if (ctx.state === 'suspended') ctx.resume();
+  // Play a silent buffer to fully unlock on iOS
+  const buf = ctx.createBuffer(1, 1, 22050);
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+  src.connect(ctx.destination);
+  src.start(0);
+  audioUnlocked = true;
+}
+// Attach to all interactive elements on first touch
+document.addEventListener('touchstart', unlockAudio, { once: true });
+document.addEventListener('click', unlockAudio, { once: true });
 
 function persona() { return document.getElementById('sel-persona').value; }
 
