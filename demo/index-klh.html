@@ -17,12 +17,22 @@ section{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:col
 .sec-body strong{color:#F0F0F5}
 .sec-body em{color:#D4D4DC;font-style:italic}
 .c-red{color:#F87171}.c-indigo{color:#818CF8}.c-green{color:#6EE7B7}.c-amber{color:#FCD34D}.c-pink{color:#F9A8D4}
-/* Embedded demo */
-.embed-wrap{margin:24px 0 8px;display:flex;gap:20px;align-items:flex-start}
-.embed-frame{width:220px;height:440px;border-radius:28px;overflow:hidden;border:3px solid #2A2A32;box-shadow:0 12px 40px rgba(0,0,0,.4);flex-shrink:0;background:#000}
-.embed-frame iframe{width:100%;height:100%;border:none;border-radius:25px}
-.embed-caption{font-size:11px;color:#6B6B78;margin-top:8px;text-align:center}
-@media(max-width:640px){.embed-wrap{flex-direction:column;align-items:center}.embed-frame{width:180px;height:360px}}
+/* Embedded demo — iPhone 15 Pro frame */
+.embed-wrap{margin:32px 0 12px;display:flex;align-items:center;justify-content:center}
+.embed-device{position:relative;width:200px;flex-shrink:0}
+/* Outer shell — titanium case feel */
+.embed-case{background:linear-gradient(145deg,#2A2A30 0%,#1E1E24 50%,#2A2A30 100%);border-radius:36px;padding:10px;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 24px 64px rgba(0,0,0,.5),0 8px 20px rgba(0,0,0,.3);position:relative}
+/* Side buttons */
+.embed-case::before{content:'';position:absolute;right:-2.5px;top:80px;width:2.5px;height:20px;background:linear-gradient(180deg,#3A3A40,#2A2A30);border-radius:0 1.5px 1.5px 0}
+.embed-case::after{content:'';position:absolute;left:-2.5px;top:68px;width:2.5px;height:16px;background:linear-gradient(180deg,#3A3A40,#2A2A30);border-radius:1.5px 0 0 1.5px}
+/* Inner screen bezel */
+.embed-screen{background:#000;border-radius:27px;overflow:hidden;position:relative;height:410px}
+/* Dynamic Island */
+.embed-di{width:72px;height:20px;background:#000;border-radius:12px;position:absolute;top:6px;left:50%;transform:translateX(-50%);z-index:10}
+/* iframe scaled down */
+.embed-screen iframe{width:393px;height:852px;border:none;transform:scale(0.481);transform-origin:top left;position:absolute;top:0;left:0;border-radius:27px}
+.embed-caption{font-size:10px;color:#52525B;margin-top:10px;text-align:center;letter-spacing:.5px}
+@media(max-width:640px){.embed-device{width:160px}.embed-screen{height:330px}.embed-screen iframe{transform:scale(0.387)}}
 /* Next CTA */
 .next-cta{display:inline-flex;align-items:center;gap:8px;margin-top:28px;padding:10px 22px;border:1px solid #2A2A32;border-radius:10px;color:#A1A1AA;text-decoration:none;font-size:13px;font-weight:500;transition:all .2s;background:rgba(255,255,255,.02)}
 .next-cta:hover{background:rgba(255,255,255,.05);border-color:#52525B;color:#E2E8F0}
@@ -131,14 +141,14 @@ section{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:col
       <p style="margin-top:12px"><strong>Multimodal</strong> — not as input capture, but as output engagement. See the screen. Listen to the explanation. Conduct a conversation. "Kya Likha Hai" is the aural complement to visual UI. <strong>Multimodel</strong> — a frontier LLM (Claude) reasons in English where DPL is native; a sovereign model (Sarvam) regenerates in the user's language with culturally native delivery. Best of both. <span class="c-green">One-fourth the cost.</span></p>
     </div>
     <div class="embed-wrap">
-      <div>
-        <div class="embed-frame">
-          <iframe src="https://journey-intelligence.vercel.app/mobile3.html" loading="lazy" allow="autoplay"></iframe>
+      <div class="embed-device">
+        <div class="embed-case">
+          <div class="embed-screen">
+            <div class="embed-di"></div>
+            <iframe src="https://journey-intelligence.vercel.app/mobile3.html" loading="lazy" allow="autoplay"></iframe>
+          </div>
         </div>
-        <div class="embed-caption">Live: eKYC rhetorical layer</div>
-      </div>
-      <div class="sec-body" style="margin-top:0;font-size:13px;max-width:400px">
-        <p style="color:#8B8B96">Interactive demo → step through an Aadhaar eKYC consent flow. At each step, the <span class="c-indigo">rhetorical comprehension layer</span> explains what's happening, flags risks, and voices the explanation in Hindi, Kannada, or Tamil. A <span class="c-amber">comprehension gate</span> blocks irreversible actions until the user confirms understanding.</p>
+        <div class="embed-caption">Live demo · Tap to interact</div>
       </div>
     </div>
     <a class="demo-link" href="https://applicationator.vercel.app/klh-world-model.html" target="_blank">KLH World Model <span class="arrow">→</span></a>
