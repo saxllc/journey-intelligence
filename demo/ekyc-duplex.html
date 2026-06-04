@@ -6,30 +6,90 @@
 <title>KLH — eKYC Duplex Conversation</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Inter',system-ui,sans-serif;background:#0B0F1A;color:#E2E8F0;height:100vh;display:flex;flex-direction:column}
-.top-bar{background:#111827;border-bottom:1px solid #1E293B;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',system-ui,sans-serif;background:#0B0F1A;color:#E2E8F0;height:100vh;display:flex;flex-direction:column}
+.top-bar{background:#111827;border-bottom:1px solid #1E293B;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .top-bar h1{font-size:15px;font-weight:700;color:#F8FAFC}
 .top-bar .sub{font-size:10px;color:#64748B}
 .config{display:flex;gap:8px;align-items:center}
 .config select{background:#1E293B;border:1px solid #334155;color:#E2E8F0;padding:5px 8px;border-radius:6px;font-size:11px}
-.layout{display:grid;grid-template-columns:300px 1fr;flex:1;min-height:0}
-/* Left: eKYC screen mock */
-.screen-mock{background:#111827;border-right:1px solid #1E293B;padding:12px;display:flex;flex-direction:column;height:100%;overflow:hidden}
-.phone-frame{background:#1a1a2e;border:2px solid #334155;border-radius:24px;padding:12px;max-width:280px;margin:0 auto;flex-shrink:1;overflow-y:auto}
-.phone-notch{width:80px;height:6px;background:#334155;border-radius:3px;margin:0 auto 12px}
-.screen-title{font-size:13px;font-weight:700;color:#F8FAFC;text-align:center;margin-bottom:8px}
-.screen-field{background:#0F172A;border:1px solid #1E293B;border-radius:8px;padding:8px;margin-bottom:5px;font-size:10px;color:#94A3B8}
-.screen-field strong{color:#E2E8F0;display:block;margin-bottom:2px;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
-.screen-warn{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:8px;font-size:10px;color:#FCA5A5;text-align:center;margin:6px 0}
-.screen-consent{font-size:9px;color:#64748B;text-align:center;margin-top:6px;line-height:1.4}
-.screen-btn{display:block;width:100%;padding:8px;border-radius:8px;font-size:11px;font-weight:600;border:none;margin-top:5px;cursor:default}
-.btn-proceed{background:#059669;color:#FFF}
-.btn-cancel{background:#1E293B;color:#94A3B8;border:1px solid #334155}
-.intent-chips{margin-top:10px;flex-shrink:0}
-.intent-chips-title{font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:600}
-.chip{display:inline-block;background:#1E293B;border:1px solid #334155;border-radius:16px;padding:5px 10px;font-size:10px;color:#94A3B8;margin:2px;cursor:pointer;transition:all .15s}
-.chip:hover{background:#334155;color:#E2E8F0}
-.chip.used{border-color:#059669;color:#34D399}
+.layout{display:grid;grid-template-columns:340px 1fr;flex:1;min-height:0}
+/* ═══ iPhone 15 Pro Mock ═══ */
+.screen-mock{background:#111827;border-right:1px solid #1E293B;padding:10px;display:flex;align-items:center;justify-content:center;height:100%;overflow:hidden;position:relative}
+.iphone{--bezel:#1C1C1E;--screen-bg:#000;--screen-radius:50px;--inner-radius:42px;width:280px;height:calc(100vh - 70px);max-height:600px;min-height:460px;background:var(--bezel);border-radius:var(--screen-radius);padding:8px;position:relative;box-shadow:0 0 0 1.5px #3A3A3C,0 0 0 3px #1C1C1E,0 20px 60px rgba(0,0,0,.7);display:flex;flex-direction:column}
+/* Titanium side buttons */
+.iphone::before{content:'';position:absolute;right:-3px;top:120px;width:3px;height:28px;background:#3A3A3C;border-radius:0 2px 2px 0}
+.iphone::after{content:'';position:absolute;left:-3px;top:100px;width:3px;height:22px;background:#3A3A3C;border-radius:2px 0 0 2px}
+.iphone-screen{background:var(--screen-bg);border-radius:var(--inner-radius);flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+/* Dynamic Island */
+.dynamic-island{width:120px;height:34px;background:#000;border-radius:20px;position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:10;display:flex;align-items:center;justify-content:center}
+.di-cam{width:10px;height:10px;background:#1a1a2e;border-radius:50%;border:1.5px solid #2a2a3e;margin-left:30px}
+/* Status bar */
+.ios-status{display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0;font-size:11px;font-weight:600;height:50px;flex-shrink:0}
+.ios-time{font-size:14px;font-weight:700}
+.ios-icons{display:flex;gap:4px;align-items:center;font-size:10px}
+/* App content */
+.app-content{flex:1;overflow-y:auto;padding:8px 14px 10px;display:flex;flex-direction:column;gap:6px;-webkit-overflow-scrolling:touch}
+.app-content::-webkit-scrollbar{width:0}
+/* iOS-style nav bar */
+.ios-nav{text-align:center;padding:2px 0 6px;flex-shrink:0}
+.ios-nav .back{font-size:11px;position:absolute;left:20px;color:#007AFF;font-weight:500}
+.ios-nav h2{font-size:15px;font-weight:600}
+/* eKYC screen elements — iOS style */
+.ekyc-hero{text-align:center;padding:10px 0 6px}
+.ekyc-hero .icon{font-size:32px;margin-bottom:4px}
+.ekyc-hero h3{font-size:16px;font-weight:700;margin-bottom:2px}
+.ekyc-hero p{font-size:10px;opacity:.6}
+.ios-card{border-radius:12px;padding:10px 12px;margin-bottom:6px;font-size:11px;line-height:1.5}
+.ios-card .card-label{font-size:9px;text-transform:uppercase;letter-spacing:.5px;opacity:.5;font-weight:600;margin-bottom:2px}
+.ios-card .card-value{font-weight:500;font-size:12px}
+.ios-card-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0}
+.ios-card-row+.ios-card-row{border-top:1px solid rgba(128,128,128,.15)}
+.ios-warn{border-radius:12px;padding:10px;text-align:center;font-size:10px;font-weight:500;margin-bottom:6px}
+.ios-consent{font-size:9px;opacity:.5;text-align:center;line-height:1.4;padding:4px 6px}
+.ios-btn{display:block;width:100%;padding:10px;border-radius:12px;font-size:14px;font-weight:600;border:none;cursor:default;margin-bottom:5px;letter-spacing:-.2px}
+.ios-btn-primary{background:#007AFF;color:#FFF}
+.ios-btn-secondary{background:transparent;color:#007AFF;font-size:13px}
+/* Chips inside phone */
+.ios-chips{padding:4px 0 6px;flex-shrink:0}
+.ios-chips-title{font-size:9px;text-transform:uppercase;letter-spacing:.8px;opacity:.4;font-weight:600;margin-bottom:5px;text-align:center}
+.ios-chip-grid{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.chip{display:inline-block;border-radius:14px;padding:4px 9px;font-size:9px;cursor:pointer;transition:all .15s;font-weight:500}
+.chip.used{opacity:.5}
+/* Home indicator */
+.home-indicator{height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.home-indicator span{width:100px;height:4px;border-radius:2px}
+/* ═══ Dark/Light mode ═══ */
+.mode-toggle{position:absolute;top:8px;right:8px;z-index:5;background:#1E293B;border:1px solid #334155;border-radius:6px;padding:3px 7px;font-size:10px;cursor:pointer;color:#94A3B8}
+.mode-toggle:hover{background:#334155}
+/* Light mode */
+.iphone.light{--bezel:#E5E5E7;--screen-bg:#F2F2F7}
+.iphone.light .dynamic-island{background:#000}
+.iphone.light{box-shadow:0 0 0 1.5px #D1D1D6,0 0 0 3px #E5E5E7,0 20px 60px rgba(0,0,0,.2)}
+.iphone.light .ios-status,.iphone.light .ios-nav h2,.iphone.light .ekyc-hero h3{color:#1C1C1E}
+.iphone.light .ios-status .ios-time{color:#1C1C1E}
+.iphone.light .ios-icons{color:#1C1C1E}
+.iphone.light .ekyc-hero p,.iphone.light .ios-consent{color:#1C1C1E}
+.iphone.light .ios-card{background:#FFF;color:#1C1C1E}
+.iphone.light .ios-warn{background:#FFF3CD;color:#856404;border:1px solid #FFEEBA}
+.iphone.light .ios-btn-secondary{color:#007AFF;background:transparent}
+.iphone.light .chip{background:#E5E5EA;color:#1C1C1E;border:none}
+.iphone.light .chip:hover{background:#D1D1D6}
+.iphone.light .chip.used{background:#34C759;color:#FFF;opacity:1}
+.iphone.light .home-indicator span{background:rgba(0,0,0,.2)}
+.iphone.light .ios-chips-title{color:#1C1C1E}
+.iphone.light .ios-nav .back{color:#007AFF}
+/* Dark mode (default) */
+.iphone.dark .ios-status,.iphone.dark .ios-nav h2,.iphone.dark .ekyc-hero h3{color:#F5F5F7}
+.iphone.dark .ios-status .ios-time{color:#F5F5F7}
+.iphone.dark .ios-icons{color:#F5F5F7}
+.iphone.dark .ekyc-hero p,.iphone.dark .ios-consent{color:#F5F5F7}
+.iphone.dark .ios-card{background:#1C1C1E;color:#F5F5F7}
+.iphone.dark .ios-warn{background:rgba(255,69,58,.12);color:#FF6961;border:1px solid rgba(255,69,58,.25)}
+.iphone.dark .chip{background:#2C2C2E;color:#F5F5F7;border:none}
+.iphone.dark .chip:hover{background:#3A3A3C}
+.iphone.dark .chip.used{background:#30D158;color:#000;opacity:1}
+.iphone.dark .home-indicator span{background:rgba(255,255,255,.2)}
+.iphone.dark .ios-chips-title{color:#F5F5F7}
 /* Right: conversation */
 .conv-area{display:flex;flex-direction:column;height:100%;min-height:0;overflow:hidden}
 .messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px;min-height:0}
@@ -80,30 +140,63 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0B0F1A;color:#E2E8F0;h
 </div>
 
 <div class="layout">
-  <!-- Left: eKYC screen -->
+  <!-- Left: iPhone 15 Pro eKYC screen -->
   <div class="screen-mock">
-    <div class="phone-frame">
-      <div class="phone-notch"></div>
-      <div class="screen-title">eKYC Verification</div>
-      <div class="screen-field"><strong>Method</strong>Aadhaar eKYC</div>
-      <div class="screen-field"><strong>Data Shared</strong>Name, Address, Photo, DOB, Aadhaar#</div>
-      <div class="screen-field"><strong>Reversible</strong>❌ Irrevocable</div>
-      <div class="screen-warn">⚠ Once shared, your identity data cannot be recalled</div>
-      <div class="screen-consent">By proceeding, I authorize sharing my Aadhaar details with the service provider via eKYC.</div>
-      <button class="screen-btn btn-proceed">Complete eKYC</button>
-      <button class="screen-btn btn-cancel">Cancel</button>
-    </div>
-    <div class="intent-chips">
-      <div class="intent-chips-title">Quick questions (tap or speak)</div>
-      <span class="chip" data-q="ये eKYC क्या है?" onclick="sendChip(this)">ये क्या है?</span>
-      <span class="chip" data-q="क्या data share होगा?" onclick="sendChip(this)">क्या share होगा?</span>
-      <span class="chip" data-q="क्या वापस ले सकते हैं?" onclick="sendChip(this)">वापस ले सकते?</span>
-      <span class="chip" data-q="biometric क्या है?" onclick="sendChip(this)">biometric?</span>
-      <span class="chip" data-q="ये safe है?" onclick="sendChip(this)">safe है?</span>
-      <span class="chip" data-q="क्या होगा अगर करूँ?" onclick="sendChip(this)">क्या होगा?</span>
-      <span class="chip" data-q="कौन लेगा data?" onclick="sendChip(this)">कौन लेगा?</span>
-      <span class="chip" data-q="कोई और तरीका है?" onclick="sendChip(this)">और तरीका?</span>
-      <span class="chip" data-q="क्या करूँ आगे?" onclick="sendChip(this)">क्या करूँ?</span>
+    <button class="mode-toggle" onclick="toggleMode()">🌓 Mode</button>
+    <div class="iphone dark" id="iphone">
+      <div class="iphone-screen">
+        <div class="dynamic-island"><div class="di-cam"></div></div>
+        <div class="ios-status">
+          <span class="ios-time">9:41</span>
+          <span class="ios-icons">
+            <span>●●●●</span>
+            <span>WiFi</span>
+            <span>🔋</span>
+          </span>
+        </div>
+        <div class="ios-nav" style="position:relative">
+          <span class="back">‹ Settings</span>
+          <h2>eKYC Verification</h2>
+        </div>
+        <div class="app-content">
+          <div class="ekyc-hero">
+            <div class="icon">🛡️</div>
+            <h3>Aadhaar eKYC</h3>
+            <p>Verify your identity electronically</p>
+          </div>
+          <div class="ios-card">
+            <div class="card-label">Information to be shared</div>
+            <div class="ios-card-row"><span>Full Name</span><span style="opacity:.5">From Aadhaar</span></div>
+            <div class="ios-card-row"><span>Address</span><span style="opacity:.5">From Aadhaar</span></div>
+            <div class="ios-card-row"><span>Photograph</span><span style="opacity:.5">From Aadhaar</span></div>
+            <div class="ios-card-row"><span>Date of Birth</span><span style="opacity:.5">From Aadhaar</span></div>
+            <div class="ios-card-row"><span>Aadhaar Number</span><span style="opacity:.5">12 digits</span></div>
+          </div>
+          <div class="ios-card">
+            <div class="card-label">Biometric</div>
+            <div class="ios-card-row"><span>Fingerprint / Iris</span><span style="opacity:.5">Required</span></div>
+          </div>
+          <div class="ios-warn">⚠ Irrevocable — once shared, your data cannot be recalled by you, the bank, or anyone.</div>
+          <div class="ios-consent">By tapping "Verify with Aadhaar", I authorize sharing my Aadhaar details with the service provider. This consent is digitally signed and legally binding.</div>
+          <button class="ios-btn ios-btn-primary">Verify with Aadhaar</button>
+          <button class="ios-btn ios-btn-secondary">Cancel</button>
+          <div class="ios-chips">
+            <div class="ios-chips-title">Ask GATO about this screen</div>
+            <div class="ios-chip-grid">
+              <span class="chip" data-q="ये eKYC क्या है?" onclick="sendChip(this)">ये क्या है?</span>
+              <span class="chip" data-q="क्या data share होगा?" onclick="sendChip(this)">क्या share होगा?</span>
+              <span class="chip" data-q="क्या वापस ले सकते हैं?" onclick="sendChip(this)">वापस ले सकते?</span>
+              <span class="chip" data-q="biometric क्या है?" onclick="sendChip(this)">biometric?</span>
+              <span class="chip" data-q="ये safe है?" onclick="sendChip(this)">safe है?</span>
+              <span class="chip" data-q="क्या होगा अगर करूँ?" onclick="sendChip(this)">क्या होगा?</span>
+              <span class="chip" data-q="कौन लेगा data?" onclick="sendChip(this)">कौन लेगा?</span>
+              <span class="chip" data-q="कोई और तरीका है?" onclick="sendChip(this)">और तरीका?</span>
+              <span class="chip" data-q="क्या करूँ आगे?" onclick="sendChip(this)">क्या करूँ?</span>
+            </div>
+          </div>
+        </div>
+        <div class="home-indicator"><span></span></div>
+      </div>
     </div>
   </div>
 
@@ -315,6 +408,13 @@ async function playTTS(text, msgEl) {
   } catch (e) {
     console.error('TTS error:', e);
   }
+}
+
+// ═══════ PHONE MODE TOGGLE ═══════
+function toggleMode() {
+  const phone = document.getElementById('iphone');
+  phone.classList.toggle('dark');
+  phone.classList.toggle('light');
 }
 
 // ═══════ RESET ═══════
