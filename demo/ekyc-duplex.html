@@ -239,35 +239,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',syste
 </div>
 
 <script>
-let audioCtx = null;
-let currentSource = null;
 let mediaRecorder = null;
 let audioChunks = [];
 let isRecording = false;
 let conversationHistory = [];
+
+// ═══════ iOS-SAFE AUDIO — persistent <audio> element ═══════
+// iOS blocks Web Audio API playback after async chains.
+// A single <audio> element unlocked on first tap, then reused via src swap.
+const ttsAudio = new Audio();
+ttsAudio.playsInline = true;
+ttsAudio.setAttribute('playsinline', '');
+
+// Unlock on first user gesture — iOS requires .play() in a tap handler.
+// Playing empty data URI is enough to unlock the element for future use.
 let audioUnlocked = false;
-
-function getActx() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  return audioCtx;
-}
-
-// iOS requires AudioContext.resume() inside a direct user gesture.
-// We unlock once on the first tap, then all subsequent playback works.
 function unlockAudio() {
   if (audioUnlocked) return;
-  const ctx = getActx();
-  if (ctx.state === 'suspended') ctx.resume();
-  // Play a silent buffer to fully unlock on iOS
-  const buf = ctx.createBuffer(1, 1, 22050);
-  const src = ctx.createBufferSource();
-  src.buffer = buf;
-  src.connect(ctx.destination);
-  src.start(0);
-  audioUnlocked = true;
+  ttsAudio.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+  ttsAudio.play().then(() => { audioUnlocked = true; }).catch(() => {});
 }
-// Attach to all interactive elements on first touch
 document.addEventListener('touchstart', unlockAudio, { once: true });
+document.addEventListener('touchend', unlockAudio, { once: true });
 document.addEventListener('click', unlockAudio, { once: true });
 
 function persona() { return document.getElementById('sel-persona').value; }
@@ -420,12 +413,11 @@ async function handleUserQuery(text) {
   }
 }
 
-// ═══════ TTS ═══════
+// ═══════ TTS — uses persistent <audio> element for iOS compatibility ═══════
 async function playTTS(text, msgEl) {
-  if (currentSource) { try { currentSource.stop(); } catch(e) {} currentSource = null; }
-
-  const ctx = getActx();
-  await ctx.resume();
+  // Stop any current playback
+  ttsAudio.pause();
+  ttsAudio.currentTime = 0;
 
   try {
     const r = await fetch('/api/tts', {
@@ -436,18 +428,9 @@ async function playTTS(text, msgEl) {
     const data = await r.json();
     if (!data.data_uri) return;
 
-    const b64 = data.data_uri.split(',')[1];
-    const bin = atob(b64);
-    const bytes = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    const buf = await ctx.decodeAudioData(bytes.buffer);
-
-    const src = ctx.createBufferSource();
-    src.buffer = buf;
-    src.connect(ctx.destination);
-    currentSource = src;
-    src.onended = () => { currentSource = null; };
-    src.start(0);
+    // Set data URI as source and play
+    ttsAudio.src = data.data_uri;
+    await ttsAudio.play();
   } catch (e) {
     console.error('TTS error:', e);
   }
