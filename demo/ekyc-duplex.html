@@ -121,14 +121,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',syste
 .send-btn:hover{background:#4F46E5}
 .status-bar{font-size:10px;color:#475569;text-align:center;padding:4px;background:#0F172A;flex-shrink:0}
 @media(max-width:768px){
-  .layout{grid-template-columns:1fr;grid-template-rows:auto 1fr}
-  .screen-mock{height:auto;max-height:50vh;padding:8px;overflow-y:auto}
-  .iphone{height:auto;max-height:calc(50vh - 20px);min-height:360px;width:240px}
+  body{background:#666}
+  .top-bar{padding:6px 12px}
+  .top-bar h1{font-size:13px}
+  .top-bar .sub{display:none}
+  .layout{grid-template-columns:1fr;grid-template-rows:1fr auto;height:calc(100vh - 40px)}
+  .screen-mock{padding:8px;display:flex;align-items:flex-start;justify-content:center;overflow:hidden;background:#666;border-right:none}
+  .iphone{width:100%;max-width:390px;height:calc(100vh - 140px);max-height:none;min-height:300px}
+  .conv-area{height:auto;max-height:none;min-height:0}
+  .messages{max-height:80px;min-height:40px;padding:6px 12px;gap:6px;flex:none}
+  .msg{font-size:11px;padding:6px 10px;max-width:95%}
+  .msg .meta{display:none}
+  .input-bar{padding:6px 10px}
+  .mic-btn{width:40px;height:40px;font-size:18px}
+  .text-input{padding:8px 10px;font-size:12px}
+  .send-btn{padding:8px 12px;font-size:12px}
+  .status-bar{display:none}
 }
 @media(max-width:430px) and (hover:none) and (pointer:coarse){
-  .iphone{width:100%!important;height:auto!important;max-height:45vh!important;min-height:320px!important;border-radius:0!important;padding:0!important;box-shadow:none!important}
+  body{background:#555}
+  .screen-mock{padding:0;background:#555}
+  .iphone{max-width:100%;border-radius:0!important;padding:0!important;box-shadow:none!important}
   .iphone::before,.iphone::after{display:none!important}
-  .iphone-screen{border-radius:0!important}
+  .iphone-inner{border-radius:0!important}
   .dynamic-island{display:none}.home-indicator{display:none}
 }
 </style>
