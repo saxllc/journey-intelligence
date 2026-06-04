@@ -27,16 +27,17 @@ section{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:col
 /* Side buttons */
 .embed-case::before{content:'';position:absolute;right:-2.5px;top:100px;width:2.5px;height:24px;background:linear-gradient(180deg,#444,#333);border-radius:0 1.5px 1.5px 0}
 .embed-case::after{content:'';position:absolute;left:-2.5px;top:85px;width:2.5px;height:18px;background:linear-gradient(180deg,#444,#333);border-radius:1.5px 0 0 1.5px}
-/* Inner screen */
+/* Inner screen — uses a zoom wrapper so pointer events map correctly */
 .embed-screen{background:#000;border-radius:34px;overflow:hidden;position:relative;height:500px}
 /* Dynamic Island — smaller */
-.embed-di{width:56px;height:16px;background:#000;border-radius:10px;position:absolute;top:5px;left:50%;transform:translateX(-50%);z-index:10}
-/* iframe scaled to fit wider */
-.embed-screen iframe{width:393px;height:852px;border:none;transform:scale(0.62);transform-origin:top left;position:absolute;top:0;left:0;border-radius:34px}
-.embed-caption{font-size:10px;color:#52525B;margin-top:12px;text-align:center;letter-spacing:.5px}
+.embed-di{width:56px;height:16px;background:#000;border-radius:10px;position:absolute;top:5px;left:50%;transform:translateX(-50%);z-index:10;pointer-events:none}
+/* Zoom wrapper — scales the iframe without breaking pointer/touch events */
+.embed-zoom{width:393px;height:852px;transform-origin:top left;overflow:hidden;border-radius:34px}
+.embed-zoom iframe{width:393px;height:852px;border:none;display:block;pointer-events:auto;touch-action:auto}
 /* Reflection line at top of case */
-.embed-case .reflect{position:absolute;top:0;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);border-radius:1px}
-@media(max-width:640px){.embed-device{width:220px}.embed-screen{height:420px}.embed-screen iframe{transform:scale(0.52)}.embed-glow{width:260px;height:360px}}
+.embed-case .reflect{position:absolute;top:0;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);border-radius:1px;z-index:2}
+.embed-caption{font-size:10px;color:#52525B;margin-top:12px;text-align:center;letter-spacing:.5px}
+@media(max-width:640px){.embed-device{width:220px}.embed-screen{height:420px}.embed-glow{width:260px;height:360px}}
 /* Next CTA */
 .next-cta{display:inline-flex;align-items:center;gap:8px;margin-top:28px;padding:10px 22px;border:1px solid #2A2A32;border-radius:10px;color:#A1A1AA;text-decoration:none;font-size:13px;font-weight:500;transition:all .2s;background:rgba(255,255,255,.02)}
 .next-cta:hover{background:rgba(255,255,255,.05);border-color:#52525B;color:#E2E8F0}
@@ -149,9 +150,11 @@ section{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:col
       <div class="embed-device">
         <div class="embed-case">
           <div class="reflect"></div>
-          <div class="embed-screen">
+          <div class="embed-screen" id="embedScreen">
             <div class="embed-di"></div>
-            <iframe src="https://journey-intelligence.vercel.app/mobile3.html" loading="lazy" allow="autoplay"></iframe>
+            <div class="embed-zoom" id="embedZoom">
+              <iframe src="https://journey-intelligence.vercel.app/mobile3.html" loading="lazy" allow="autoplay" id="embedIframe"></iframe>
+            </div>
           </div>
         </div>
         <div class="embed-caption">Live demo · Tap to interact</div>
@@ -253,6 +256,34 @@ sections.forEach(s => observer.observe(s));
 function scrollToSec(i) {
   sections[i].scrollIntoView({ behavior: 'smooth' });
 }
+
+// ═══ Embedded phone: scale zoom wrapper and isolate scroll ═══
+(function() {
+  const screen = document.getElementById('embedScreen');
+  const zoom = document.getElementById('embedZoom');
+  if (!screen || !zoom) return;
+
+  function scaleZoom() {
+    const containerW = screen.clientWidth;
+    const containerH = screen.clientHeight;
+    const scale = Math.min(containerW / 393, containerH / 852);
+    zoom.style.transform = 'scale(' + scale + ')';
+  }
+  scaleZoom();
+  window.addEventListener('resize', scaleZoom);
+
+  // Prevent main page scroll when pointer is over the embedded phone.
+  // The iframe receives events natively since the zoom wrapper
+  // preserves pointer coordinate mapping (the iframe itself is unscaled).
+  screen.addEventListener('wheel', function(e) {
+    e.stopPropagation();
+    // Don't preventDefault — let the iframe handle it
+  }, { passive: true });
+
+  screen.addEventListener('touchmove', function(e) {
+    e.stopPropagation();
+  }, { passive: true });
+})();
 </script>
 </body>
 </html>
