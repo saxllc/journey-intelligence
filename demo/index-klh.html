@@ -18,21 +18,25 @@ section{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:col
 .sec-body em{color:#D4D4DC;font-style:italic}
 .c-red{color:#F87171}.c-indigo{color:#818CF8}.c-green{color:#6EE7B7}.c-amber{color:#FCD34D}.c-pink{color:#F9A8D4}
 /* Embedded demo — iPhone 15 Pro frame */
-.embed-wrap{margin:32px 0 12px;display:flex;align-items:center;justify-content:center}
-.embed-device{position:relative;width:200px;flex-shrink:0}
-/* Outer shell — titanium case feel */
-.embed-case{background:linear-gradient(145deg,#2A2A30 0%,#1E1E24 50%,#2A2A30 100%);border-radius:36px;padding:10px;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 24px 64px rgba(0,0,0,.5),0 8px 20px rgba(0,0,0,.3);position:relative}
+.embed-wrap{margin:36px 0 16px;display:flex;align-items:center;justify-content:center;position:relative}
+/* Stage glow behind phone */
+.embed-glow{position:absolute;width:320px;height:420px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(ellipse at center,rgba(99,102,241,.12) 0%,rgba(99,102,241,.04) 40%,transparent 70%);pointer-events:none;z-index:0}
+.embed-device{position:relative;width:260px;flex-shrink:0;z-index:1}
+/* Outer shell — titanium case */
+.embed-case{background:linear-gradient(155deg,#333338 0%,#222228 40%,#2A2A30 80%,#333338 100%);border-radius:42px;padding:8px;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 0 80px rgba(99,102,241,.08),0 30px 70px rgba(0,0,0,.5),0 10px 24px rgba(0,0,0,.3);position:relative}
 /* Side buttons */
-.embed-case::before{content:'';position:absolute;right:-2.5px;top:80px;width:2.5px;height:20px;background:linear-gradient(180deg,#3A3A40,#2A2A30);border-radius:0 1.5px 1.5px 0}
-.embed-case::after{content:'';position:absolute;left:-2.5px;top:68px;width:2.5px;height:16px;background:linear-gradient(180deg,#3A3A40,#2A2A30);border-radius:1.5px 0 0 1.5px}
-/* Inner screen bezel */
-.embed-screen{background:#000;border-radius:27px;overflow:hidden;position:relative;height:410px}
-/* Dynamic Island */
-.embed-di{width:72px;height:20px;background:#000;border-radius:12px;position:absolute;top:6px;left:50%;transform:translateX(-50%);z-index:10}
-/* iframe scaled down */
-.embed-screen iframe{width:393px;height:852px;border:none;transform:scale(0.481);transform-origin:top left;position:absolute;top:0;left:0;border-radius:27px}
-.embed-caption{font-size:10px;color:#52525B;margin-top:10px;text-align:center;letter-spacing:.5px}
-@media(max-width:640px){.embed-device{width:160px}.embed-screen{height:330px}.embed-screen iframe{transform:scale(0.387)}}
+.embed-case::before{content:'';position:absolute;right:-2.5px;top:100px;width:2.5px;height:24px;background:linear-gradient(180deg,#444,#333);border-radius:0 1.5px 1.5px 0}
+.embed-case::after{content:'';position:absolute;left:-2.5px;top:85px;width:2.5px;height:18px;background:linear-gradient(180deg,#444,#333);border-radius:1.5px 0 0 1.5px}
+/* Inner screen */
+.embed-screen{background:#000;border-radius:34px;overflow:hidden;position:relative;height:500px}
+/* Dynamic Island — smaller */
+.embed-di{width:56px;height:16px;background:#000;border-radius:10px;position:absolute;top:5px;left:50%;transform:translateX(-50%);z-index:10}
+/* iframe scaled to fit wider */
+.embed-screen iframe{width:393px;height:852px;border:none;transform:scale(0.62);transform-origin:top left;position:absolute;top:0;left:0;border-radius:34px}
+.embed-caption{font-size:10px;color:#52525B;margin-top:12px;text-align:center;letter-spacing:.5px}
+/* Reflection line at top of case */
+.embed-case .reflect{position:absolute;top:0;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);border-radius:1px}
+@media(max-width:640px){.embed-device{width:220px}.embed-screen{height:420px}.embed-screen iframe{transform:scale(0.52)}.embed-glow{width:260px;height:360px}}
 /* Next CTA */
 .next-cta{display:inline-flex;align-items:center;gap:8px;margin-top:28px;padding:10px 22px;border:1px solid #2A2A32;border-radius:10px;color:#A1A1AA;text-decoration:none;font-size:13px;font-weight:500;transition:all .2s;background:rgba(255,255,255,.02)}
 .next-cta:hover{background:rgba(255,255,255,.05);border-color:#52525B;color:#E2E8F0}
@@ -56,9 +60,9 @@ section{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:col
 .sec-tag.t1{color:#EF4444}.sec-tag.t2{color:#6366F1}.sec-tag.t3{color:#10B981}.sec-tag.t4{color:#F59E0B}.sec-tag.t5{color:#EC4899}
 /* Hero */
 .hero{text-align:center;padding:80px 40px}
-.hero-title{font-size:clamp(36px,5vw,56px);font-weight:800;letter-spacing:-1px;line-height:1.08;color:#FFF;margin-bottom:12px}
+.hero-title{font-size:clamp(36px,5vw,56px);font-weight:800;letter-spacing:-1px;line-height:1.08;color:#FFF;margin-bottom:20px}
 .hero-sub{font-size:clamp(15px,1.8vw,19px);color:#9C9CAA;max-width:600px;margin:0 auto 30px}
-.hero-tagline{font-size:13px;color:#6B6B78;letter-spacing:1px;text-transform:uppercase}
+.hero-tagline{font-size:13px;color:#6B6B78;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
 /* Stat row */
 .stats{display:flex;gap:24px;margin:24px 0;flex-wrap:wrap}
 .stat{text-align:center}
@@ -104,7 +108,7 @@ section{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:col
     <div class="hero-tagline">Comprehension Infrastructure</div>
     <h1 class="hero-title">क्या लिखा है?</h1>
     <p class="hero-sub">"What does it say?" — The question a billion Indians ask every time a digital screen decides their money, identity, or consent.</p>
-    <p style="font-size:14px;color:#7B7B8A;margin-top:20px">KLH is the <span style="color:#6366F1">comprehension layer</span> of India's DPI stack.</p>
+    <p style="font-size:14px;color:#7B7B8A;margin-top:28px">KLH is the <span style="color:#6366F1">comprehension layer</span> of India's DPI stack.</p>
     <div style="margin-top:30px">
       <a class="demo-link" href="#sec-1">Explore ↓</a>
     </div>
@@ -141,8 +145,10 @@ section{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:col
       <p style="margin-top:12px"><strong>Multimodal</strong> — not as input capture, but as output engagement. See the screen. Listen to the explanation. Conduct a conversation. "Kya Likha Hai" is the aural complement to visual UI. <strong>Multimodel</strong> — a frontier LLM (Claude) reasons in English where DPL is native; a sovereign model (Sarvam) regenerates in the user's language with culturally native delivery. Best of both. <span class="c-green">One-fourth the cost.</span></p>
     </div>
     <div class="embed-wrap">
+      <div class="embed-glow"></div>
       <div class="embed-device">
         <div class="embed-case">
+          <div class="reflect"></div>
           <div class="embed-screen">
             <div class="embed-di"></div>
             <iframe src="https://journey-intelligence.vercel.app/mobile3.html" loading="lazy" allow="autoplay"></iframe>
