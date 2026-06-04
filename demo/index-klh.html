@@ -7,14 +7,21 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-snap-type:y mandatory}
-body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',system-ui,sans-serif;background:#000;color:#E2E8F0;-webkit-font-smoothing:antialiased}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',system-ui,sans-serif;background:#111114;color:#E2E8F0;-webkit-font-smoothing:antialiased}
 section{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;padding:60px 40px;position:relative;overflow:hidden}
 .container{max-width:900px;margin:0 auto;width:100%}
 /* Typography */
 .sec-tag{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:3px;margin-bottom:16px;display:block}
 .sec-title{font-size:clamp(28px,4vw,42px);font-weight:700;letter-spacing:-.5px;line-height:1.15;margin-bottom:20px;color:#FFF}
-.sec-body{font-size:clamp(14px,1.6vw,16px);line-height:1.75;color:#A1A1AA;max-width:720px}
-.sec-body strong{color:#E2E8F0}
+.sec-body{font-size:clamp(15px,1.7vw,17px);line-height:1.8;color:#C4C4CC;max-width:720px}
+.sec-body strong{color:#F0F0F5}
+.sec-body em{color:#D4D4DC;font-style:italic}
+.c-red{color:#F87171}.c-indigo{color:#818CF8}.c-green{color:#6EE7B7}.c-amber{color:#FCD34D}.c-pink{color:#F9A8D4}
+/* Next CTA */
+.next-cta{display:inline-flex;align-items:center;gap:8px;margin-top:28px;padding:10px 22px;border:1px solid #2A2A32;border-radius:10px;color:#A1A1AA;text-decoration:none;font-size:13px;font-weight:500;transition:all .2s;background:rgba(255,255,255,.02)}
+.next-cta:hover{background:rgba(255,255,255,.05);border-color:#52525B;color:#E2E8F0}
+.next-cta .next-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#52525B}
+.next-cta .next-text{color:#A1A1AA}
 /* Links */
 .demo-link{display:inline-flex;align-items:center;gap:6px;margin-top:20px;margin-right:16px;padding:10px 20px;border:1px solid #334155;border-radius:10px;color:#E2E8F0;text-decoration:none;font-size:13px;font-weight:500;transition:all .2s}
 .demo-link:hover{background:#1E293B;border-color:#6366F1;color:#FFF}
@@ -34,13 +41,13 @@ section{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:col
 /* Hero */
 .hero{text-align:center;padding:80px 40px}
 .hero-title{font-size:clamp(36px,5vw,56px);font-weight:800;letter-spacing:-1px;line-height:1.08;color:#FFF;margin-bottom:12px}
-.hero-sub{font-size:clamp(14px,1.8vw,18px);color:#71717A;max-width:600px;margin:0 auto 30px}
-.hero-tagline{font-size:13px;color:#52525B;letter-spacing:1px;text-transform:uppercase}
+.hero-sub{font-size:clamp(15px,1.8vw,19px);color:#9C9CAA;max-width:600px;margin:0 auto 30px}
+.hero-tagline{font-size:13px;color:#6B6B78;letter-spacing:1px;text-transform:uppercase}
 /* Stat row */
 .stats{display:flex;gap:24px;margin:24px 0;flex-wrap:wrap}
 .stat{text-align:center}
 .stat-val{font-size:28px;font-weight:800;color:#FFF}
-.stat-label{font-size:10px;color:#71717A;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.stat-label{font-size:10px;color:#8B8B96;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
 /* Matrix mini */
 .matrix-mini{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;max-width:280px;margin:20px 0}
 .matrix-cell{width:100%;aspect-ratio:1;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px}
@@ -52,8 +59,8 @@ section{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:col
 .tier-bar .t-pct{font-size:18px;font-weight:800;color:#FFF}
 .tier-bar .t-cost{font-size:9px;margin-top:2px;opacity:.7}
 /* Footer */
-.footer{text-align:center;padding:40px;font-size:11px;color:#3F3F46;border-top:1px solid #1E1E22}
-.footer a{color:#52525B;text-decoration:none}
+.footer{text-align:center;padding:40px;font-size:11px;color:#52525B;border-top:1px solid #222228}
+.footer a{color:#6B6B78;text-decoration:none}
 @media(max-width:640px){
   section{padding:40px 20px}
   .stats{gap:16px}
@@ -81,7 +88,7 @@ section{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:col
     <div class="hero-tagline">Comprehension Infrastructure</div>
     <h1 class="hero-title">क्या लिखा है?</h1>
     <p class="hero-sub">"What does it say?" — The question a billion Indians ask every time a digital screen decides their money, identity, or consent.</p>
-    <p style="font-size:13px;color:#52525B;margin-top:20px">KLH is the comprehension layer of India's DPI stack.</p>
+    <p style="font-size:14px;color:#7B7B8A;margin-top:20px">KLH is the <span style="color:#6366F1">comprehension layer</span> of India's DPI stack.</p>
     <div style="margin-top:30px">
       <a class="demo-link" href="#sec-1">Explore ↓</a>
     </div>
@@ -95,7 +102,7 @@ section{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:col
     <h2 class="sec-title">Enrolled but frozen.</h2>
     <div class="sec-body">
       <p>India's DPI stack moves at protocol speed. <strong>20 billion UPI transactions/month. 1.4 billion Aadhaar enrollments.</strong> DPI@2047 projects 4.2% GDP contribution by 2030. Yet ISIDE 2025 exposes the ground truth: India ranks 3rd globally on aggregate digitalisation but <strong>28th per-user</strong>. Five aspirational states haven't finished DPI 1.0.</p>
-      <p style="margin-top:12px">The gap isn't access. It's comprehension. <strong>Digital Procedural Lexicon</strong> — eKYC, NACH mandates, collect requests, tokenization, auto-debit — these terms carry legal and financial consequence. They're thrust upon users who cannot parse them. "Irrevocable" on an eKYC consent screen means your identity is permanently shared. Most users scroll past it.</p>
+      <p style="margin-top:12px">The gap isn't access. It's <span class="c-red">comprehension</span>. <strong>Digital Procedural Lexicon</strong> — eKYC, NACH mandates, collect requests, tokenization, auto-debit — these terms carry legal and financial consequence. They're thrust upon users who cannot parse them. "Irrevocable" on an eKYC consent screen means your identity is permanently shared. Most users scroll past it.</p>
     </div>
     <div class="stats">
       <div class="stat"><div class="stat-val">20B</div><div class="stat-label">UPI txns/month</div></div>
@@ -103,6 +110,8 @@ section{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:col
       <div class="stat"><div class="stat-val">13L+</div><div class="stat-label">RBI complaints/yr</div></div>
     </div>
     <a class="demo-link" href="https://saxllc.github.io/posts/dpixfint.html" target="_blank">Heterogeneity Matrix <span class="arrow">→</span></a>
+    <br>
+    <a class="next-cta" href="#sec-2"><span class="next-label">Next</span> <span class="next-text">— The comprehension engine ↓</span></a>
   </div>
 </section>
 
@@ -112,10 +121,12 @@ section{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:col
     <span class="sec-tag t2">02 — Multilingual × Multimodal × Multimodel</span>
     <h2 class="sec-title">Not a language switcher.<br>A comprehension engine.</h2>
     <div class="sec-body">
-      <p>The internet's answer to language is a drop-down. English → Hindi. The dense lexicon — "irrevocable", "auto-debit mandate" — gets transliterated: <strong>अपरिवर्तनीय</strong> is no clearer than "irrevocable" to a farmer in Vidarbha. Standard ML maps words 1:1. LLMs abstract semantically — they explain <em>consequence</em> in spoken register. But text alone doesn't cut cognitive load.</p>
-      <p style="margin-top:12px"><strong>Multimodal</strong> — not as input capture, but as output engagement. See the screen. Listen to the explanation. Conduct a conversation. "Kya Likha Hai" is the aural complement to visual UI. <strong>Multimodel</strong> — a frontier LLM (Claude) reasons in English where DPL is native; a sovereign model (Sarvam) regenerates in the user's language with culturally native delivery. Best of both. One-fourth the cost.</p>
+      <p>The internet's answer to language is a drop-down. English → Hindi. The dense lexicon — "irrevocable", "auto-debit mandate" — gets transliterated: <strong>अपरिवर्तनीय</strong> is no clearer than "irrevocable" to a farmer in Vidarbha. Standard ML maps words 1:1. LLMs abstract <span class="c-indigo">semantically</span> — they explain <em>consequence</em> in spoken register. But text alone doesn't cut cognitive load.</p>
+      <p style="margin-top:12px"><strong>Multimodal</strong> — not as input capture, but as output engagement. See the screen. Listen to the explanation. Conduct a conversation. "Kya Likha Hai" is the aural complement to visual UI. <strong>Multimodel</strong> — a frontier LLM (Claude) reasons in English where DPL is native; a sovereign model (Sarvam) regenerates in the user's language with culturally native delivery. Best of both. <span class="c-green">One-fourth the cost.</span></p>
     </div>
     <a class="demo-link" href="https://applicationator.vercel.app/klh-world-model.html" target="_blank">KLH World Model <span class="arrow">→</span></a>
+    <br>
+    <a class="next-cta" href="#sec-3"><span class="next-label">Next</span> <span class="next-text">— Making it economically viable ↓</span></a>
   </div>
 </section>
 
@@ -150,12 +161,13 @@ section{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:col
       </div>
     </div>
     <div class="sec-body" style="margin-top:12px">
-      <p>The "million journeys" are generated once offline, cached at the edge forever. <strong>Sarvam's Indic-native models at ¼ frontier token cost</strong> make the live tier affordable. Materiality routing ensures only high-stakes, irreversible actions (L4) trigger full AI reasoning with a comprehension gate — a forced 5-second review before irrevocable consent.</p>
+      <p>The "million journeys" are generated once offline, cached at the edge forever. <strong>Sarvam's Indic-native models at ¼ frontier token cost</strong> make the live tier affordable. Materiality routing ensures only high-stakes, irreversible actions (L4) trigger full AI reasoning with a comprehension gate — a forced <span class="c-amber">5-second review</span> before irrevocable consent.</p>
     </div>
     <div style="margin-top:16px">
       <a class="demo-link" href="https://applicationator.vercel.app/tier-compare.html" target="_blank">Tier Comparison <span class="arrow">→</span></a>
       <a class="demo-link" href="https://applicationator.vercel.app/materiality-router.html" target="_blank">Materiality Router <span class="arrow">→</span></a>
     </div>
+    <a class="next-cta" href="#sec-4"><span class="next-label">Next</span> <span class="next-text">— Two-way voice conversation ↓</span></a>
   </div>
 </section>
 
@@ -166,9 +178,11 @@ section{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:col
     <h2 class="sec-title">Ask the screen.<br>It answers in your language.</h2>
     <div class="sec-body">
       <p>"ये क्या है?" "वापस ले सकते?" "safe है?" — pre-cached narration chunks answer instantly. Novel questions escalate to a live model. <strong>Voice in, voice out, Hindi.</strong> This is not a read-aloud feature. It's a conversational comprehension companion — the AI equivalent of the trusted neighbor who reads your bank letter.</p>
-      <p style="margin-top:12px">For the woman in a patriarchal household seeking an elder's opinion on an eKYC consent — this conversation happens <strong>on-device, private by construction</strong>. No screen text leaves the phone. The aural channel is inherently private, personal, and culturally appropriate. Comprehension as a right, not a privilege.</p>
+      <p style="margin-top:12px">For the woman in a patriarchal household seeking an elder's opinion on an eKYC consent — this conversation happens <strong>on-device, <span class="c-amber">private by construction</span></strong>. No screen text leaves the phone. The aural channel is inherently private, personal, and culturally appropriate. Comprehension as a right, not a privilege.</p>
     </div>
     <a class="demo-link" href="https://applicationator.vercel.app/ekyc-duplex.html" target="_blank">eKYC Duplex Conversation <span class="arrow">→</span></a>
+    <br>
+    <a class="next-cta" href="#sec-5"><span class="next-label">Next</span> <span class="next-text">— Why a sovereign voice matters ↓</span></a>
   </div>
 </section>
 
@@ -178,8 +192,8 @@ section{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:col
     <span class="sec-tag t5">05 — Why Sarvam</span>
     <h2 class="sec-title">Intelligence from the West.<br>Voice from the soil.</h2>
     <div class="sec-body">
-      <p>Frontier LLMs are 95% English-trained. Indian languages represent a decimal fraction of training corpus. A sovereign model trained natively on Indian languages doesn't just translate better — <strong>it speaks like your neighbor, not a Silicon Valley assistant</strong>. Sarvam's Bulbul v2 TTS delivers in voices that are culturally native across Hindi, Kannada, Tamil, and 10+ Indic languages.</p>
-      <p style="margin-top:12px">The architecture: <strong>Claude reasons in English</strong> where Digital Procedural Lexicon is native. <strong>Sarvam localizes and voices</strong> in the user's language with contextually appropriate delivery. Comprehension requires both intelligence and intimacy. One provides the reasoning. The other provides the voice.</p>
+      <p>Frontier LLMs are 95% English-trained. Indian languages represent a decimal fraction of training corpus. A sovereign model trained natively on Indian languages doesn't just translate better — <strong>it speaks like your neighbor</strong>, not a Silicon Valley assistant. Sarvam's Bulbul v2 TTS delivers in voices that are culturally native across Hindi, Kannada, Tamil, and 10+ Indic languages.</p>
+      <p style="margin-top:12px">The architecture: <strong>Claude reasons in English</strong> where Digital Procedural Lexicon is native. <strong>Sarvam localizes and voices</strong> in the user's language with contextually appropriate delivery. Comprehension requires both intelligence and intimacy. One provides the <span class="c-indigo">reasoning</span>. The other provides the <span class="c-pink">voice</span>.</p>
     </div>
   </div>
 </section>
