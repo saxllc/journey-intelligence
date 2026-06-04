@@ -59,8 +59,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',syste
 .home-indicator{height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .home-indicator span{width:100px;height:4px;border-radius:2px}
 /* ═══ Dark/Light mode ═══ */
-.mode-toggle{position:absolute;top:8px;right:8px;z-index:5;background:#1E293B;border:1px solid #334155;border-radius:6px;padding:3px 7px;font-size:10px;cursor:pointer;color:#94A3B8}
-.mode-toggle:hover{background:#334155}
+.mode-toggle{background:none;border:none;font-size:11px;cursor:pointer;padding:0;line-height:1;opacity:.7;transition:opacity .15s}
+.mode-toggle:hover{opacity:1}
 /* Light mode */
 .iphone.light{--bezel:#E5E5E7;--screen-bg:#F2F2F7}
 .iphone.light .dynamic-island{background:#000}
@@ -142,7 +142,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',syste
 <div class="layout">
   <!-- Left: iPhone 15 Pro eKYC screen -->
   <div class="screen-mock">
-    <button class="mode-toggle" onclick="toggleMode()">🌓 Mode</button>
     <div class="iphone dark" id="iphone">
       <div class="iphone-screen">
         <div class="dynamic-island"><div class="di-cam"></div></div>
@@ -150,12 +149,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',syste
           <span class="ios-time">9:41</span>
           <span class="ios-icons">
             <span>●●●●</span>
-            <span>WiFi</span>
+            <span>▲</span>
+            <button class="mode-toggle" onclick="toggleMode()">🌓</button>
             <span>🔋</span>
           </span>
         </div>
-        <div class="ios-nav" style="position:relative">
-          <span class="back">‹ Settings</span>
+        <div class="ios-nav">
           <h2>eKYC Verification</h2>
         </div>
         <div class="app-content">
@@ -409,6 +408,14 @@ async function playTTS(text, msgEl) {
     console.error('TTS error:', e);
   }
 }
+
+// ═══════ TOUCH ISOLATION — phone scroll independent of page ═══════
+document.querySelector('.app-content').addEventListener('touchmove', function(e) {
+  e.stopPropagation();
+}, { passive: true });
+document.querySelector('.iphone-screen').addEventListener('wheel', function(e) {
+  e.stopPropagation();
+}, { passive: true });
 
 // ═══════ PHONE MODE TOGGLE ═══════
 function toggleMode() {
