@@ -8,18 +8,18 @@
      - iPhone 15 Pro frame (Dynamic Island, status bar, home indicator)
      - Light theme default, dark mode toggle in status bar
      - Content scrolls independently of page
-     - Tap anywhere on phone → fullscreen modal
+     - Tap anywhere on phone → fullscreen modal (move, not clone)
      - ESC key or ✕ button to exit fullscreen
    ═══════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
 
   // ── Shared modal overlay (one per page) ──────────────────
-  let modalOverlay = null;
-  let modalClose = null;
-  let modalEsc = null;
-  let activePhone = null;  // the phone clone currently in the modal
-  let sourcePhone = null;  // the inline phone that was tapped
+  var modalOverlay = null;
+  var modalClose = null;
+  var modalEsc = null;
+  var activePhone = null;   // the phone currently in the modal
+  var placeholder = null;   // holds the phone's spot in the DOM
 
   function ensureModal() {
     if (modalOverlay) return;
@@ -56,42 +56,22 @@
 
   function openModal(phone) {
     ensureModal();
-    sourcePhone = phone;
 
-    // Clone the phone's inner screen content
-    var clone = phone.cloneNode(true);
-    clone.classList.add('sax-phone-modal-instance');
+    // Insert placeholder to hold position in DOM
+    placeholder = document.createElement('div');
+    placeholder.className = 'sax-phone-placeholder';
+    placeholder.style.width = phone.offsetWidth + 'px';
+    placeholder.style.height = phone.offsetHeight + 'px';
+    phone.parentNode.insertBefore(placeholder, phone);
 
-    // Remove tap hint from clone
-    var hint = clone.querySelector('.sax-phone-tap-hint');
-    if (hint) hint.remove();
+    // Move phone into modal (not clone — preserves all event listeners and state)
+    activePhone = phone;
+    activePhone.classList.add('sax-phone-modal-instance');
+    modalOverlay.insertBefore(activePhone, modalClose);
 
-    // Remove pointer cursor on modal phone
-    clone.style.cursor = 'default';
-
-    // Make the mode toggle work on the clone
-    var toggle = clone.querySelector('.sax-phone-mode-toggle');
-    if (toggle) {
-      toggle.addEventListener('click', function (e) {
-        e.stopPropagation();
-        var current = clone.getAttribute('data-theme') || 'light';
-        var next = current === 'light' ? 'dark' : 'light';
-        clone.setAttribute('data-theme', next);
-        this.textContent = next === 'dark' ? '☀️' : '🌙';
-        // Sync back to source
-        sourcePhone.setAttribute('data-theme', next);
-        var srcToggle = sourcePhone.querySelector('.sax-phone-mode-toggle');
-        if (srcToggle) srcToggle.textContent = this.textContent;
-      });
-    }
-
-    // Don't close modal when clicking inside the phone
-    clone.addEventListener('click', function (e) {
-      e.stopPropagation();
-    });
-
-    activePhone = clone;
-    modalOverlay.insertBefore(clone, modalClose);
+    // Hide tap hint in modal
+    var hint = activePhone.querySelector('.sax-phone-tap-hint');
+    if (hint) hint.style.display = 'none';
 
     // Show
     requestAnimationFrame(function () {
@@ -101,17 +81,24 @@
   }
 
   function closeModal() {
-    if (!modalOverlay) return;
+    if (!modalOverlay || !activePhone) return;
     modalOverlay.classList.remove('open');
     document.body.style.overflow = '';
 
-    // Clean up clone after transition
+    // Move phone back to its original position after transition
+    var phone = activePhone;
+    var ph = placeholder;
     setTimeout(function () {
-      if (activePhone && activePhone.parentNode) {
-        activePhone.parentNode.removeChild(activePhone);
+      if (phone && ph && ph.parentNode) {
+        phone.classList.remove('sax-phone-modal-instance');
+        ph.parentNode.insertBefore(phone, ph);
+        ph.parentNode.removeChild(ph);
+        // Restore tap hint
+        var hint = phone.querySelector('.sax-phone-tap-hint');
+        if (hint) hint.style.display = '';
       }
       activePhone = null;
-      sourcePhone = null;
+      placeholder = null;
     }, 300);
   }
 
@@ -210,31 +197,31 @@
       var atTop = contentEl.scrollTop === 0;
       var atBottom = contentEl.scrollTop + contentEl.clientHeight >= contentEl.scrollHeight - 1;
       if ((e.deltaY < 0 && atTop) || (e.deltaY > 0 && atBottom)) {
-        // Allow page scroll only at bounds
         return;
       }
       e.stopPropagation();
     }, { passive: true });
 
     // Touch scroll isolation
-    var touchStartY = 0;
-    contentEl.addEventListener('touchstart', function (e) {
-      touchStartY = e.touches[0].clientY;
-    }, { passive: true });
-
     contentEl.addEventListener('touchmove', function (e) {
       e.stopPropagation();
     }, { passive: true });
 
-    // Tap to fullscreen — only if not clicking interactive elements
+    // Tap to fullscreen — skip interactive elements
     el.addEventListener('click', function (e) {
-      // Don't open modal if clicking buttons, links, inputs, selects, toggles
+      // Don't open modal if already in modal
+      if (el.classList.contains('sax-phone-modal-instance')) return;
+
       var target = e.target;
       var tag = target.tagName.toLowerCase();
+      // Skip buttons, links, inputs, selects, textareas, chips, and anything with onclick
       if (tag === 'button' || tag === 'a' || tag === 'input' ||
           tag === 'select' || tag === 'textarea' || tag === 'label' ||
           target.classList.contains('sax-phone-mode-toggle') ||
+          target.classList.contains('chip') ||
+          target.hasAttribute('onclick') ||
           target.closest('button') || target.closest('a') ||
+          target.closest('[onclick]') ||
           target.closest('input') || target.closest('select')) {
         return;
       }
