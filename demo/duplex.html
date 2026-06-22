@@ -34,7 +34,7 @@ body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;d
 .journey-pick label{font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:#64748B;font-weight:600;display:block;margin-bottom:4px}
 .journey-pick select{width:100%;background:#1E293B;border:1px solid #334155;color:#E2E8F0;padding:9px 10px;border-radius:9px;font-size:13px;font-weight:600;outline:none;cursor:pointer}
 .journey-pick select:focus{border-color:#6366F1}
-/* Responsive phone: width bounded by BOTH column (≤340) and available height */
+/* Responsive phone: width bounded by BOTH column (≤300) and available height */
 .sax-phone{width:min(300px, calc((100vh - 170px) * 0.46));aspect-ratio:300/620;height:auto;flex-shrink:0}
 
 /* Phone screen content */
@@ -128,6 +128,10 @@ body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;d
 .play-btn{background:#1E293B;border:1px solid #334155;color:#E2E8F0;padding:6px 10px;border-radius:7px;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:5px}
 .play-btn:hover{background:#334155}
 .play-btn:disabled{opacity:.4;cursor:not-allowed}
+.play-btn.on{border-color:#6366F1;color:#fff;background:#312E81}
+.stop-btn{background:#1E293B;border:1px solid #334155;color:#E2E8F0;padding:6px 9px;border-radius:7px;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:4px}
+.stop-btn:hover{background:#334155}
+.stop-btn:disabled{opacity:.35;cursor:not-allowed}
 .foot-status{font-size:9px;color:#475569;flex:1;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 .status-bar{font-size:10px;color:#475569;text-align:center;padding:5px;background:#0F172A;flex-shrink:0;border-top:1px solid #1E293B}
@@ -151,7 +155,7 @@ body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;d
 <div class="top-bar">
   <div>
     <h1>KLH — Tier 1 vs Tier 2 · Multi-Journey Duplex</h1>
-    <div class="sub">Same journey · same question · same persona. Left = Redis cache. Right = forced live generation. Voice in, voice out.</div>
+    <div class="sub">Cache-first routing: Tier 1 answers if it has a match; otherwise Tier 2 generates live. One answer per question. Voice in, voice out.</div>
   </div>
   <div class="config">
     <div class="field">
@@ -170,7 +174,7 @@ body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;d
         <option value="HIGH">High</option>
       </select>
     </div>
-    <button class="btn-run" id="btn-run" onclick="runComparison()">▶ Run comparison</button>
+    <button class="btn-run" id="btn-run" onclick="runComparison()">▶ Ask GATO</button>
   </div>
 </div>
 
@@ -237,7 +241,8 @@ body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;d
           <div class="metric"><div class="metric-val" id="cache-source">—</div><div class="metric-label">Source</div></div>
         </div>
         <div class="panel-foot">
-          <button class="play-btn" id="cache-play" disabled onclick="playLatest('cache')">🔊 Play</button>
+          <button class="play-btn" id="cache-play" disabled onclick="playToggle('cache')">🔊 Play</button>
+          <button class="stop-btn" id="cache-stop" disabled onclick="stopAudio('cache')" title="Stop">⏹</button>
           <div class="foot-status" id="cache-status">Waiting</div>
         </div>
       </div>
@@ -254,13 +259,14 @@ body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;d
           <div class="metric"><div class="metric-val" id="live-source">—</div><div class="metric-label">Source</div></div>
         </div>
         <div class="panel-foot">
-          <button class="play-btn" id="live-play" disabled onclick="playLatest('live')">🔊 Play</button>
+          <button class="play-btn" id="live-play" disabled onclick="playToggle('live')">🔊 Play</button>
+          <button class="stop-btn" id="live-stop" disabled onclick="stopAudio('live')" title="Stop">⏹</button>
           <div class="foot-status" id="live-status">Waiting</div>
         </div>
       </div>
     </div>
 
-    <div class="status-bar" id="status-bar"><b>Ready.</b> Tap a chip or Run comparison — cache vs forced-live, same answer.</div>
+    <div class="status-bar" id="status-bar"><b>Ready.</b> Tap a chip or Ask GATO — Tier 1 cache answers; Tier 2 live only when there's no cache match.</div>
   </div>
 </div>
 
@@ -399,65 +405,109 @@ function addTurn(side,qText,data){
   t.appendChild(d);t.scrollTop=t.scrollHeight;
 }
 
-/* Core dual-fetch comparison */
+/* Cache-first routing: ONE request → the answer lands in exactly one panel.
+   source==='cache' → Tier 1 panel; source==='live' (no cache match) → Tier 2 panel. */
 let running=false;
 async function runComparison(qTextArg){
   if(running)return;running=true;
   const btn=document.getElementById('btn-run');btn.disabled=true;
   const qText=qTextArg||chipLabel(activeChunk);
   const payload={transcript:qText,persona:persona(),journeyId:current};
-  clearEmpty('cache');clearEmpty('live');
-  addTyping('cache');addTyping('live');
-  document.getElementById('cache-status').textContent='Requesting cache...';
-  document.getElementById('live-status').textContent='Forcing live...';
+  clearEmpty('cache');
+  addTyping('cache');
+  document.getElementById('cache-status').textContent='Checking cache…';
+  document.getElementById('live-status').textContent='Standby';
   const t0=Date.now();
-  const cacheP=fetch('/api/journey-chunk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
-    .then(r=>r.json()).then(d=>({...d,client_ms:Date.now()-t0})).catch(e=>({error:e.message,client_ms:Date.now()-t0}));
-  const t1=Date.now();
-  const liveP=fetch('/api/journey-chunk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...payload,nocache:true})})
-    .then(r=>r.json()).then(d=>({...d,client_ms:Date.now()-t1})).catch(e=>({error:e.message,client_ms:Date.now()-t1}));
-
-  cacheP.then(d=>renderSide('cache',qText,d));
-  liveP.then(d=>renderSide('live',qText,d));
-  const [cd]=await Promise.all([cacheP,liveP]);
-  // auto-play the cache-side answer (voice-out)
-  if(cd&&cd.script){playTTS(cd.script,'cache');}
+  let data;
+  try{
+    const r=await fetch('/api/journey-chunk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    data=await r.json();data.client_ms=Date.now()-t0;
+  }catch(e){data={error:e.message,client_ms:Date.now()-t0};}
+  removeTyping('cache');
+  if(data.error){
+    document.getElementById('cache-status').textContent='Error: '+data.error;
+    running=false;btn.disabled=false;return;
+  }
+  const side=data.source==='cache'?'cache':'live';
+  if(side==='live'){
+    document.getElementById('cache-source').textContent='miss';
+    document.getElementById('cache-status').textContent='No cache match — routed to live';
+  }
+  renderSide(side,qText,data);
+  if(data.script)startPlay(side);   // auto-play in the answering panel only
   running=false;btn.disabled=false;
 }
 
 function renderSide(side,qText,data){
-  removeTyping(side);
-  if(data.error){
-    document.getElementById(side+'-status').textContent='Error: '+data.error;
-    document.getElementById(side+'-source').textContent='ERR';
-    return;
-  }
+  clearEmpty(side);
   addTurn(side,qText,data);
   lastScript[side]=data.script||'';
   const ms=data.client_ms||0;
-  document.getElementById(side+'-latency').textContent=ms<1000?ms+'ms':(ms/1000).toFixed(1)+'s';
+  const msLabel=ms<1000?ms+'ms':(ms/1000).toFixed(1)+'s';
+  document.getElementById(side+'-latency').textContent=msLabel;
   document.getElementById(side+'-cost').textContent=data.source==='cache'?'~$0':'~$0.01';
   document.getElementById(side+'-source').textContent=data.source==='cache'?'Redis':'Claude';
   document.getElementById(side+'-status').textContent=data.cache_key||'live generation';
-  document.getElementById(side+'-play').disabled=!data.script;
-  // comprehension uses the server-classified intent
   if(data.intent){exploredSet(current).add(data.intent);renderChips(current);updateComprehension();}
-  setStatus('Compared "'+qText+'" · '+side+' '+(data.source||'')+' '+(ms)+'ms');
+  updateAudioUI();
+  setStatus('GATO answered "'+qText+'" from '+(data.source==='cache'?'Tier 1 cache':'Tier 2 live')+' · '+msLabel);
 }
 
-/* TTS */
-async function playTTS(text,side){
-  if(!text)return;
+/* ───── Audio: play/pause toggle + stop, per panel (one shared element) ───── */
+let audioSide=null;      // which panel's audio is loaded
+let audioState='idle';   // idle | loading | playing | paused
+ttsAudio.onended=function(){audioState='idle';audioSide=null;updateAudioUI();};
+
+function updateAudioUI(){
+  ['cache','live'].forEach(function(s){
+    const play=document.getElementById(s+'-play');
+    const stop=document.getElementById(s+'-stop');
+    if(!play||!stop)return;
+    const hasScript=!!lastScript[s];
+    if(audioSide===s&&audioState==='playing'){
+      play.disabled=false;play.classList.add('on');play.innerHTML='⏸ Pause';stop.disabled=false;
+    }else if(audioSide===s&&audioState==='paused'){
+      play.disabled=false;play.classList.add('on');play.innerHTML='▶ Resume';stop.disabled=false;
+    }else if(audioSide===s&&audioState==='loading'){
+      play.disabled=true;play.classList.remove('on');play.innerHTML='⏳';stop.disabled=true;
+    }else{
+      play.disabled=!hasScript;play.classList.remove('on');play.innerHTML='🔊 Play';stop.disabled=true;
+    }
+  });
+}
+
+async function startPlay(side){
+  const text=lastScript[side];if(!text)return;
+  try{ttsAudio.pause();}catch(e){}
+  audioSide=side;audioState='loading';updateAudioUI();
+  document.getElementById(side+'-status').textContent='Loading audio…';
   try{
-    document.getElementById(side+'-status').textContent='Loading audio...';
     const r=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,500),language:'hi-IN',speaker:'anushka'})});
     const data=await r.json();
-    if(!data.data_uri){document.getElementById(side+'-status').textContent='No audio';return;}
-    ttsAudio.pause();ttsAudio.currentTime=0;ttsAudio.src=data.data_uri;await ttsAudio.play();
+    if(!data.data_uri){document.getElementById(side+'-status').textContent='No audio';audioState='idle';audioSide=null;updateAudioUI();return;}
+    ttsAudio.currentTime=0;ttsAudio.src=data.data_uri;await ttsAudio.play();
+    audioState='playing';updateAudioUI();
     document.getElementById(side+'-status').textContent='▶ Playing';
-  }catch(e){document.getElementById(side+'-status').textContent='Audio error';}
+  }catch(e){document.getElementById(side+'-status').textContent='Audio error';audioState='idle';audioSide=null;updateAudioUI();}
 }
-function playLatest(side){playTTS(lastScript[side],side);}
+
+function playToggle(side){
+  if(audioSide===side&&audioState==='playing'){
+    ttsAudio.pause();audioState='paused';updateAudioUI();
+    document.getElementById(side+'-status').textContent='⏸ Paused';
+  }else if(audioSide===side&&audioState==='paused'){
+    ttsAudio.play();audioState='playing';updateAudioUI();
+    document.getElementById(side+'-status').textContent='▶ Playing';
+  }else{
+    startPlay(side);
+  }
+}
+
+function stopAudio(side){
+  try{ttsAudio.pause();ttsAudio.currentTime=0;}catch(e){}
+  audioState='idle';audioSide=null;updateAudioUI();
+  document.getElementById(side+'-status').textContent='⏹ Stopped';
+}
 
 /* STT */
 let mediaRecorder=null,audioChunks=[],isRecording=false;
@@ -488,15 +538,17 @@ function sendText(){const el=document.getElementById('text-input');const t=el.va
 
 /* Select / reset */
 function emptyThreads(){
+  try{ttsAudio.pause();ttsAudio.currentTime=0;}catch(e){}
+  audioSide=null;audioState='idle';
   ['cache','live'].forEach(s=>{
-    document.getElementById('thread-'+s).innerHTML='<div class="thread-empty">Pick a chip or press Run comparison to see the '+(s==='cache'?'cached':'live')+' answer.</div>';
+    document.getElementById('thread-'+s).innerHTML='<div class="thread-empty">'+(s==='cache'?'Cache-served answers appear here.':'Live answers appear here when the cache has no match.')+'</div>';
     document.getElementById(s+'-latency').textContent='—';
     document.getElementById(s+'-cost').textContent='—';
     document.getElementById(s+'-source').textContent='—';
     document.getElementById(s+'-status').textContent='Waiting';
-    document.getElementById(s+'-play').disabled=true;
     lastScript[s]='';
   });
+  updateAudioUI();
 }
 function selectJourney(id){
   current=id;activeChunk=CHUNKS[id][0];
