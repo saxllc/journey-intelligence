@@ -1,0 +1,394 @@
+/* ═══════════════════════════════════════════════════════════
+   SAX Design System — shared tokens + phone mock styles
+   Host: applicationator.vercel.app/shared/sax-design.css
+   Usage: <link rel="stylesheet" href="https://applicationator.vercel.app/shared/sax-design.css">
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── 1. Design tokens ─────────────────────────────────────── */
+:root {
+  /* Brand */
+  --sax-blue: #2563EB;
+  --sax-blue-d: #1D4ED8;
+  --sax-indigo: #6366F1;
+  --sax-green: #34D399;
+  --sax-green-d: #163300;
+  --sax-orange: #FF6B00;
+  --sax-red: #DC2626;
+  --sax-red-d: #B91C1C;
+  --sax-amber: #F59E0B;
+  --sax-pink: #EC4899;
+
+  /* Surfaces — page level */
+  --sax-page-bg: #F7F8FA;
+  --sax-page-ink: #0e0f0c;
+  --sax-page-sec: #4B5563;
+  --sax-page-ter: #9CA3AF;
+  --sax-page-bd: #E5E7EB;
+  --sax-page-card: #FFFFFF;
+
+  /* Typography */
+  --sax-font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  --sax-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+
+  /* Radius */
+  --sax-r-sm: 8px;
+  --sax-r-md: 12px;
+  --sax-r-lg: 16px;
+  --sax-r-pill: 9999px;
+
+  /* Shadows */
+  --sax-shadow-sm: 0 1px 3px rgba(0,0,0,.08);
+  --sax-shadow-md: 0 4px 16px rgba(0,0,0,.1);
+  --sax-shadow-lg: 0 20px 60px rgba(0,0,0,.15);
+}
+
+/* Dark page theme */
+[data-sax-page="dark"] {
+  --sax-page-bg: #1A1A1F;
+  --sax-page-ink: #E2E8F0;
+  --sax-page-sec: #94A3B8;
+  --sax-page-ter: #64748B;
+  --sax-page-bd: #2D2D35;
+  --sax-page-card: #242429;
+}
+
+
+/* ── 2. Base reset ────────────────────────────────────────── */
+.sax-page {
+  font-family: var(--sax-font);
+  background: var(--sax-page-bg);
+  color: var(--sax-page-ink);
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+.sax-page *, .sax-page *::before, .sax-page *::after {
+  box-sizing: border-box;
+}
+
+
+/* ── 3. Common components ─────────────────────────────────── */
+
+/* Buttons */
+.sax-btn {
+  border: 0; cursor: pointer; font-family: var(--sax-font);
+  font-weight: 600; transition: all .15s ease; display: inline-flex;
+  align-items: center; justify-content: center; gap: 6px;
+}
+.sax-btn:hover { transform: scale(1.03); }
+.sax-btn:active { transform: scale(.97); }
+.sax-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.sax-btn-primary {
+  background: var(--sax-blue); color: #fff;
+  padding: 10px 20px; border-radius: var(--sax-r-md); font-size: 14px;
+}
+.sax-btn-primary:hover { background: var(--sax-blue-d); }
+.sax-btn-ghost {
+  background: transparent; color: var(--sax-page-sec);
+  padding: 8px 14px; border-radius: var(--sax-r-md); font-size: 13px;
+}
+.sax-btn-ghost:hover { background: var(--sax-page-bd); }
+
+/* Cards */
+.sax-card {
+  background: var(--sax-page-card);
+  border-radius: var(--sax-r-lg);
+  box-shadow: inset 0 0 0 1px var(--sax-page-bd);
+  padding: 20px;
+}
+
+/* Tags / pills */
+.sax-tag {
+  display: inline-block; border-radius: 4px;
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .5px; padding: 3px 8px;
+}
+.sax-tag-red { background: #FFEBEE; color: #C62828; }
+.sax-tag-blue { background: #E3F2FD; color: #1565C0; }
+.sax-tag-green { background: #E8F5E9; color: #2E7D32; }
+.sax-tag-amber { background: #FFF8E1; color: #F57F17; }
+
+/* Segmented control */
+.sax-seg {
+  display: inline-flex; background: #F3F4F6; border-radius: var(--sax-r-pill); padding: 3px;
+}
+[data-sax-page="dark"] .sax-seg { background: #2D2D35; }
+.sax-seg button {
+  border: 0; background: transparent; color: #6B7280;
+  font-size: 13px; font-weight: 600; font-family: var(--sax-font);
+  padding: 8px 16px; border-radius: var(--sax-r-pill);
+  cursor: pointer; transition: all .15s ease;
+}
+.sax-seg button.on {
+  background: #fff; color: var(--sax-page-ink);
+  box-shadow: var(--sax-shadow-sm);
+}
+[data-sax-page="dark"] .sax-seg button.on {
+  background: #3A3A42; color: #F5F5F7;
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   4. SAX PHONE MOCK — iPhone 15 Pro
+   ══════════════════════════════════════════════════════════════
+   Usage:
+   <div class="sax-phone" data-theme="light">
+     <div class="sax-phone-content">
+       ...your screen content...
+     </div>
+   </div>
+
+   The JS (sax-phone.js) auto-initializes: wraps content in bezel,
+   adds Dynamic Island, status bar, home indicator, dark/light toggle,
+   tap-to-fullscreen modal.
+   ══════════════════════════════════════════════════════════════ */
+
+/* Phone dimensions — iPhone 15 Pro aspect ratio (393×852 logical) */
+.sax-phone {
+  --phone-w: 320px;
+  --phone-h: 693px;  /* 320 × (852/393) */
+  --bezel-color: #1C1C1E;
+  --bezel-edge: #3A3A3C;
+  --screen-bg: #F2F2F7;
+  --screen-radius: 50px;
+  --inner-radius: 42px;
+  --text-color: #1C1C1E;
+  --text-sec: rgba(0,0,0,.5);
+  --card-bg: #FFFFFF;
+  --card-border: rgba(0,0,0,.06);
+  --chip-bg: #E5E5EA;
+  --chip-color: #1C1C1E;
+  --warn-bg: #FFF3CD;
+  --warn-color: #856404;
+  --indicator-bg: rgba(0,0,0,.2);
+
+  width: var(--phone-w);
+  height: var(--phone-h);
+  background: var(--bezel-color);
+  border-radius: var(--screen-radius);
+  padding: 8px;
+  position: relative;
+  box-shadow:
+    0 0 0 1.5px var(--bezel-edge),
+    0 0 0 3px var(--bezel-color),
+    var(--sax-shadow-lg);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: box-shadow .2s ease;
+}
+.sax-phone:hover {
+  box-shadow:
+    0 0 0 1.5px var(--bezel-edge),
+    0 0 0 3px var(--bezel-color),
+    0 0 30px rgba(99,102,241,.2),
+    var(--sax-shadow-lg);
+}
+
+/* Side buttons */
+.sax-phone::before {
+  content: ''; position: absolute; right: -3px; top: 120px;
+  width: 3px; height: 28px; background: var(--bezel-edge);
+  border-radius: 0 2px 2px 0;
+}
+.sax-phone::after {
+  content: ''; position: absolute; left: -3px; top: 100px;
+  width: 3px; height: 22px; background: var(--bezel-edge);
+  border-radius: 2px 0 0 2px;
+}
+
+/* Screen area */
+.sax-phone-screen {
+  background: var(--screen-bg);
+  border-radius: var(--inner-radius);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Dynamic Island */
+.sax-phone-island {
+  width: 100px; height: 28px;
+  background: #000; border-radius: 16px;
+  position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  z-index: 10;
+  display: flex; align-items: center; justify-content: center;
+}
+.sax-phone-island-cam {
+  width: 8px; height: 8px;
+  background: #1a1a2e; border-radius: 50%;
+  border: 1.5px solid #2a2a3e;
+  margin-left: 24px;
+}
+
+/* Status bar */
+.sax-phone-statusbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 20px 0; height: 48px; flex-shrink: 0;
+  font-size: 12px; font-weight: 600; color: var(--text-color);
+}
+.sax-phone-statusbar-time { font-size: 14px; font-weight: 700; }
+.sax-phone-statusbar-icons { display: flex; gap: 4px; align-items: center; font-size: 10px; }
+
+/* Mode toggle — inside status bar */
+.sax-phone-mode-toggle {
+  background: none; border: none; font-size: 14px;
+  cursor: pointer; padding: 2px; line-height: 1;
+  opacity: .7; transition: opacity .15s;
+}
+.sax-phone-mode-toggle:hover { opacity: 1; }
+
+/* Scrollable content area */
+.sax-phone-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+/* Hide scrollbar inside phone */
+.sax-phone-content::-webkit-scrollbar { width: 0; }
+.sax-phone-content { scrollbar-width: none; }
+
+/* Home indicator */
+.sax-phone-home {
+  height: 20px; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.sax-phone-home span {
+  width: 100px; height: 4px; border-radius: 2px;
+  background: var(--indicator-bg);
+}
+
+/* Tap hint overlay */
+.sax-phone-tap-hint {
+  position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,.7); color: #fff;
+  font-size: 11px; font-weight: 500; padding: 5px 12px;
+  border-radius: var(--sax-r-pill);
+  opacity: 0; transition: opacity .3s;
+  pointer-events: none; z-index: 20;
+  white-space: nowrap;
+}
+.sax-phone:hover .sax-phone-tap-hint { opacity: 1; }
+
+/* ── Dark theme for phone ── */
+.sax-phone[data-theme="dark"] {
+  --screen-bg: #000;
+  --text-color: #F5F5F7;
+  --text-sec: rgba(255,255,255,.5);
+  --card-bg: #1C1C1E;
+  --card-border: rgba(255,255,255,.08);
+  --chip-bg: #2C2C2E;
+  --chip-color: #F5F5F7;
+  --warn-bg: rgba(255,69,58,.12);
+  --warn-color: #FF6961;
+  --indicator-bg: rgba(255,255,255,.2);
+}
+
+/* ── Light bezel (silver) for light theme ── */
+.sax-phone[data-theme="light"] {
+  --bezel-color: #E5E5E7;
+  --bezel-edge: #D1D1D6;
+  box-shadow:
+    0 0 0 1.5px #D1D1D6,
+    0 0 0 3px #E5E5E7,
+    var(--sax-shadow-lg);
+}
+.sax-phone[data-theme="light"]:hover {
+  box-shadow:
+    0 0 0 1.5px #D1D1D6,
+    0 0 0 3px #E5E5E7,
+    0 0 30px rgba(99,102,241,.15),
+    var(--sax-shadow-lg);
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   5. FULLSCREEN MODAL
+   ══════════════════════════════════════════════════════════════ */
+
+.sax-phone-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.85);
+  z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s ease;
+}
+.sax-phone-modal-overlay.open {
+  opacity: 1; pointer-events: auto;
+}
+
+/* Phone in modal — larger */
+.sax-phone-modal-overlay .sax-phone {
+  --phone-w: 393px;
+  --phone-h: 852px;
+  cursor: default;
+  max-height: 92vh;
+  max-width: 95vw;
+}
+/* On smaller screens, scale down proportionally */
+@media (max-height: 900px) {
+  .sax-phone-modal-overlay .sax-phone {
+    --phone-w: 340px;
+    --phone-h: 737px;
+  }
+}
+@media (max-height: 700px) {
+  .sax-phone-modal-overlay .sax-phone {
+    --phone-w: 300px;
+    --phone-h: 650px;
+  }
+}
+/* Mobile: fill screen */
+@media (max-width: 430px) {
+  .sax-phone-modal-overlay .sax-phone {
+    --phone-w: 100vw;
+    --phone-h: 100vh;
+    --screen-radius: 0;
+    --inner-radius: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+  .sax-phone-modal-overlay .sax-phone::before,
+  .sax-phone-modal-overlay .sax-phone::after { display: none; }
+}
+
+/* Close button */
+.sax-phone-modal-close {
+  position: fixed; top: 16px; right: 20px;
+  z-index: 10000;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.2);
+  color: #fff; font-size: 20px; font-weight: 300;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all .15s ease;
+  font-family: var(--sax-font);
+}
+.sax-phone-modal-close:hover {
+  background: rgba(255,255,255,.25); transform: scale(1.1);
+}
+
+/* ESC hint */
+.sax-phone-modal-esc {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  z-index: 10000;
+  font-size: 11px; color: rgba(255,255,255,.4);
+  font-family: var(--sax-font);
+}
+
+
+/* ── 6. Utility classes ───────────────────────────────────── */
+.sax-flex { display: flex; }
+.sax-flex-col { display: flex; flex-direction: column; }
+.sax-center { align-items: center; justify-content: center; }
+.sax-gap-sm { gap: 8px; }
+.sax-gap-md { gap: 16px; }
+.sax-gap-lg { gap: 24px; }
+.sax-text-center { text-align: center; }
+.sax-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }

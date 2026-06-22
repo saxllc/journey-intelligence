@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAX Design System — Phone Mock Test</title>
+<link rel="stylesheet" href="sax-design.css">
+<style>
+  body { margin: 0; }
+  .demo-stage {
+    min-height: 100vh;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  .demo-label {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--sax-page-sec);
+    margin-bottom: 12px;
+  }
+</style>
+</head>
+<body class="sax-page">
+
+<div class="demo-stage">
+
+  <!-- Phone 1: Light theme (default), sample eKYC content -->
+  <div>
+    <div class="demo-label">Light theme (default) — eKYC consent</div>
+    <div class="sax-phone">
+      <div class="sax-phone-content" style="padding: 16px; display: flex; flex-direction: column; gap: 12px; font-family: var(--sax-font);">
+        <div style="text-align:center; padding: 12px 0;">
+          <div style="font-size: 32px; margin-bottom: 4px;">🔐</div>
+          <h3 style="font-size: 17px; font-weight: 700; color: var(--text-color);">eKYC with Aadhaar</h3>
+          <p style="font-size: 11px; color: var(--text-sec);">Verify your identity using Aadhaar biometrics</p>
+        </div>
+
+        <div style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px;">
+          <div style="font-size: 9px; text-transform: uppercase; letter-spacing: .5px; color: var(--text-sec); font-weight: 600; margin-bottom: 6px;">Verification Details</div>
+          <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--card-border);">
+            <span style="font-size: 12px; color: var(--text-sec);">Type</span>
+            <span style="font-size: 12px; font-weight: 600; color: var(--text-color);">Aadhaar OTP</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--card-border);">
+            <span style="font-size: 12px; color: var(--text-sec);">Provider</span>
+            <span style="font-size: 12px; font-weight: 600; color: var(--text-color);">UIDAI</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 6px 0;">
+            <span style="font-size: 12px; color: var(--text-sec);">Purpose</span>
+            <span style="font-size: 12px; font-weight: 600; color: var(--text-color);">Account KYC</span>
+          </div>
+        </div>
+
+        <div style="background: var(--warn-bg); color: var(--warn-color); border-radius: 12px; padding: 12px; text-align: center; font-size: 11px; font-weight: 500;">
+          ⚠️ This will share your Aadhaar details with the requesting entity
+        </div>
+
+        <div style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px;">
+          <div style="font-size: 9px; text-transform: uppercase; letter-spacing: .5px; color: var(--text-sec); font-weight: 600; margin-bottom: 6px;">Data Shared</div>
+          <div style="font-size: 12px; color: var(--text-color); line-height: 1.6;">Full name, Date of birth, Address, Photo, Aadhaar number (masked)</div>
+        </div>
+
+        <div style="font-size: 10px; color: var(--text-sec); text-align: center; line-height: 1.4; padding: 4px 8px;">
+          By proceeding, you consent to share your Aadhaar details as per the Aadhaar Act, 2016.
+        </div>
+
+        <button style="display: block; width: 100%; padding: 12px; border-radius: 12px; font-size: 15px; font-weight: 600; border: none; background: #007AFF; color: #FFF; cursor: pointer;">
+          Proceed with eKYC
+        </button>
+        <button style="display: block; width: 100%; padding: 10px; border: none; background: transparent; color: #007AFF; font-size: 13px; font-weight: 500; cursor: pointer;">
+          Cancel
+        </button>
+
+        <!-- Extra content to test scrolling -->
+        <div style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; margin-top: 8px;">
+          <div style="font-size: 9px; text-transform: uppercase; letter-spacing: .5px; color: var(--text-sec); font-weight: 600; margin-bottom: 6px;">What happens next</div>
+          <div style="font-size: 12px; color: var(--text-color); line-height: 1.6;">
+            1. You'll receive an OTP on your Aadhaar-linked mobile number.<br><br>
+            2. Enter the OTP to verify your identity.<br><br>
+            3. Your KYC details will be shared with SafeLoan Finance.<br><br>
+            4. This process is governed by UIDAI and the Aadhaar Act, 2016.<br><br>
+            5. You can revoke consent at any time through the UIDAI portal.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phone 2: Dark theme, UPI AutoPay -->
+  <div>
+    <div class="demo-label">Dark theme — UPI AutoPay mandate</div>
+    <div class="sax-phone" data-theme="dark">
+      <div class="sax-phone-content" style="padding: 16px; display: flex; flex-direction: column; gap: 12px; font-family: var(--sax-font);">
+        <div style="text-align:center; padding: 12px 0;">
+          <div style="font-size: 32px; margin-bottom: 4px;">💳</div>
+          <h3 style="font-size: 17px; font-weight: 700; color: var(--text-color);">UPI AutoPay Setup</h3>
+          <p style="font-size: 11px; color: var(--text-sec);">Recurring payment mandate</p>
+        </div>
+
+        <div style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px;">
+          <div style="font-size: 9px; text-transform: uppercase; letter-spacing: .5px; color: var(--text-sec); font-weight: 600; margin-bottom: 6px;">Mandate Details</div>
+          <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--card-border);">
+            <span style="font-size: 12px; color: var(--text-sec);">Payee</span>
+            <span style="font-size: 12px; font-weight: 600; color: var(--text-color);">Netflix India</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--card-border);">
+            <span style="font-size: 12px; color: var(--text-sec);">Amount</span>
+            <span style="font-size: 12px; font-weight: 600; color: var(--text-color);">₹649 / month</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--card-border);">
+            <span style="font-size: 12px; color: var(--text-sec);">Duration</span>
+            <span style="font-size: 12px; font-weight: 600; color: var(--text-color);">12 months</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 6px 0;">
+            <span style="font-size: 12px; color: var(--text-sec);">Max debit</span>
+            <span style="font-size: 12px; font-weight: 600; color: #FF6961;">₹999</span>
+          </div>
+        </div>
+
+        <div style="background: var(--warn-bg); color: var(--warn-color); border-radius: 12px; padding: 12px; text-align: center; font-size: 11px; font-weight: 500;">
+          ⚠️ Max debit ₹999 is higher than the stated monthly amount of ₹649
+        </div>
+
+        <button style="display: block; width: 100%; padding: 12px; border-radius: 12px; font-size: 15px; font-weight: 600; border: none; background: #007AFF; color: #FFF; cursor: pointer;">
+          Approve Mandate
+        </button>
+        <button style="display: block; width: 100%; padding: 10px; border: none; background: transparent; color: #007AFF; font-size: 13px; font-weight: 500; cursor: pointer;">
+          Decline
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="sax-phone.js"></script>
+</body>
+</html>
