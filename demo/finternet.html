@@ -8,7 +8,9 @@
 <title>Finternet — DPIx Demo</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&family=Noto+Sans+Kannada:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="/shared/sax-design.css">
 <style>
+.sax-phone-placeholder{background:transparent}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Noto Sans','Noto Sans Devanagari',sans-serif;background:#0d0d1f;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px}
 .cfg-badge{position:fixed;top:16px;right:16px;background:#1a1a2e;color:#7c7cff;font-size:11px;padding:6px 12px;border-radius:20px;font-family:monospace;z-index:100;max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid #2a2a4a}
@@ -148,7 +150,7 @@ body{font-family:'Noto Sans','Noto Sans Devanagari',sans-serif;background:#0d0d1
 
 <div class="cfg-badge" id="cfg-badge">⚙ connecting...</div>
 
-<div class="phone">
+<div class="phone sax-phone" data-sax-manual>
   <div class="island"></div>
   <div class="screen">
 
@@ -208,6 +210,7 @@ body{font-family:'Noto Sans','Noto Sans Devanagari',sans-serif;background:#0d0d1
   </div>
 </div>
 
+<script src="/shared/sax-phone.js"></script>
 <script>
 // ── Supabase ─────────────────────────────────────────────
 const SUPA_URL = 'https://xbtmbolhfgyondgibhki.supabase.co';

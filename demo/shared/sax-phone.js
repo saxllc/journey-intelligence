@@ -103,6 +103,34 @@
   }
 
 
+  // ── Add tap-to-fullscreen behavior to any element ────────
+  function addModalBehavior(el) {
+    // Tap hint
+    var tapHint = document.createElement('div');
+    tapHint.className = 'sax-phone-tap-hint';
+    tapHint.textContent = 'Tap to open fullscreen';
+    el.appendChild(tapHint);
+
+    // Tap to fullscreen — skip interactive elements
+    el.addEventListener('click', function (e) {
+      if (el.classList.contains('sax-phone-modal-instance')) return;
+      var target = e.target;
+      var tag = target.tagName.toLowerCase();
+      if (tag === 'button' || tag === 'a' || tag === 'input' ||
+          tag === 'select' || tag === 'textarea' || tag === 'label' ||
+          target.classList.contains('sax-phone-mode-toggle') ||
+          target.classList.contains('mode-toggle') ||
+          target.classList.contains('chip') ||
+          target.hasAttribute('onclick') ||
+          target.closest('button') || target.closest('a') ||
+          target.closest('[onclick]') ||
+          target.closest('input') || target.closest('select')) {
+        return;
+      }
+      openModal(el);
+    });
+  }
+
   // ── Initialize a single phone element ────────────────────
   function initPhone(el) {
     // Skip if already initialized
@@ -114,17 +142,29 @@
       el.setAttribute('data-theme', 'light');
     }
 
+    // MANUAL MODE: phone already has its own frame structure.
+    // Only add tap-to-fullscreen modal behavior + scroll isolation.
+    if (el.hasAttribute('data-sax-manual')) {
+      addModalBehavior(el);
+      // Scroll isolation on first scrollable child
+      var scrollable = el.querySelector('.iphone-screen, .sax-phone-content, [class*="screen"]');
+      if (scrollable) {
+        scrollable.addEventListener('wheel', function (e) { e.stopPropagation(); }, { passive: true });
+        scrollable.addEventListener('touchmove', function (e) { e.stopPropagation(); }, { passive: true });
+      }
+      return;
+    }
+
+    // FULL MODE: build the phone frame from scratch.
     // Grab user's content
     var contentEl = el.querySelector('.sax-phone-content');
     if (!contentEl) {
-      // Wrap all children as content
       contentEl = document.createElement('div');
       contentEl.className = 'sax-phone-content';
       while (el.firstChild) {
         contentEl.appendChild(el.firstChild);
       }
     } else {
-      // Detach it temporarily
       el.removeChild(contentEl);
     }
 
@@ -178,11 +218,6 @@
     var homeBar = document.createElement('span');
     home.appendChild(homeBar);
 
-    // Tap hint
-    var tapHint = document.createElement('div');
-    tapHint.className = 'sax-phone-tap-hint';
-    tapHint.textContent = 'Tap to open fullscreen';
-
     // Assemble
     screen.appendChild(island);
     screen.appendChild(statusbar);
@@ -190,9 +225,8 @@
     screen.appendChild(home);
 
     el.appendChild(screen);
-    el.appendChild(tapHint);
 
-    // Scroll isolation: prevent page scroll when scrolling inside phone
+    // Scroll isolation
     contentEl.addEventListener('wheel', function (e) {
       var atTop = contentEl.scrollTop === 0;
       var atBottom = contentEl.scrollTop + contentEl.clientHeight >= contentEl.scrollHeight - 1;
@@ -202,31 +236,11 @@
       e.stopPropagation();
     }, { passive: true });
 
-    // Touch scroll isolation
     contentEl.addEventListener('touchmove', function (e) {
       e.stopPropagation();
     }, { passive: true });
 
-    // Tap to fullscreen — skip interactive elements
-    el.addEventListener('click', function (e) {
-      // Don't open modal if already in modal
-      if (el.classList.contains('sax-phone-modal-instance')) return;
-
-      var target = e.target;
-      var tag = target.tagName.toLowerCase();
-      // Skip buttons, links, inputs, selects, textareas, chips, and anything with onclick
-      if (tag === 'button' || tag === 'a' || tag === 'input' ||
-          tag === 'select' || tag === 'textarea' || tag === 'label' ||
-          target.classList.contains('sax-phone-mode-toggle') ||
-          target.classList.contains('chip') ||
-          target.hasAttribute('onclick') ||
-          target.closest('button') || target.closest('a') ||
-          target.closest('[onclick]') ||
-          target.closest('input') || target.closest('select')) {
-        return;
-      }
-      openModal(el);
-    });
+    addModalBehavior(el);
   }
 
 

@@ -7,7 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Journey Intelligence — Aadhaar eKYC Demo</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared/sax-design.css">
 <style>
+.sax-phone-placeholder{background:transparent}
 /* ── Reset & Base ──────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -695,7 +697,7 @@ body {
   <p>Aadhaar eKYC Demo — Rhetorical Comprehension Layer</p>
 </div>
 
-<div class="phone-frame">
+<div class="phone-frame sax-phone" data-sax-manual>
   <div class="phone-screen">
 
     <!-- Status Bar -->
@@ -717,8 +719,8 @@ body {
         <div class="step-counter" id="app-counter">Step 1 of 4</div>
       </div>
       <div class="lang-pills" id="lang-pills">
-        <button class="lang-pill active" data-lang="en">EN</button>
-        <button class="lang-pill" data-lang="hi">HI</button>
+        <button class="lang-pill" data-lang="en">EN</button>
+        <button class="lang-pill active" data-lang="hi">HI</button>
         <button class="lang-pill" data-lang="kn">KN</button>
         <button class="lang-pill" data-lang="ta">TA</button>
       </div>
@@ -840,6 +842,7 @@ body {
   iPhone 15 <span>393 &times; 852</span>
 </div>
 
+<script src="/shared/sax-phone.js"></script>
 <script>
 // ── FLOW DATA ─────────────────────────────────────────────────────────────
 const FLOW = {
@@ -900,7 +903,7 @@ const FLOW = {
 };
 
 let currentStep = 0;
-let currentLang = 'en';
+let currentLang = 'hi';
 let casGatePassed = false;
 let rhetoricalData = null;
 
