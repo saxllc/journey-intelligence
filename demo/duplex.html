@@ -25,17 +25,17 @@ body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;d
 .btn-run:hover{background:#4F46E5}
 .btn-run:disabled{opacity:.5;cursor:not-allowed}
 
-/* Layout */
-.layout{display:grid;grid-template-columns:minmax(280px,340px) 1fr;flex:1;min-height:0}
+/* Layout — wider phone column, narrower tier panels */
+.layout{display:grid;grid-template-columns:minmax(400px,440px) 1fr;flex:1;min-height:0}
 
 /* Phone column — fits viewport height, no stray scrollbars */
 .phone-col{background:#111827;border-right:1px solid #1E293B;padding:12px 10px;display:flex;flex-direction:column;align-items:center;gap:10px;overflow:hidden;justify-content:flex-start}
-.journey-pick{width:100%;max-width:300px;flex-shrink:0}
+.journey-pick{width:100%;max-width:380px;flex-shrink:0}
 .journey-pick label{font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:#64748B;font-weight:600;display:block;margin-bottom:4px}
 .journey-pick select{width:100%;background:#1E293B;border:1px solid #334155;color:#E2E8F0;padding:9px 10px;border-radius:9px;font-size:13px;font-weight:600;outline:none;cursor:pointer}
 .journey-pick select:focus{border-color:#6366F1}
-/* Responsive phone: width bounded by BOTH column (≤300) and available height */
-.sax-phone{width:min(300px, calc((100vh - 170px) * 0.46));aspect-ratio:300/620;height:auto;flex-shrink:0}
+/* Responsive phone: width bounded by BOTH column (≤380) and available height */
+.sax-phone{width:min(380px, calc((100vh - 160px) * 0.46));aspect-ratio:300/620;height:auto;flex-shrink:0}
 
 /* Phone screen content */
 .ph-pad{padding:8px 13px 12px;display:flex;flex-direction:column;gap:6px}
@@ -138,12 +138,12 @@ body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;d
 .status-bar b{color:#64748B}
 .sax-phone-placeholder{background:transparent}
 
-/* Mobile: stack, phone on top, page scrolls */
+/* Mobile: stack, phone on top (wider), page scrolls */
 @media(max-width:900px){
   body{overflow:auto;height:auto;min-height:100vh}
   .layout{grid-template-columns:1fr;overflow:visible}
   .phone-col{border-right:none;border-bottom:1px solid #1E293B;overflow:visible}
-  .sax-phone{width:min(320px,82vw);aspect-ratio:300/620;height:auto}
+  .sax-phone{width:min(370px,94vw);aspect-ratio:300/620;height:auto}
   .arena{grid-template-columns:1fr;gap:12px}
   .panel{min-height:320px}
   .text-input{width:130px}
@@ -434,7 +434,7 @@ async function runComparison(qTextArg){
     document.getElementById('cache-status').textContent='No cache match — routed to live';
   }
   renderSide(side,qText,data);
-  if(data.script)startPlay(side);   // auto-play in the answering panel only
+  if(data.script && side==='cache')startPlay(side);   // auto-play Tier 1 only; Tier 2 plays on demand
   running=false;btn.disabled=false;
 }
 
