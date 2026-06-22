@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QKKSDLY59C"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-QKKSDLY59C');</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KLH — Tier 1 vs Tier 2 · Multi-Journey Duplex</title>
+<link rel="stylesheet" href="/shared/sax-design.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+/* Header */
+.top-bar{background:#111827;border-bottom:1px solid #1E293B;padding:9px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:12px;flex-wrap:wrap}
+.top-bar h1{font-size:15px;font-weight:700;color:#F8FAFC}
+.top-bar .sub{font-size:10px;color:#64748B}
+.config{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.config .field{display:flex;flex-direction:column;gap:2px}
+.config label{font-size:8px;text-transform:uppercase;letter-spacing:.8px;color:#64748B;font-weight:600;padding-left:2px}
+.config select{background:#1E293B;border:1px solid #334155;color:#E2E8F0;padding:6px 8px;border-radius:7px;font-size:11px;outline:none;cursor:pointer}
+.config select:focus{border-color:#6366F1}
+.btn-run{background:#6366F1;color:#FFF;border:none;padding:8px 18px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;letter-spacing:.3px;display:flex;align-items:center;gap:6px;height:31px}
+.btn-run:hover{background:#4F46E5}
+.btn-run:disabled{opacity:.5;cursor:not-allowed}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:minmax(280px,340px) 1fr;flex:1;min-height:0}
+
+/* Phone column — fits viewport height, no stray scrollbars */
+.phone-col{background:#111827;border-right:1px solid #1E293B;padding:12px 10px;display:flex;flex-direction:column;align-items:center;gap:10px;overflow:hidden;justify-content:flex-start}
+.journey-pick{width:100%;max-width:300px;flex-shrink:0}
+.journey-pick label{font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:#64748B;font-weight:600;display:block;margin-bottom:4px}
+.journey-pick select{width:100%;background:#1E293B;border:1px solid #334155;color:#E2E8F0;padding:9px 10px;border-radius:9px;font-size:13px;font-weight:600;outline:none;cursor:pointer}
+.journey-pick select:focus{border-color:#6366F1}
+/* Responsive phone: width bounded by BOTH column (≤340) and available height */
+.sax-phone{width:min(300px, calc((100vh - 170px) * 0.46));aspect-ratio:300/620;height:auto;flex-shrink:0}
+
+/* Phone screen content */
+.ph-pad{padding:8px 13px 12px;display:flex;flex-direction:column;gap:6px}
+.j-mat{align-self:center;font-size:9px;font-weight:700;padding:3px 10px;border-radius:6px;color:#fff;letter-spacing:.4px;margin-bottom:2px}
+.mat-L1{background:#2ecc71}.mat-L2{background:#3498db}.mat-L3{background:#f39c12}.mat-L4{background:#e74c3c}
+.ios-nav{text-align:center;padding:0 0 2px}
+.ios-nav h2{font-size:14px;font-weight:600;color:var(--text-color)}
+.j-hero{text-align:center;padding:4px 0 2px}
+.j-hero .icon{font-size:28px;margin-bottom:3px;line-height:1}
+.j-hero h3{font-size:15px;font-weight:700;margin-bottom:2px;color:var(--text-color)}
+.j-hero p{font-size:10px;color:var(--text-sec)}
+.ios-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:9px 12px;font-size:11px;line-height:1.5;color:var(--text-color)}
+.ios-card .card-label{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-sec);font-weight:600;margin-bottom:4px}
+.ios-card-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;gap:10px;color:var(--text-color)}
+.ios-card-row+.ios-card-row{border-top:1px solid var(--card-border)}
+.ios-card-row span:first-child{flex-shrink:0}
+.ios-card-row span:last-child{color:var(--text-sec);text-align:right}
+.otp-row{display:flex;gap:6px;justify-content:center;margin-top:6px}
+.otp-box{width:26px;height:32px;border-radius:7px;background:var(--chip-bg);border:1px solid var(--card-border);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--text-color)}
+.ios-warn{background:var(--warn-bg);color:var(--warn-color);border-radius:12px;padding:9px 10px;text-align:center;font-size:10px;font-weight:500;line-height:1.45}
+.ios-acceptance{font-size:9px;color:var(--text-sec);text-align:center;line-height:1.4;padding:2px 4px}
+.ios-btn{display:block;width:100%;padding:10px;border-radius:12px;font-size:14px;font-weight:600;border:none;cursor:default;letter-spacing:-.2px}
+.ios-btn-primary{background:#007AFF;color:#FFF}
+.ios-btn-primary.risk-critical{background:#FF3B30}
+.ios-btn-primary.risk-high{background:#FF9500}
+.ios-btn-secondary{background:transparent;color:#0A84FF;font-size:13px}
+
+/* Compare area */
+.compare-area{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.qbar{background:#0F172A;border-bottom:1px solid #1E293B;padding:10px 18px;flex-shrink:0;display:flex;flex-direction:column;gap:8px}
+.chips-row{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.chips-lead{font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:#475569;font-weight:600;margin-right:2px}
+.chip{display:inline-flex;align-items:center;gap:4px;background:#1E293B;color:#CBD5E1;border:1px solid #334155;border-radius:14px;padding:5px 10px;font-size:10px;cursor:pointer;transition:all .15s;font-weight:500}
+.chip:hover{border-color:#6366F1;color:#fff}
+.chip.active{border-color:#6366F1;background:#312E81;color:#fff}
+.chip.used{background:rgba(52,211,153,.14);border-color:#34D399;color:#6EE7B7}
+.chip .c-ico{font-size:11px}
+.q-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.progress-wrap{flex:1;min-width:180px;display:flex;align-items:center;gap:8px}
+.progress-label{font-size:10px;color:#94A3B8;white-space:nowrap}
+.progress-label b{color:#6EE7B7;font-weight:700}
+.progress-track{flex:1;height:6px;background:#1E293B;border-radius:4px;overflow:hidden;min-width:60px}
+.progress-fill{height:100%;background:linear-gradient(90deg,#34D399,#6EE7B7);border-radius:4px;width:0;transition:width .4s}
+.input-mini{display:flex;gap:6px;align-items:center}
+.mic-btn{width:34px;height:34px;border-radius:50%;border:1.5px solid #334155;background:#1E293B;color:#E2E8F0;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.mic-btn:hover{border-color:#6366F1}
+.mic-btn.recording{background:#EF4444;border-color:#EF4444;animation:pulse 1s infinite}
+.mic-btn.processing{background:#D97706;border-color:#D97706;cursor:wait}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.4)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
+.text-input{background:#1E293B;border:1px solid #334155;color:#E2E8F0;padding:8px 12px;border-radius:8px;font-size:12px;outline:none;width:190px}
+.text-input:focus{border-color:#6366F1}
+.text-input::placeholder{color:#475569}
+.send-btn{background:#334155;border:none;color:#E2E8F0;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer}
+.send-btn:hover{background:#475569}
+.comp-summary{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);border-radius:8px;padding:7px 12px;font-size:11px;color:#6EE7B7;display:none}
+.comp-summary.show{display:block}
+
+/* Arena */
+.arena{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px 18px;flex:1;min-height:0}
+.panel{background:#111827;border-radius:14px;border:1.5px solid #1E293B;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.panel-header{padding:11px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.panel.cache .panel-header{background:linear-gradient(135deg,#064E3B,#065F46);border-bottom:1px solid #047857}
+.panel.live .panel-header{background:linear-gradient(135deg,#78350F,#92400E);border-bottom:1px solid #B45309}
+.tier-badge{font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase}
+.panel.cache .tier-badge{color:#6EE7B7}
+.panel.live .tier-badge{color:#FCD34D}
+.tier-sub{font-size:10px;color:rgba(255,255,255,.65)}
+.panel-ico{font-size:20px}
+.thread{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px;min-height:0}
+.thread-empty{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;color:#475569;font-size:12px;font-style:italic;padding:20px}
+.turn{display:flex;flex-direction:column;gap:5px}
+.turn-q{align-self:flex-end;background:#4F46E5;color:#fff;font-size:11px;padding:6px 11px;border-radius:12px;border-bottom-right-radius:4px;max-width:85%}
+.turn-a{align-self:flex-start;background:#1E293B;color:#E2E8F0;font-size:12px;line-height:1.55;padding:9px 13px;border-radius:12px;border-bottom-left-radius:4px;max-width:92%}
+.turn-meta{align-self:flex-start;font-size:9px;color:#64748B;padding-left:4px;display:flex;align-items:center;gap:6px}
+.source-badge{display:inline-block;font-size:8px;padding:1px 5px;border-radius:3px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.source-badge.cache{background:rgba(52,211,153,.15);color:#34D399}
+.source-badge.live{background:rgba(251,191,36,.15);color:#FBBF24}
+.typing{align-self:flex-start;display:flex;gap:4px;padding:8px 12px}
+.typing span{width:7px;height:7px;background:#475569;border-radius:50%;animation:bounce .6s infinite alternate}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{to{transform:translateY(-5px);background:#94A3B8}}
+.metric-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:10px 14px;border-top:1px solid #1E293B;flex-shrink:0}
+.metric{background:#0F172A;border-radius:8px;padding:7px;text-align:center}
+.metric-val{font-size:16px;font-weight:700;margin-bottom:1px}
+.metric-label{font-size:8px;color:#64748B;text-transform:uppercase;letter-spacing:.5px}
+.panel.cache .metric-val{color:#34D399}
+.panel.live .metric-val{color:#FBBF24}
+.panel-foot{display:flex;align-items:center;gap:8px;padding:8px 14px;border-top:1px solid #1E293B;flex-shrink:0}
+.play-btn{background:#1E293B;border:1px solid #334155;color:#E2E8F0;padding:6px 10px;border-radius:7px;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:5px}
+.play-btn:hover{background:#334155}
+.play-btn:disabled{opacity:.4;cursor:not-allowed}
+.foot-status{font-size:9px;color:#475569;flex:1;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.status-bar{font-size:10px;color:#475569;text-align:center;padding:5px;background:#0F172A;flex-shrink:0;border-top:1px solid #1E293B}
+.status-bar b{color:#64748B}
+.sax-phone-placeholder{background:transparent}
+
+/* Mobile: stack, phone on top, page scrolls */
+@media(max-width:900px){
+  body{overflow:auto;height:auto;min-height:100vh}
+  .layout{grid-template-columns:1fr;overflow:visible}
+  .phone-col{border-right:none;border-bottom:1px solid #1E293B;overflow:visible}
+  .sax-phone{width:min(320px,82vw);aspect-ratio:300/620;height:auto}
+  .arena{grid-template-columns:1fr;gap:12px}
+  .panel{min-height:320px}
+  .text-input{width:130px}
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div>
+    <h1>KLH — Tier 1 vs Tier 2 · Multi-Journey Duplex</h1>
+    <div class="sub">Same journey · same question · same persona. Left = Redis cache. Right = forced live generation. Voice in, voice out.</div>
+  </div>
+  <div class="config">
+    <div class="field">
+      <label>Persona</label>
+      <select id="sel-persona" onchange="onPersonaChange()">
+        <option value="arjun">Arjun — GenZ (Hinglish)</option>
+        <option value="rajan" selected>Rajan — Farmer (Hindi)</option>
+        <option value="sunita">Sunita — Migrant (Hindi)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Verbosity</label>
+      <select id="sel-verbosity">
+        <option value="LOW">Low</option>
+        <option value="MEDIUM" selected>Medium</option>
+        <option value="HIGH">High</option>
+      </select>
+    </div>
+    <button class="btn-run" id="btn-run" onclick="runComparison()">▶ Run comparison</button>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="phone-col">
+    <div class="journey-pick">
+      <label>Journey</label>
+      <select id="sel-journey" onchange="selectJourney(this.value)">
+        <optgroup label="L4 · Consequential">
+          <option value="ekyc" selected>🛡️ eKYC Aadhaar</option>
+          <option value="nach_mandate">📝 NACH Mandate Sign</option>
+          <option value="credit_line">🏦 Credit Line Activation</option>
+          <option value="collect_unknown">🚨 Collect Request (Unknown)</option>
+          <option value="token_lock">🔒 Token Lock / Finternet</option>
+        </optgroup>
+        <optgroup label="L3 · Transactional">
+          <option value="p2p_large_unknown">⚠️ P2P &gt;₹5K Unknown</option>
+          <option value="beneficiary_add">➕ Beneficiary Add</option>
+          <option value="aadhaar_sign">✍️ Aadhaar Digital Sign</option>
+          <option value="autopay">🔁 UPI AutoPay Setup</option>
+        </optgroup>
+        <optgroup label="L2 · Informational">
+          <option value="p2p_small">💸 P2P Send &lt;₹500</option>
+          <option value="p2m_qr">🏪 P2M QR Scan</option>
+          <option value="ondc">🛒 ONDC Order</option>
+          <option value="balance">💰 Balance Check</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="sax-phone" data-theme="dark" id="iphone">
+      <div class="sax-phone-content">
+        <div class="ph-pad" id="phone-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="compare-area">
+    <div class="qbar">
+      <div class="chips-row" id="chip-grid"></div>
+      <div class="q-controls">
+        <div class="progress-wrap">
+          <span class="progress-label">Explored <b id="comp-done">0</b> of <b id="comp-total">9</b> risk areas</span>
+          <div class="progress-track"><div class="progress-fill" id="comp-fill"></div></div>
+        </div>
+        <div class="input-mini">
+          <button class="mic-btn" id="mic-btn" onclick="toggleMic()">🎤</button>
+          <input class="text-input" id="text-input" placeholder="Ask your own question..." onkeydown="if(event.key==='Enter')sendText()">
+          <button class="send-btn" onclick="sendText()">Ask</button>
+        </div>
+      </div>
+      <div class="comp-summary" id="comp-summary">✓ You've covered the key risk areas for this journey — what's shared, whether it's reversible, who receives it, and what happens if you proceed.</div>
+    </div>
+
+    <div class="arena">
+      <div class="panel cache">
+        <div class="panel-header">
+          <div><div class="tier-badge">Tier 1 — Cache</div><div class="tier-sub">Precomputed · Upstash Redis</div></div>
+          <div class="panel-ico">⚡</div>
+        </div>
+        <div class="thread" id="thread-cache"></div>
+        <div class="metric-row">
+          <div class="metric"><div class="metric-val" id="cache-latency">—</div><div class="metric-label">Latency</div></div>
+          <div class="metric"><div class="metric-val" id="cache-cost">—</div><div class="metric-label">Cost</div></div>
+          <div class="metric"><div class="metric-val" id="cache-source">—</div><div class="metric-label">Source</div></div>
+        </div>
+        <div class="panel-foot">
+          <button class="play-btn" id="cache-play" disabled onclick="playLatest('cache')">🔊 Play</button>
+          <div class="foot-status" id="cache-status">Waiting</div>
+        </div>
+      </div>
+
+      <div class="panel live">
+        <div class="panel-header">
+          <div><div class="tier-badge">Tier 2 — Live</div><div class="tier-sub">Claude Sonnet → Sarvam</div></div>
+          <div class="panel-ico">🧠</div>
+        </div>
+        <div class="thread" id="thread-live"></div>
+        <div class="metric-row">
+          <div class="metric"><div class="metric-val" id="live-latency">—</div><div class="metric-label">Latency</div></div>
+          <div class="metric"><div class="metric-val" id="live-cost">—</div><div class="metric-label">Cost</div></div>
+          <div class="metric"><div class="metric-val" id="live-source">—</div><div class="metric-label">Source</div></div>
+        </div>
+        <div class="panel-foot">
+          <button class="play-btn" id="live-play" disabled onclick="playLatest('live')">🔊 Play</button>
+          <div class="foot-status" id="live-status">Waiting</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="status-bar" id="status-bar"><b>Ready.</b> Tap a chip or Run comparison — cache vs forced-live, same answer.</div>
+  </div>
+</div>
+
+<script src="/shared/sax-phone.js"></script>
+<script>
+const JOURNEYS=[
+{id:'balance',name:'Balance Check',mat:1,upiTitle:'Check Balance',fields:[{label:'Account',value:'SBI Savings ****4521'},{label:'Action',value:'Balance Enquiry'}],actions:[{label:'Check Balance',type:'primary',risk:'none'},{label:'Cancel',type:'secondary',risk:'none'}]},
+{id:'p2p_small',name:'P2P Send <₹500',mat:2,upiTitle:'Send Money',fields:[{label:'To',value:'Rahul Sharma'},{label:'UPI ID',value:'rahul@okaxis'},{label:'Amount',value:'₹350'}],actions:[{label:'Pay ₹350',type:'primary',risk:'low'},{label:'Cancel',type:'secondary',risk:'none'}]},
+{id:'p2p_large_unknown',name:'P2P >₹5K Unknown',mat:3,upiTitle:'Send Money',fields:[{label:'To',value:'Unknown Contact'},{label:'UPI ID',value:'merchant8847@ybl'},{label:'Amount',value:'₹8,500'},{label:'Status',value:'⚠ First time · Unverified'}],actions:[{label:'Pay ₹8,500',type:'primary',risk:'high'},{label:'Decline',type:'secondary',risk:'none'}]},
+{id:'p2m_qr',name:'P2M QR Scan',mat:2,upiTitle:'Pay Merchant',fields:[{label:'Merchant',value:'Fresh Mart Store ✓'},{label:'Amount',value:'₹1,200'},{label:'Method',value:'QR Code Scan'}],actions:[{label:'Pay ₹1,200',type:'primary',risk:'low'},{label:'Cancel',type:'secondary',risk:'none'}]},
+{id:'collect_unknown',name:'Collect Request Unknown',mat:4,upiTitle:'Collect Request',fields:[{label:'From',value:'⚠ fraud_alert99@paytm'},{label:'Amount',value:'₹15,000'},{label:'Type',value:'COLLECT (money leaves YOU)'},{label:'Status',value:'🚨 Unknown · Unverified'}],actions:[{label:'Approve ₹15,000',type:'primary',risk:'critical'},{label:'Decline',type:'secondary',risk:'none'}]},
+{id:'beneficiary_add',name:'Beneficiary Add',mat:3,upiTitle:'Add Beneficiary',fields:[{label:'Name',value:'Unknown Trader'},{label:'Account',value:'****7823'},{label:'IFSC',value:'SBIN0001234'},{label:'Status',value:'⚠ First time'}],actions:[{label:'Add Beneficiary',type:'primary',risk:'medium'},{label:'Cancel',type:'secondary',risk:'none'}]},
+{id:'nach_mandate',name:'NACH Mandate Sign',mat:4,upiTitle:'NACH e-Mandate',fields:[{label:'Creditor',value:'QuickLoan NBFC'},{label:'Amount',value:'Up to ₹25,000/month'},{label:'Duration',value:'3 years (36 months)'},{label:'Type',value:'NACH Auto-Debit'}],actions:[{label:'Sign Mandate',type:'primary',risk:'critical'},{label:'Decline',type:'secondary',risk:'none'}]},
+{id:'autopay',name:'UPI AutoPay Setup',mat:4,upiTitle:'UPI AutoPay',fields:[{label:'Merchant',value:'StreamFlix Premium'},{label:'Amount',value:'₹599/month'},{label:'Type',value:'Recurring AutoPay'},{label:'PIN',value:'Only first time'}],actions:[{label:'Enable AutoPay',type:'primary',risk:'high'},{label:'Skip',type:'secondary',risk:'none'}]},
+{id:'ekyc',name:'eKYC Aadhaar',mat:4,upiTitle:'eKYC Verification',fields:[{label:'Full Name',value:'From Aadhaar'},{label:'Address',value:'From Aadhaar'},{label:'Photograph',value:'From Aadhaar'},{label:'Date of Birth',value:'From Aadhaar'},{label:'Aadhaar Number',value:'12 digits'}],actions:[{label:'Verify with Aadhaar',type:'primary',risk:'critical'},{label:'Cancel',type:'secondary',risk:'none'}]},
+{id:'credit_line',name:'Credit Line Activation',mat:4,upiTitle:'Activate Credit',fields:[{label:'Lender',value:'QuickCash NBFC'},{label:'Limit',value:'₹50,000'},{label:'Interest',value:'18% APR'},{label:'Penalty',value:'₹500 + interest/late'}],actions:[{label:'Activate Credit',type:'primary',risk:'critical'},{label:'Decline',type:'secondary',risk:'none'}]},
+{id:'ondc',name:'ONDC Order',mat:3,upiTitle:'ONDC Order',fields:[{label:'Seller',value:'KisanDirect Farm'},{label:'Item',value:'Organic Rice 5kg'},{label:'Price',value:'₹450'},{label:'Network',value:'ONDC (Open)'}],actions:[{label:'Pay ₹450',type:'primary',risk:'medium'},{label:'Cancel',type:'secondary',risk:'none'}]},
+{id:'token_lock',name:'Token Lock / Finternet',mat:4,upiTitle:'Finternet Token Lock',fields:[{label:'Asset',value:'Land Token #LPT-4421'},{label:'Lock',value:'180 days'},{label:'Restrictions',value:'No transfer/sale/collateral'},{label:'Reversible',value:'❌ Irrevocable'}],actions:[{label:'Lock Token',type:'primary',risk:'critical'},{label:'Cancel',type:'secondary',risk:'none'}]},
+{id:'aadhaar_sign',name:'Aadhaar Digital Sign',mat:4,upiTitle:'Aadhaar e-Sign',fields:[{label:'Document',value:'Property Sale Agreement'},{label:'Method',value:'Aadhaar e-Sign'},{label:'Legal',value:'Binding (IT Act 2000)'},{label:'Reversible',value:'❌ Irrevocable'}],actions:[{label:'Sign Document',type:'primary',risk:'critical'},{label:'Decline',type:'secondary',risk:'none'}]},
+];
+const J={};JOURNEYS.forEach(j=>J[j.id]=j);
+
+const META={
+  ekyc:{icon:'🛡️',sub:'Verify your identity electronically',cls:'Consequential',otp:true,warn:'⚠ Irrevocable — once shared, your Aadhaar data cannot be recalled by you, the bank, or anyone.'},
+  nach_mandate:{icon:'📝',sub:'Authorize recurring auto-debit',cls:'Consequential',warn:'⚠ Legally binding for 3 years. Up to ₹9,00,000 total exposure. Irrevocable for the mandate period.'},
+  credit_line:{icon:'🏦',sub:'Activate a pre-approved loan',cls:'Consequential',warn:'⚠ This is a LOAN at 18% APR. EMI auto-debited. Late penalty ₹500. Affects your CIBIL score.'},
+  collect_unknown:{icon:'🚨',sub:'Someone is requesting money FROM you',cls:'Consequential',warn:'🚨 COLLECT request — approving DEBITS ₹15,000 from YOUR account. #1 UPI fraud method. Irrevocable.'},
+  token_lock:{icon:'🔒',sub:'Freeze a tokenized asset on the ledger',cls:'Consequential',warn:'⚠ Land token frozen for 180 days. Cannot sell, transfer, or use as collateral. Irrevocable.'},
+  p2p_large_unknown:{icon:'⚠️',sub:'First transfer to an unverified ID',cls:'Transactional',warn:'⚠ Unverified, first-time recipient. ₹8,500 is irrevocable once sent — high scam risk.'},
+  beneficiary_add:{icon:'➕',sub:'Add a new payee for quick transfers',cls:'Transactional',warn:'⚠ Once added, future transfers skip verification. Verify the details carefully.'},
+  aadhaar_sign:{icon:'✍️',sub:'Legally binding electronic signature',cls:'Transactional',otp:true,warn:'⚠ Equivalent to a physical signature under IT Act 2000. Irrevocable and court-enforceable.'},
+  autopay:{icon:'🔁',sub:'Recurring payment without PIN',cls:'Transactional',warn:'⚠ ₹599 auto-debited monthly without PIN after first authorization. Must cancel manually.'},
+  p2p_small:{icon:'💸',sub:'Small instant transfer',cls:'Informational'},
+  p2m_qr:{icon:'🏪',sub:'Pay a verified merchant',cls:'Informational'},
+  ondc:{icon:'🛒',sub:'Order on an open network',cls:'Informational',warn:'ⓘ ONDC is an open network — dispute resolution differs from marketplace apps.'},
+  balance:{icon:'💰',sub:'Read-only — no money moves',cls:'Informational'},
+};
+
+const CHUNK_DEFS={
+  overview:     {ico:'❓',hi:'ये क्या है?',     hg:'ye kya hai?'},
+  data_shared:  {ico:'📤',hi:'क्या share होगा?',hg:'kya share hoga?'},
+  biometric:    {ico:'👆',hi:'biometric?',      hg:'biometric?'},
+  reversibility:{ico:'↩️',hi:'वापस ले सकते?',   hg:'wapas le sakte?'},
+  consequence:  {ico:'⚠️',hi:'क्या होगा?',      hg:'kya hoga?'},
+  who_gets_data:{ico:'👥',hi:'कौन लेगा?',       hg:'kaun lega?'},
+  alternative:  {ico:'🔀',hi:'और तरीका?',       hg:'aur tarika hai?'},
+  safety:       {ico:'🛡️',hi:'safe है?',        hg:'safe hai?'},
+  action:       {ico:'✅',hi:'क्या करूँ?',      hg:'kya karu?'},
+};
+const CHUNKS={
+  ekyc:['overview','data_shared','biometric','reversibility','consequence','who_gets_data','alternative','safety','action'],
+  nach_mandate:['overview','data_shared','reversibility','consequence','who_gets_data','alternative','safety','action'],
+  credit_line:['overview','data_shared','reversibility','consequence','who_gets_data','alternative','safety','action'],
+  collect_unknown:['overview','data_shared','reversibility','consequence','who_gets_data','alternative','safety','action'],
+  token_lock:['overview','data_shared','reversibility','consequence','who_gets_data','alternative','safety','action'],
+  p2p_large_unknown:['overview','consequence','reversibility','safety','action'],
+  beneficiary_add:['overview','consequence','reversibility','who_gets_data','safety','action'],
+  aadhaar_sign:['overview','data_shared','reversibility','consequence','safety','action'],
+  autopay:['overview','consequence','reversibility','safety','action'],
+  p2p_small:['overview','consequence','action'],
+  p2m_qr:['overview','consequence','action'],
+  ondc:['overview','consequence','action'],
+  balance:['overview','consequence','action'],
+};
+
+let current='ekyc', activeChunk='overview';
+const explored={};
+const lastScript={cache:'',live:''};
+function persona(){return document.getElementById('sel-persona').value;}
+function verbosity(){return document.getElementById('sel-verbosity').value;}
+function exploredSet(id){if(!explored[id])explored[id]=new Set();return explored[id];}
+function chipLabel(ck){const d=CHUNK_DEFS[ck];return persona()==='arjun'?d.hg:d.hi;}
+
+/* iOS-safe audio */
+const ttsAudio=new Audio();ttsAudio.playsInline=true;ttsAudio.setAttribute('playsinline','');
+let audioUnlocked=false;
+function unlockAudio(){if(audioUnlocked)return;ttsAudio.src='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';ttsAudio.play().then(()=>{audioUnlocked=true;}).catch(()=>{});}
+document.addEventListener('touchstart',unlockAudio,{once:true});
+document.addEventListener('click',unlockAudio,{once:true});
+
+/* Phone render */
+function renderPhone(id){
+  const j=J[id],m=META[id]||{};
+  let h='';
+  h+='<div class="j-mat mat-L'+j.mat+'">L'+j.mat+' · '+(m.cls||'')+'</div>';
+  h+='<div class="ios-nav"><h2>'+j.upiTitle+'</h2></div>';
+  h+='<div class="j-hero"><div class="icon">'+(m.icon||'📱')+'</div><h3>'+j.name+'</h3><p>'+(m.sub||'')+'</p></div>';
+  h+='<div class="ios-card"><div class="card-label">'+(id==='ekyc'?'Information to be shared':'Details')+'</div>';
+  j.fields.forEach(f=>{h+='<div class="ios-card-row"><span>'+f.label+'</span><span>'+f.value+'</span></div>';});
+  h+='</div>';
+  if(id==='ekyc'){h+='<div class="ios-card"><div class="card-label">Biometric</div><div class="ios-card-row"><span>Fingerprint / Iris</span><span>Required</span></div></div>';}
+  if(m.otp){h+='<div class="ios-card"><div class="card-label">Aadhaar OTP — sent to ****1234</div><div class="otp-row"><div class="otp-box">4</div><div class="otp-box">8</div><div class="otp-box">1</div><div class="otp-box">•</div><div class="otp-box">•</div><div class="otp-box">•</div></div></div>';}
+  if(m.warn){h+='<div class="ios-warn">'+m.warn+'</div>';}
+  if(m.cls!=='Informational'){h+='<div class="ios-acceptance">By tapping "'+j.actions[0].label+'", you authorize this action. This consent is digitally recorded.</div>';}
+  j.actions.forEach(a=>{
+    if(a.type==='primary'){const rc=a.risk==='critical'?' risk-critical':a.risk==='high'?' risk-high':'';h+='<button class="ios-btn ios-btn-primary'+rc+'">'+a.label+'</button>';}
+    else{h+='<button class="ios-btn ios-btn-secondary">'+a.label+'</button>';}
+  });
+  document.getElementById('phone-content').innerHTML=h;
+}
+
+/* Chips */
+function renderChips(id){
+  const set=exploredSet(id);
+  let h='<span class="chips-lead">Ask GATO</span>';
+  CHUNKS[id].forEach(ck=>{
+    const cls=(ck===activeChunk?' active':'')+(set.has(ck)?' used':'');
+    h+='<span class="chip'+cls+'" data-chunk="'+ck+'" onclick="pickChunk(\''+ck+'\')"><span class="c-ico">'+CHUNK_DEFS[ck].ico+'</span>'+chipLabel(ck)+'</span>';
+  });
+  document.getElementById('chip-grid').innerHTML=h;
+}
+function pickChunk(ck){activeChunk=ck;renderChips(current);runComparison(chipLabel(ck));}
+
+/* Comprehension */
+function updateComprehension(){
+  const total=CHUNKS[current].length,done=exploredSet(current).size;
+  document.getElementById('comp-done').textContent=done;
+  document.getElementById('comp-total').textContent=total;
+  document.getElementById('comp-fill').style.width=Math.round(done/total*100)+'%';
+  document.getElementById('comp-summary').classList.toggle('show',done>=total);
+}
+
+/* Thread helpers */
+function badge(src){return '<span class="source-badge '+src+'">'+(src==='cache'?'⚡ cache':'🧠 live')+'</span>';}
+function clearEmpty(side){const t=document.getElementById('thread-'+side);const e=t.querySelector('.thread-empty');if(e)e.remove();}
+function addTyping(side){clearEmpty(side);const t=document.getElementById('thread-'+side);const d=document.createElement('div');d.className='typing';d.id='typing-'+side;d.innerHTML='<span></span><span></span><span></span>';t.appendChild(d);t.scrollTop=t.scrollHeight;}
+function removeTyping(side){const d=document.getElementById('typing-'+side);if(d)d.remove();}
+function addTurn(side,qText,data){
+  const t=document.getElementById('thread-'+side);
+  const d=document.createElement('div');d.className='turn';
+  const ms=data.client_ms||data.latency_ms||0;
+  const msLabel=ms<1000?ms+'ms':(ms/1000).toFixed(1)+'s';
+  d.innerHTML='<div class="turn-q">'+qText+'</div>'+
+              '<div class="turn-a">'+(data.script||'(no answer)')+'</div>'+
+              '<div class="turn-meta">'+(data.intent||'')+' · '+msLabel+' '+badge(data.source)+'</div>';
+  t.appendChild(d);t.scrollTop=t.scrollHeight;
+}
+
+/* Core dual-fetch comparison */
+let running=false;
+async function runComparison(qTextArg){
+  if(running)return;running=true;
+  const btn=document.getElementById('btn-run');btn.disabled=true;
+  const qText=qTextArg||chipLabel(activeChunk);
+  const payload={transcript:qText,persona:persona(),journeyId:current};
+  clearEmpty('cache');clearEmpty('live');
+  addTyping('cache');addTyping('live');
+  document.getElementById('cache-status').textContent='Requesting cache...';
+  document.getElementById('live-status').textContent='Forcing live...';
+  const t0=Date.now();
+  const cacheP=fetch('/api/journey-chunk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+    .then(r=>r.json()).then(d=>({...d,client_ms:Date.now()-t0})).catch(e=>({error:e.message,client_ms:Date.now()-t0}));
+  const t1=Date.now();
+  const liveP=fetch('/api/journey-chunk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...payload,nocache:true})})
+    .then(r=>r.json()).then(d=>({...d,client_ms:Date.now()-t1})).catch(e=>({error:e.message,client_ms:Date.now()-t1}));
+
+  cacheP.then(d=>renderSide('cache',qText,d));
+  liveP.then(d=>renderSide('live',qText,d));
+  const [cd]=await Promise.all([cacheP,liveP]);
+  // auto-play the cache-side answer (voice-out)
+  if(cd&&cd.script){playTTS(cd.script,'cache');}
+  running=false;btn.disabled=false;
+}
+
+function renderSide(side,qText,data){
+  removeTyping(side);
+  if(data.error){
+    document.getElementById(side+'-status').textContent='Error: '+data.error;
+    document.getElementById(side+'-source').textContent='ERR';
+    return;
+  }
+  addTurn(side,qText,data);
+  lastScript[side]=data.script||'';
+  const ms=data.client_ms||0;
+  document.getElementById(side+'-latency').textContent=ms<1000?ms+'ms':(ms/1000).toFixed(1)+'s';
+  document.getElementById(side+'-cost').textContent=data.source==='cache'?'~$0':'~$0.01';
+  document.getElementById(side+'-source').textContent=data.source==='cache'?'Redis':'Claude';
+  document.getElementById(side+'-status').textContent=data.cache_key||'live generation';
+  document.getElementById(side+'-play').disabled=!data.script;
+  // comprehension uses the server-classified intent
+  if(data.intent){exploredSet(current).add(data.intent);renderChips(current);updateComprehension();}
+  setStatus('Compared "'+qText+'" · '+side+' '+(data.source||'')+' '+(ms)+'ms');
+}
+
+/* TTS */
+async function playTTS(text,side){
+  if(!text)return;
+  try{
+    document.getElementById(side+'-status').textContent='Loading audio...';
+    const r=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,500),language:'hi-IN',speaker:'anushka'})});
+    const data=await r.json();
+    if(!data.data_uri){document.getElementById(side+'-status').textContent='No audio';return;}
+    ttsAudio.pause();ttsAudio.currentTime=0;ttsAudio.src=data.data_uri;await ttsAudio.play();
+    document.getElementById(side+'-status').textContent='▶ Playing';
+  }catch(e){document.getElementById(side+'-status').textContent='Audio error';}
+}
+function playLatest(side){playTTS(lastScript[side],side);}
+
+/* STT */
+let mediaRecorder=null,audioChunks=[],isRecording=false;
+async function toggleMic(){if(isRecording)stopRec();else startRec();}
+async function startRec(){
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    mediaRecorder=new MediaRecorder(stream,{mimeType:'audio/webm;codecs=opus'});audioChunks=[];
+    mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data);};
+    mediaRecorder.onstop=()=>{stream.getTracks().forEach(t=>t.stop());processRec();};
+    mediaRecorder.start();isRecording=true;
+    document.getElementById('mic-btn').className='mic-btn recording';setStatus('🔴 Recording — tap mic to stop');
+  }catch(e){setStatus('Mic error: '+e.message);}
+}
+function stopRec(){if(mediaRecorder&&mediaRecorder.state!=='inactive')mediaRecorder.stop();isRecording=false;document.getElementById('mic-btn').className='mic-btn processing';setStatus('⏳ Transcribing...');}
+async function processRec(){
+  const blob=new Blob(audioChunks,{type:'audio/webm'});
+  try{
+    const r=await fetch('/api/stt',{method:'POST',headers:{'Content-Type':'audio/webm'},body:blob});
+    const data=await r.json();document.getElementById('mic-btn').className='mic-btn';
+    if(data.transcript){setStatus('Heard: '+data.transcript.slice(0,50));runComparison(data.transcript);}
+    else setStatus('Could not transcribe. Try again or type.');
+  }catch(e){document.getElementById('mic-btn').className='mic-btn';setStatus('STT error: '+e.message);}
+}
+
+/* Text input */
+function sendText(){const el=document.getElementById('text-input');const t=el.value.trim();if(!t){runComparison();return;}el.value='';runComparison(t);}
+
+/* Select / reset */
+function emptyThreads(){
+  ['cache','live'].forEach(s=>{
+    document.getElementById('thread-'+s).innerHTML='<div class="thread-empty">Pick a chip or press Run comparison to see the '+(s==='cache'?'cached':'live')+' answer.</div>';
+    document.getElementById(s+'-latency').textContent='—';
+    document.getElementById(s+'-cost').textContent='—';
+    document.getElementById(s+'-source').textContent='—';
+    document.getElementById(s+'-status').textContent='Waiting';
+    document.getElementById(s+'-play').disabled=true;
+    lastScript[s]='';
+  });
+}
+function selectJourney(id){
+  current=id;activeChunk=CHUNKS[id][0];
+  exploredSet(id).clear();
+  renderPhone(id);renderChips(id);emptyThreads();updateComprehension();
+  setStatus('Loaded '+J[id].name+' · '+CHUNKS[id].length+' risk areas · '+(META[id]||{}).cls);
+}
+function onPersonaChange(){
+  exploredSet(current).clear();renderChips(current);emptyThreads();updateComprehension();
+  setStatus('Persona: '+persona()+' · comparison reset');
+}
+function setStatus(t){document.getElementById('status-bar').innerHTML='<b>'+t+'</b>';}
+
+selectJourney('ekyc');
+</script>
+</body>
+</html>

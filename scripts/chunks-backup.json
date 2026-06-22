@@ -1,0 +1,2762 @@
+{
+  "saved_at": "2026-06-22T18:17:43.635Z",
+  "count": 212,
+  "entries": [
+    {
+      "key": "klh:ekyc:chunk:data_shared:arjun:hi",
+      "value": {
+        "script": "देखो यार, यहाँ पैसे नहीं जा रहे बस तुम्हारी पूरी आईडी शेयर हो रही है - तुम्हारा नाम, घर का पूरा पता, फोटो, जन्मदिन और आधार नंबर सब कुछ। एक बार भेज दिया तो वापस नहीं ला सकते, परमानेंट हो जाएगा। बायोमेट्रिक मतलब फिंगरप्रिंट या आई स्कैन भी जाएगा सर्विस प्रोवाइडर के पास।",
+        "chunk": "data_shared",
+        "journey": "ekyc",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:49:49.518Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:data_shared:rajan:hi",
+      "value": {
+        "script": "देखो भाई, इसमें पैसे नहीं जाएंगे, बस तुम्हारी जानकारी जाएगी। तुम्हारा नाम, घर का पता, फोटो, जन्मदिन और आधार का नंबर - ये सब चीजें उन्हें मिल जाएंगी। एक बार दे दिया तो वापस नहीं ले सकते, ध्यान से सोचो।",
+        "chunk": "data_shared",
+        "journey": "ekyc",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:50:03.050Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:data_shared:sunita:hi",
+      "value": {
+        "script": "दीदी, इसमें आपका पैसा नहीं जाएगा, बस आपकी जानकारी जाएगी। आपका पूरा नाम, आपके घर का पता, आपकी फ़ोटो, जन्मदिन और आधार नंबर - ये सब कुछ उस कंपनी के पास चला जाएगा। एक बार भेज दिया तो वापस नहीं ले सकते, ध्यान रखना।",
+        "chunk": "data_shared",
+        "journey": "ekyc",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:50:09.086Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:biometric:arjun:hi",
+      "value": {
+        "script": "देखो, बायोमेट्रिक मतलब तुम्हारे शरीर का यूनीक डेटा है यार - जैसे फिंगरप्रिंट या आँख की स्कैन। ये चीज़ें तुम बदल नहीं सकते ना, पासवर्ड की तरह नहीं है। अगर कहीं लीक हो गया तो वो हमेशा के लिए कम्प्रोमाइज़ हो जाएगा, इसलिए सोच समझकर शेयर करना।",
+        "chunk": "biometric",
+        "journey": "ekyc",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:50:16.269Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:biometric:rajan:hi",
+      "value": {
+        "script": "भाई साहब, बायोमेट्रिक माने आपके शरीर की पहचान - जैसे उंगली के निशान या आँख की पुतली। ये चीज़ें सिर्फ आपकी हैं, किसी और की नहीं। अगर एक बार ये जानकारी गलत हाथों में चली गई तो पासवर्ड जैसे बदल नहीं सकते, क्योंकि आपकी उंगली और आँख तो वही रहेगी ना।",
+        "chunk": "biometric",
+        "journey": "ekyc",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:50:22.501Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:biometric:sunita:hi",
+      "value": {
+        "script": "दीदी, बायोमीट्रिक माने आपके शरीर की पहचान - जैसे उंगली के निशान या आँख का स्कैन। ये चीज़ें सिर्फ आपकी हैं, किसी और की नहीं। लेकिन समस्या ये है कि पासवर्ड तो बदल सकते हैं, पर उंगली के निशान तो जिंदगी भर वही रहेंगे ना। अगर कहीं गलत हाथ में चले गए तो वापस नहीं बदल सकते।",
+        "chunk": "biometric",
+        "journey": "ekyc",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:50:29.669Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:reversibility:arjun:hi",
+      "value": {
+        "script": "देखो, स्क्रीन पे साफ लिखा है कि ये ईकेवाईसी इररेवोकेबल है यानी एक बार शेयर करने के बाद वापस नहीं ले सकते। तुम्हारा नाम, एड्रेस, फोटो, जन्मतिथि सब कुछ सर्विस प्रोवाइडर के पास चला जाएगा और अनडू नहीं कर सकते। तो सोच समझ के आगे बढ़ो।",
+        "chunk": "reversibility",
+        "journey": "ekyc",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:50:36.119Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:reversibility:rajan:hi",
+      "value": {
+        "script": "भैया, ये वापस नहीं हो सकता। एक बार आधार की जानकारी दे दी तो वापस नहीं ले सकते। पर घबराने की बात नहीं, बस ध्यान से सोच लो कि देना है या नहीं।",
+        "chunk": "reversibility",
+        "journey": "ekyc",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:50:41.270Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:reversibility:sunita:hi",
+      "value": {
+        "script": "दीदी, ये वाली चीज़ वापस नहीं हो सकती। एक बार आधार की जानकारी दे दी तो उसे वापस मांग नहीं सकते। इसलिए सोच समझ के हाँ करना, पर घबराने की बात नहीं - बस ध्यान से देखो कि किसको दे रहे हो।",
+        "chunk": "reversibility",
+        "journey": "ekyc",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:50:47.577Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:consequence:arjun:hi",
+      "value": {
+        "script": "अगर तू आगे बढ़ी तो तेरा नाम, एड्रेस, फोटो, जन्मतारीख और आधार नंबर सर्विस प्रोवाइडर के पास चला जाएगा यार, और फिर वापस नहीं ले सकती। बाद में वो लोग तेरी आइडेंटिटी वेरिफाई करने के लिए इस डेटा को यूज़ करेंगे, तो सोच ले कि तू इस कंपनी पर भरोसा करती है या नहीं।",
+        "chunk": "consequence",
+        "journey": "ekyc",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:50:58.746Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:consequence:rajan:hi",
+      "value": {
+        "script": "अगर आप हाँ करेंगे तो आपका नाम, पता, फोटो, जन्मतिथि और आधार नंबर इस कंपनी को मिल जाएगा। ये जानकारी एक बार दे दी तो वापस नहीं ले सकते, हमेशा के लिए उनके पास रहेगी। आगे जाकर वो लोग आपकी पहचान पक्की कर सकेंगे इसी से।",
+        "chunk": "consequence",
+        "journey": "ekyc",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:51:04.789Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:consequence:sunita:hi",
+      "value": {
+        "script": "दीदी, अगर आप हाँ करेंगी तो अभी आपका आधार नंबर, फोटो, पता सब कुछ इस कंपनी के पास चला जाएगा। एक बार भेज दिया तो वापस नहीं ले सकते, वो लोग हमेशा के लिए रख लेंगे। बाद में वो आपकी पहचान के लिए इस्तेमाल करेंगे, तो सोच समझ के ही हाँ करिएगा।",
+        "chunk": "consequence",
+        "journey": "ekyc",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:51:12.052Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:who_gets_data:arjun:hi",
+      "value": {
+        "script": "देखो, तुम्हारा आधार डेटा सर्विस प्रोवाइडर के पास जाएगा - तो पक्का चेक करो कि ये कौनसी कंपनी या ऐप है। एक बार शेयर किया तो वापस नहीं ले सकते, तो प्रोसीड करने से पहले कन्फर्म करलो कि ये ट्रस्टेड है या नहीं। बस दो मिनट लगाके वेरिफाई करलो फिर आगे बढ़ना।",
+        "chunk": "who_gets_data",
+        "journey": "ekyc",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:51:19.299Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:who_gets_data:rajan:hi",
+      "value": {
+        "script": "भईया, ये जो आधार की जानकारी माँग रहे हैं ना, वो सीधे उस कंपनी को जाएगी जिसको आप पैसा देने या लेने वाले हो। पहले ये पक्का कर लो कि ये कौन लोग हैं, नाम ठीक से पढ़ लो ऊपर। एक बार दे दिया तो वापस नहीं ले सकते, तो सोच समझ के हाँ करना।",
+        "chunk": "who_gets_data",
+        "journey": "ekyc",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:51:26.900Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:who_gets_data:sunita:hi",
+      "value": {
+        "script": "दीदी, ये आधार की जानकारी जिस कंपनी या ऐप में आप भर रही हैं उसको जाएगी। आगे बढ़ने से पहले ज़रा ध्यान से देख लीजिए कि ये कौन सी कंपनी है, नाम पता सही है क्या। एक बार शेयर कर दिया तो वापस नहीं ले सकते, तो पक्का कर लीजिए कि ये वाकई सही जगह है।",
+        "chunk": "who_gets_data",
+        "journey": "ekyc",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:51:33.976Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:alternative:arjun:hi",
+      "value": {
+        "script": "रुको यार, पहले चेक करो कि ये वेबसाइट असली है या नहीं। तुम नॉर्मल केवाईसी भी कर सकते हो - पैन कार्ड या ड्राइविंग लाइसेंस से, वो ज़्यादा सेफ है। आधार बायोमेट्रिक एक बार शेयर हुआ तो वापस नहीं ले सकते, तो पहले कंपनी रिव्यू पढ़ लो।",
+        "chunk": "alternative",
+        "journey": "ekyc",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:51:40.591Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:alternative:rajan:hi",
+      "value": {
+        "script": "भैया, ये आधार वाली केवाईसी करने से पहले आप दूसरा तरीका भी अपना सकते हैं। आप अपना पैन कार्ड या बैंक पासबुक लेकर सीधे दुकान या दफ्तर जा सकते हैं, वहाँ कागज पर फॉर्म भरेंगे। जल्दबाजी की कोई जरूरत नहीं है, पहले किसी भरोसेमंद आदमी से या बैंक वाले से पूछ लीजिये कि ये कंपनी सही है या नहीं।",
+        "chunk": "alternative",
+        "journey": "ekyc",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:51:48.204Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:alternative:sunita:hi",
+      "value": {
+        "script": "दीदी, ज़रूरी नहीं कि अभी तुरंत हाँ करें। आप पहले किसी भरोसेमंद आदमी से पूछ सकती हैं, या जो कंपनी माँग रही है उसका नाम लिखकर रख लें और बाद में पता करें। आधार देना ज़रूरी लगे तभी दें, वरना दूसरे तरीके भी पूछ सकती हैं जैसे पैन कार्ड या बैंक की कागज़ी पर्ची।",
+        "chunk": "alternative",
+        "journey": "ekyc",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:51:56.602Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:safety:arjun:hi",
+      "value": {
+        "script": "देखो यार, अगर ये कोई बैंक, गवर्नमेंट ऐप या बड़ी वेरिफाइड कंपनी है तो चिल है, लेकिन अगर कोई अनजान ऐप या वेबसाइट माँग रही है तो बिल्कुल मत करो। रेड फ्लैग्स ये हैं - अगर कोई कॉल पे जल्दी करने को बोल रहा है, या फिर छोटी सी चीज़ के लिए आधार माँग रहे हैं तो सस्पेक्ट है। याद रखो एक बार शेयर किया तो वापस नहीं ले सकते, तो पक्का चेक करो ये लेजिट है या नहीं।",
+        "chunk": "safety",
+        "journey": "ekyc",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:52:05.919Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:safety:rajan:hi",
+      "value": {
+        "script": "भैया, जो आदमी या कंपनी आप नहीं जानते या जिसपे भरोसा नहीं है, उसको कभी ये मत दीजिए। अगर कोई फ़ौरन देने को बोले या डराए तो समझो धोखा है। सरकारी बैंक या पक्की जगह हो, जहाँ आप खुद गए हो, तभी दीजिए।",
+        "chunk": "safety",
+        "journey": "ekyc",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:52:12.615Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:safety:sunita:hi",
+      "value": {
+        "script": "दीदी, अगर ये किसी बैंक या सरकारी योजना के लिए माँग रहे हैं जो आप जानती हैं, तो ठीक है। लेकिन अगर कोई अनजान कंपनी है, या फोन पर किसी ने कहा \"जल्दी करो वरना बंद हो जाएगा\", तो बिल्कुल मत दीजिए। आधार शेयर करने से पहले पक्का करें कि सामने वाला असली है, नहीं तो आपके नाम पर कोई लोन या गलत काम हो सकता है।",
+        "chunk": "safety",
+        "journey": "ekyc",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:52:20.359Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:action:arjun:hi",
+      "value": {
+        "script": "देखो यार, ये इरीवोकेबल है मतलब वापस नहीं ले सकते। अगर तुम्हें इस कंपनी पर पूरा भरोसा है और समझ आ रहा है कि क्या शेयर हो रहा है, तभी आगे बढ़ो। वरना अभी रुको और किसी ट्रस्टेड पर्सन से पूछ लो। कोई जल्दी नहीं है भाई।",
+        "chunk": "action",
+        "journey": "ekyc",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:52:27.217Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:action:rajan:hi",
+      "value": {
+        "script": "देखिए, ये बहुत जरूरी कागज है। आपका नाम, पता, फोटो, सब कुछ शेयर होगा और वापस नहीं ले सकते। अगर आपको इस कंपनी पर पूरा भरोसा है तभी हाँ करिए, नहीं तो अपने किसी भरोसेमंद आदमी से पूछ लीजिए पहले। कोई जल्दी नहीं है।",
+        "chunk": "action",
+        "journey": "ekyc",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:52:33.874Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ekyc:chunk:action:sunita:hi",
+      "value": {
+        "script": "दीदी, मैं सीधी बात बोलूं - अगर आप इस कंपनी को जानती हैं और भरोसा करती हैं तभी आगे बढ़ें, वरना मत करें। ये आधार की जानकारी एक बार शेयर हो गई तो वापस नहीं ली जा सकती। अगर समझ नहीं आ रहा तो कोई जल्दी नहीं है, घर में किसी भरोसेमंद इंसान से पूछ लें पहले।",
+        "chunk": "action",
+        "journey": "ekyc",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:52:40.937Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:overview:arjun:hi",
+      "value": {
+        "script": "अरे हाँ तो देख, ये एक एनएसीएच ई-मैंडेट है जो क्विकलोन को हर महीने तेरे अकाउंट से ऑटोमैटिक पैसे काटने की परमिशन देता है। बेसिकली अगले तीन साल तक हर महीने पच्चीस हज़ार तक का अमाउंट डायरेक्ट डेबिट हो जाएगा। तुझे बस यूपीआई पिन डालके ये मंज़ूर करना है।",
+        "chunk": "overview",
+        "journey": "nach_mandate",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:52:48.416Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:overview:rajan:hi",
+      "value": {
+        "script": "भाईसाहब, ये स्क्रीन आपसे एक फ़ॉर्म पर दस्तखत माँग रही है। इसमें लिखा है कि क्विकलोन वाली कंपनी हर महीने आपके खाते से अपने आप पच्चीस हज़ार रुपये तक काट सकती है, अगले तीन साल तक। आपको अपना यूपीआई पिन डालकर इजाज़त देनी है।",
+        "chunk": "overview",
+        "journey": "nach_mandate",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:52:55.074Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:overview:sunita:hi",
+      "value": {
+        "script": "देखिए दीदी, ये स्क्रीन पे क्विकलोन वाली कंपनी आपके खाते से हर महीने अपने आप पैसे काटने की इजाज़त माँग रही है। ये तीन साल तक चलेगा और हर महीने पच्चीस हज़ार रुपये तक कट सकते हैं। आपको नीचे अपना यूपीआई पिन डालके इसको हाँ करना है।",
+        "chunk": "overview",
+        "journey": "nach_mandate",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:53:02.240Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:data_shared:arjun:hi",
+      "value": {
+        "script": "देख भाई, तू अभी यूपीआई पिन डालेगा तो क्विकलोन को परमिशन मिल जाएगी कि वो अगले तीन साल तक हर महीने तेरे अकाउंट से सीधे पैसे काट सके, मैक्सिमम पच्चीस हज़ार। मतलब तेरा बैंक बैलेंस हर महीने ऑटोमैटिक कम होता रहेगा बिना तुझसे पूछे, और तू बीच में रोक भी नहीं सकता। बस इतना ही, कोई एक्स्ट्रा डेटा नहीं जा रहा, सिर्फ तेरे बैंक अकाउंट का एक्सेस मिल रहा है उनको।",
+        "chunk": "data_shared",
+        "journey": "nach_mandate",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:53:12.071Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:data_shared:rajan:hi",
+      "value": {
+        "script": "भैया, ये देखो - आज आपका कोई पैसा नहीं जाएगा। लेकिन आप अपना यूपीआई पिन डालोगे तो क्विकलोन वालों को हक मिल जाएगा कि वो अगले तीन साल तक हर महीने आपके खाते से सीधे पच्चीस हजार रुपये तक निकाल सकते हैं। एक बार ये साइन किया तो बीच में रोक नहीं सकते। सोच समझ के करना भाई।",
+        "chunk": "data_shared",
+        "journey": "nach_mandate",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:53:20.774Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:data_shared:sunita:hi",
+      "value": {
+        "script": "दीदी, इसमें आपका पैसा कटेगा हर महीने अपने आप - ज़्यादा से ज़्यादा पच्चीस हज़ार रुपये। ये तीन साल तक चलेगा मतलब छत्तीस बार आपके खाते से पैसा निकलेगा बिना पूछे। आपका बैंक खाता नंबर, नाम, फ़ोन नंबर सब QuickLoan वालों को मिल जाएगा। एक बार साइन किया तो बीच में रोक नहीं सकतीं तीन साल तक।",
+        "chunk": "data_shared",
+        "journey": "nach_mandate",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:53:28.555Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:reversibility:arjun:hi",
+      "value": {
+        "script": "देखो, यह 'इरेवोकेबल' लिखा है मतलब तीन साल के लिए कैंसल नहीं कर सकते। हाँ लेकिन अगर बैंक को बोलो तो वो स्टॉप कर सकते हैं, पर QuickLoan की परमिशन लगेगी। बेसिकली ऑटो-डेबिट हर महीने होता रहेगा जब तक लोन खत्म न हो जाए।",
+        "chunk": "reversibility",
+        "journey": "nach_mandate",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:53:35.724Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:reversibility:rajan:hi",
+      "value": {
+        "script": "देखिए भाई साहब, ये जो कागज़ है ना, इसमें लिखा है कि तीन साल तक इसे रद्द नहीं कर सकते। मतलब हर महीने पच्चीस हज़ार रुपये तक अपने आप कट जाएँगे आपके खाते से। तीन साल पूरे होने तक ये बंद नहीं होगा, तो अच्छे से सोच लीजिए।",
+        "chunk": "reversibility",
+        "journey": "nach_mandate",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:53:41.876Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:reversibility:sunita:hi",
+      "value": {
+        "script": "दीदी, ये मैंडेट तीन साल तक चलेगा और बीच में रद्द नहीं कर सकते - इसीलिए लिखा है 'इरिवोकेबल'। मतलब हर महीने अपने आप पैसा कट जाएगा तीन साल तक। अगर बाद में रोकना चाहें तो बैंक या क्विकलोन से बहुत झंझट करना पड़ेगा, इसलिए सोच समझ के ही साइन करें।",
+        "chunk": "reversibility",
+        "journey": "nach_mandate",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:53:49.447Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:consequence:arjun:hi",
+      "value": {
+        "script": "देखो, अगर तुम अभी यूपीआई पिन डालोगे ना तो तुम्हारे बैंक अकाउंट से क्विकलोन हर महीने ऑटो-डेबिट कर सकता है, मैक्स पच्चीस हज़ार तक। ये पूरे तीन साल चलेगा यानी छत्तीस महीने, और बीच में रोक नहीं सकते। बेसिकली तुम्हें हर महीने अकाउंट में पैसे रखने होंगे वरना बाउंस चार्ज लगेगा।",
+        "chunk": "consequence",
+        "journey": "nach_mandate",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:53:57.334Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:consequence:rajan:hi",
+      "value": {
+        "script": "अगर आप आगे बढ़े तो अभी आपका यूपीआई पिन डालते ही ये मंजूरी हो जाएगी। इसके बाद अगले तीन साल तक हर महीने क्विकलोन वाले आपके खाते से खुद-ब-खुद पच्चीस हजार रुपये तक निकाल सकते हैं। ये तीन साल में रोक नहीं सकते, चाहे आपके खाते में पैसे हों या नहीं। बैंक बार-बार कोशिश करेगा और चार्ज भी लग सकता है।",
+        "chunk": "consequence",
+        "journey": "nach_mandate",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:54:04.722Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:consequence:sunita:hi",
+      "value": {
+        "script": "दीदी, अगर आप यूपीआई पिन डाल देंगी तो ये क्विकलोन वाले अगले तीन साल तक हर महीने आपके खाते से अपने आप पच्चीस हजार रुपये तक काट सकते हैं। एक बार साइन कर दिया तो बीच में रोक नहीं सकतीं, पूरे तीन साल चलेगा। मतलब अगर किसी महीने पैसे नहीं भी हैं तो भी ये लोग काट लेंगे।",
+        "chunk": "consequence",
+        "journey": "nach_mandate",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:54:13.309Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:who_gets_data:arjun:hi",
+      "value": {
+        "script": "अरे देख, हर महीने QuickLoan NBFC को सीधे तेरे अकाउंट से पच्चीस हज़ार तक कट जाएगा ऑटोमैटिक। ये तीन साल चलेगा और बीच में रोक नहीं सकते। पहले ज़रा चेक कर ले कि QuickLoan वाकई लेजिट है या नहीं, फिर ही यूपीआई पिन डाल।",
+        "chunk": "who_gets_data",
+        "journey": "nach_mandate",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:54:19.965Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:who_gets_data:rajan:hi",
+      "value": {
+        "script": "भैया, ये जो पैसा हर महीने कटेगा ना, वो सीधा क्विकलोन एनबीएफसी के पास जायेगा। आपने इनसे कर्जा लिया है क्या? पहले पक्का कर लो कि ये वही कंपनी है जिससे आपने लोन लिया था, नहीं तो गलत जगह पैसा चला जायेगा। एक बार फिर से चेक कर लो भैया।",
+        "chunk": "who_gets_data",
+        "journey": "nach_mandate",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:54:27.236Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:who_gets_data:sunita:hi",
+      "value": {
+        "script": "दीदी, ये पैसा हर महीने सीधे क्विकलोन वाली कंपनी के खाते में जाएगा, आपके बैंक से अपने आप कट जाएगा। तीन साल तक हर महीने पच्चीस हजार तक काट सकते हैं। पहले ज़रा पक्का कर लीजिए कि क्विकलोन वाले ही हैं जिनसे आपने लोन लिया है, फिर ही आगे बढ़िए।",
+        "chunk": "who_gets_data",
+        "journey": "nach_mandate",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:54:35.173Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:alternative:arjun:hi",
+      "value": {
+        "script": "देखो, यूपीआई पिन डालने से पहले रुको। तुम अभी सिर्फ लोन के पेपर्स चेक कर सकते हो, या किसी टाइम लिमिट वाले मैंडेट की जगह हर महीने मैन्युअली पे कर सकते हो। तीन साल का ऑटो-डेबिट कैंसिल नहीं होगा, तो फैमिली या किसी फाइनेंस वाले दोस्त से एक बार बात करके फिर डिसाइड करो।",
+        "chunk": "alternative",
+        "journey": "nach_mandate",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:54:43.311Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:alternative:rajan:hi",
+      "value": {
+        "script": "भैया, ये तीन साल का ऑटो-कटेगा जो है, ये एकदम पक्का हो जाएगा। आप चाहो तो पहले फोन पे या गूगल पे से हर महीने खुद पैसा भेज सकते हो, या फिर ये लोन वाले से पूछो कि हर बार अलग से अप्रूवल दे सकते हैं क्या। अभी जल्दी मत करो, एक बार अपने गाँव के जो पढ़े-लिखे भाई हैं या बैंक वाले से दिखा लो ये पेपर।",
+        "chunk": "alternative",
+        "journey": "nach_mandate",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:54:51.914Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:alternative:sunita:hi",
+      "value": {
+        "script": "दीदी, ये बहुत बड़ा फ़ैसला है - तीन साल तक हर महीने अपने आप पैसे कटेंगे। पहले आप किसी भरोसे वाले इंसान को दिखा लीजिये ये पूरा पेपर, या फिर QuickLoan वालों से पूछिये कि क्या छोटी रकम के लिए या कम महीनों के लिए भी हो सकता है। अभी UPI PIN मत डालिये, पहले सब समझ लीजिये - ये mandate एक बार साइन हो गया तो तीन साल तक रद्द नहीं कर सकते।",
+        "chunk": "alternative",
+        "journey": "nach_mandate",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:55:00.308Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:safety:arjun:hi",
+      "value": {
+        "script": "देखो यार, ये तभी सेफ है जब तुम्हें क्विकलोन एनबीएफसी पर पूरा भरोसा हो और तुमने खुद लोन लिया हो। रेड फ्लैग्स - अगर कोई अनजान पार्टी है, वेरिफाइड नहीं है, या फिर कोई तुम्हें जल्दी-जल्दी साइन करने को बोल रहा है तो भाग जाओ वहां से। तीन साल का ऑटो-डेबिट कैंसल नहीं हो सकता, तो सोच-समझ के ही यूपीआई पिन डालना।",
+        "chunk": "safety",
+        "journey": "nach_mandate",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:55:09.089Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:safety:rajan:hi",
+      "value": {
+        "script": "देखो भाई, अगर ये कंपनी पक्की है और तुमने खुद लोन लिया है तो ठीक है, पर अगर किसी ने फोन पे जल्दी-जल्दी करने को बोला या तुम्हें पता नहीं ये क्विकलोन वाले कौन हैं, तो बिलकुल मत करो। खतरे की निशानी ये है - पार्टी का नाम नहीं पता, किसी ने दबाव दिया जल्दी करने का, या रकम तुम्हारे हिसाब से बहुत ज्यादा लग रही है। तीन साल तक हर महीने अपने आप पैसे कट जाएंगे, ये रोक नहीं सकते बीच में।",
+        "chunk": "safety",
+        "journey": "nach_mandate",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:55:18.847Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:safety:sunita:hi",
+      "value": {
+        "script": "दीदी, ये तभी सेफ है जब आप खुद लोन ले रही हों और कंपनी पक्की पता हो - लाइसेंस वाली, रजिस्टर्ड हो। खतरे की निशानी ये है - अगर कोई फोन पे जल्दी-जल्दी दबाव दे रहा, या आपने खुद लोन माँगा नहीं और ये आया, या कंपनी का नाम पहचान में नहीं आता। और देखो, तीन साल का है - हर महीने अपने आप पैसा कटेगा, रोक नहीं सकोगे।",
+        "chunk": "safety",
+        "journey": "nach_mandate",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:55:27.769Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:action:arjun:hi",
+      "value": {
+        "script": "देखो यार, ये तीन साल के लिए हर महीने अपने आप पैसे कटने की परमिशन है। अगर तुम्हें क्विकलोन पर पूरा भरोसा है और तुम समझ गए हो कि ये क्या है, तभी आगे बढ़ो। वरना अभी मत करो, पहले किसी बड़े या अपने घरवालों से पूछ लो - कोई जल्दी नहीं है।",
+        "chunk": "action",
+        "journey": "nach_mandate",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:55:34.260Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:action:rajan:hi",
+      "value": {
+        "script": "भैया, ये बहुत बड़ा फ़ैसला है। अगर आपको क्विकलोन वालों पर पूरा भरोसा है और समझ आ गया कि तीन साल तक हर महीने अपने आप पैसा कट जाएगा, तभी आगे बढ़ें। नहीं तो अभी रुक जाएँ और किसी अपने भरोसेमंद आदमी से पूछ लें। जल्दबाजी की कोई ज़रूरत नहीं है।",
+        "chunk": "action",
+        "journey": "nach_mandate",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:55:41.371Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:nach_mandate:chunk:action:sunita:hi",
+      "value": {
+        "script": "दीदी, ये बहुत बड़ा फ़ैसला है - तीन साल तक हर महीने अपने आप पैसा कटेगा और बीच में रोक नहीं सकते। अगर आपको QuickLoan पर पूरा भरोसा है और क़िस्त चुकाने में कोई दिक्कत नहीं होगी, तभी आगे बढ़ें। नहीं तो किसी अपने भरोसे वाले को दिखा लें पहले, जल्दबाज़ी की कोई ज़रूरत नहीं।",
+        "chunk": "action",
+        "journey": "nach_mandate",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:55:50.895Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:overview:arjun:hi",
+      "value": {
+        "script": "अरे हाँ, तो ये स्क्रीन क्विककैश से पचास हज़ार का प्री-अप्रूव्ड लोन ऐक्टिवेट करने के लिए है। बेसिकली तुम्हें डिजिटल सिग्नेचर देना है, फिर ऑटो-डेबिट चालू हो जाएगा और ईएमआई सीधे अकाउंट से कट जाएगी। इंटरेस्ट रेट अट्ठारह परसेंट है और लेट पेमेंट पे पेनल्टी भी लगेगी।",
+        "chunk": "overview",
+        "journey": "credit_line",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:55:58.869Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:overview:rajan:hi",
+      "value": {
+        "script": "नमस्कार! देखिए, ये एक कर्जा लेने की स्क्रीन है। क्विककैश नाम की कंपनी आपको पचास हजार रुपये का कर्जा देना चाहती है, जो सीधे आपके खाते में आ जाएगा। अगर आप यहाँ हाँ करेंगे, तो हर महीने अपने आप आपके खाते से किश्त कट जाएगी। आपको क्या समझना है इसमें?",
+        "chunk": "overview",
+        "journey": "credit_line",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:56:05.234Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:overview:sunita:hi",
+      "value": {
+        "script": "दीदी, ये स्क्रीन एक कर्ज़ा चालू करने के लिए है। क्विककैश नाम की कंपनी आपको पचास हज़ार रुपये तक का लोन दे रही है। अगर आप यहाँ हाँ करेंगी तो हर महीने अपने आप पैसे कट जाएंगे आपके खाते से। बस डिजिटल हस्ताक्षर करना पड़ेगा।",
+        "chunk": "overview",
+        "journey": "credit_line",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:56:11.673Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:data_shared:arjun:hi",
+      "value": {
+        "script": "देखो, अभी तुम्हारा कोई पैसा नहीं जाएगा, लेकिन जब भी ईएमआई की तारीख आएगी तो तुम्हारे बैंक अकाउंट से ऑटो-डेबिट होगा। अगर लेट हुए तो पाँच सौ रुपये पेनल्टी भी कटेगी। और हाँ, तुम्हारा क्रेडिट हिस्ट्री डेटा - जैसे कि तुमने टाइम पे पेमेंट किया या नहीं - वो सिबिल जैसे ब्यूरो को जाएगा, जो तुम्हारा क्रेडिट स्कोर बनाते हैं।",
+        "chunk": "data_shared",
+        "journey": "credit_line",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:56:20.476Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:data_shared:rajan:hi",
+      "value": {
+        "script": "भैया, देखो - अगर आपने हाँ किया तो पहली बात, हर महीने आपके बैंक खाते से ईएमआई के पैसे अपने आप कट जाएंगे। दूसरी बात, आपकी पूरी जानकारी - नाम, पता, फोन नंबर, आधार, पैन, बैंक डिटेल - ये क्विककैश और सिबिल जैसी कंपनियों के पास चली जाएगी। अगर पैसे टाइम पे नहीं भरे तो पाँच सौ रुपये जुर्माना लगेगा, और उसके ऊपर से और ब्याज भी। समझ लो भैया, ये सब आपकी मर्जी के बिना होगा एक बार हाँ करने के बाद।",
+        "chunk": "data_shared",
+        "journey": "credit_line",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:56:31.228Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:data_shared:sunita:hi",
+      "value": {
+        "script": "दीदी, इसमें दो चीज़ें निकलेंगी आपसे। एक तो हर महीने अपने आप आपके बैंक खाते से ईएमआई का पैसा कट जाएगा - मान लो तीन हज़ार रुपये। और दूसरा, आपकी पूरी जानकारी - नाम, फ़ोन नंबर, आधार, पैन, कितना कर्ज़ लिया - ये सब सिबिल वाली कंपनी में चला जाएगा। अगर पेमेंट नहीं हुआ तो पाँच सौ रुपये जुर्माना भी लगेगा।",
+        "chunk": "data_shared",
+        "journey": "credit_line",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:56:39.271Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:reversibility:arjun:hi",
+      "value": {
+        "script": "देखो, एक बार ऐक्टिवेट करने के बाद ये क्रेडिट लाइन तुरंत चालू हो जाएगी और कैंसल नहीं कर सकते। हाँ, बाद में लोन को पूरा चुका सकते हो या क्लोज़ कर सकते हो, लेकिन ये अग्रीमेंट तो बाइंडिंग है। तो सोच-समझकर ऐक्टिवेट करना, बिना पैनिक के, बस ध्यान से।",
+        "chunk": "reversibility",
+        "journey": "credit_line",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:56:46.281Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:reversibility:rajan:hi",
+      "value": {
+        "script": "भैया, एक बार ये चालू कर दिया ना तो कर्जा आपके खाते में आ जाएगा। फिर वापस नहीं कर सकते, पैसा लौटाना ही पड़ेगा किस्तों में। इसलिए अभी अच्छे से सोच लीजिए - सच में जरूरत है तो ही हाँ कीजिए।",
+        "chunk": "reversibility",
+        "journey": "credit_line",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:56:52.437Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:reversibility:sunita:hi",
+      "value": {
+        "script": "दीदी, एक बार ये लोन चालू हो गया ना तो वापस नहीं कर सकते। हाँ, पैसा मिलने के बाद पूरा चुका सकती हो, लेकिन इस पर्ची पे साइन करने के बाद ये लोन आपके नाम पे चढ़ जाएगा। इसलिए अभी ध्यान से सोच लो — ज़रूरत है तो ही आगे बढ़ो।",
+        "chunk": "reversibility",
+        "journey": "credit_line",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:56:59.605Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:consequence:arjun:hi",
+      "value": {
+        "script": "देखो, अभी ऐक्टिवेट करोगे तो तुम्हें ₹५०,०००  का लोन मिल जाएगा और हर महीने ईएमआई ऑटो-डेबिट होगी तुम्हारे अकाउंट से। बट असली बात ये है कि अगर कभी पेमेंट मिस हुई तो ₹५०० पेनल्टी लगेगी और तुम्हारा क्रेडिट स्कोर भी खराब हो जाएगा जो फ्यूचर में लोन लेने में दिक्कत करेगा। सोच लो यार, जरूरत है तो ठीक है, बट रीपेमेंट की प्लानिंग पक्की होनी चाहिए।",
+        "chunk": "consequence",
+        "journey": "credit_line",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:57:08.309Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:consequence:rajan:hi",
+      "value": {
+        "script": "देखिए, अभी आप हाँ बोलेंगे तो ₹५०,००० का कर्ज़ आपके खाते में आ जाएगा और हर महीने अपने आप पैसा कट जाएगा। अगर किसी महीने पैसा नहीं रहा तो ₹५०० जुर्माना लगेगा, और आपका नाम बैंक वाली लिस्ट में चढ़ जाएगा। यह कर्ज़ है भाईसाहब, मुफ़्त का पैसा नहीं - वापस तो करना ही पड़ेगा ब्याज के साथ।",
+        "chunk": "consequence",
+        "journey": "credit_line",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:57:15.979Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:consequence:sunita:hi",
+      "value": {
+        "script": "दीदी, अगर आप हाँ करेंगी तो तुरंत ₹५०,००० का कर्ज़ा आपके खाते में आ जाएगा। फिर हर महीने ऑटोमैटिक आपके खाते से पैसे कट जाएंगे - अगर पैसे नहीं हुए तो ₹५०० जुर्माना लगेगा। और ये बात आपकी सिबिल रिपोर्ट में भी लिख जाएगी, जिससे बाद में दूसरे कर्ज़े लेने में दिक्कत हो सकती है।",
+        "chunk": "consequence",
+        "journey": "credit_line",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:57:23.395Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:who_gets_data:arjun:hi",
+      "value": {
+        "script": "देखो, यहाँ क्विककैश एनबीएफसी को तुम्हारा डेटा जाएगा और वो क्रेडिट ब्यूरो को भी रिपोर्ट करेंगे। पचास हज़ार का लोन तुम्हारे अकाउंट में आएगा और ईएमआई ऑटो-डेबिट होगी। एक्टिवेट करने से पहले ज़रूर चेक करो कि क्विककैश असली लेंडर है या नहीं - उनकी वेबसाइट देखो या आरबीआई की लिस्ट में चेक करो।",
+        "chunk": "who_gets_data",
+        "journey": "credit_line",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:57:38.414Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:who_gets_data:rajan:hi",
+      "value": {
+        "script": "भैया, ये जो पैसे मिलेंगे न वो क्विककैश कंपनी से आपके बैंक में आएंगे, और हर महीने अपने आप वापस कट जाएंगे। लेकिन रुकिए - पहले ये पक्का कर लीजिए कि ये कंपनी असली है, कहीं धोखा तो नहीं? आपके नाम, फोन नंबर, बैंक की सारी जानकारी इनके पास जाएगी और सिबिल में भी रिकॉर्ड होगा।",
+        "chunk": "who_gets_data",
+        "journey": "credit_line",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:57:48.757Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:who_gets_data:sunita:hi",
+      "value": {
+        "script": "दीदी, ये जो पैसा मिलेगा वो क्विककैश कंपनी से आएगा और वापसी भी उन्हीं को करनी होगी। आपकी जानकारी बैंक और क्रेडिट ब्यूरो को भी जाएगी। आगे बढ़ने से पहले ज़रा इस कंपनी के बारे में पक्का कर लीजिए - फोन नंबर या दफ्तर का पता चेक कर लीजिए कि असली है या नहीं।",
+        "chunk": "who_gets_data",
+        "journey": "credit_line",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:57:56.042Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:alternative:arjun:hi",
+      "value": {
+        "script": "अरे रुको रुको, इतनी जल्दी क्या है? देखो, ये ऑटो-डेबिट वाली चीज़ थोड़ी रिस्की है - अगर पैसे नहीं हुए तो पेनल्टी लग जाएगी। पहले अपने बैंक अकाउंट का बैलेंस चेक करो, या फिर घर से पूछ लो क्या ज़रूरत है असल में। ये प्री-अप्रूव्ड है मतलब कहीं नहीं भाग रहा, सोच-समझकर करना बेटर रहेगा।",
+        "chunk": "alternative",
+        "journey": "credit_line",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:58:03.881Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:alternative:rajan:hi",
+      "value": {
+        "script": "रुकिये भाईसाहब, ये जल्दबाजी में नहीं करना है। आप अभी इस स्क्रीन को बंद कर सकते हैं, कोई जबरदस्ती नहीं है। पहले अपने परिवार या किसी समझदार आदमी से पूछ लीजिये, फिर सोच समझ के करना। क्विककैश वाले कल भी रहेंगे, आज ही हाँ करने की जरूरत नहीं।",
+        "chunk": "alternative",
+        "journey": "credit_line",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:58:11.181Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:alternative:sunita:hi",
+      "value": {
+        "script": "दीदी, ये फटाफट लोन वाली चीज़ है। अभी साइन मत करो, पहले अपने घर के किसी समझदार आदमी को दिखा लो या बैंक जाकर पूछ लो। ये ऑटो-डेबिट लगा देंगे तो हर महीने अपने आप पैसे कट जाएंगे, और अगर पैसे नहीं हुए तो पाँच सौ रुपये जुर्माना भी लगेगा। तुम चाहो तो मैं तुम्हें बैंक का नंबर बता दूँ या ये ऐप बंद करके सोच-समझ के बाद में करो।",
+        "chunk": "alternative",
+        "journey": "credit_line",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:58:19.894Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:safety:arjun:hi",
+      "value": {
+        "script": "देखो यार, अगर ये QuickCash वाले RBI रजिस्टर्ड हैं और तुमने खुद अप्लाई किया था तो ठीक है, पर अगर ये अचानक से आया है या कोई कॉल करके प्रेशर कर रहा है कि अभी एक्टिवेट करो तो बिलकुल मत करना। रेड फ्लैग्स ये हैं - अनजान लेंडर, वेरिफाइड ऐप नहीं, या फिर कोई बोल रहा है कि दो मिनट में करना पड़ेगा वरना ऑफर खत्म। पहले गूगल पे चेक करो कि ये कंपनी असली है या नहीं, फिर ही आगे बढ़ना।",
+        "chunk": "safety",
+        "journey": "credit_line",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:58:29.509Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:safety:rajan:hi",
+      "value": {
+        "script": "भैया, ये तभी सुरक्षित है जब आपने खुद QuickCash से लोन के लिए बात की हो और उनका दफ्तर या नंबर पक्का पता हो। खतरे की निशानी ये है - अगर किसी अनजान ने फोन करके जल्दी-जल्दी हां करवाने की कोशिश की, या कोई लिंक भेजकर तुरंत दबाने को बोला। अगर आपने कभी लोन नहीं मांगा और ये अचानक आया है, तो बिलकुल मत करो साइन।",
+        "chunk": "safety",
+        "journey": "credit_line",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:58:37.498Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:safety:sunita:hi",
+      "value": {
+        "script": "बहन, अगर ये क्विककैश वाली कंपनी आपको पहले से जानती है और आपने खुद लोन माँगा था, तो ठीक है। लेकिन खतरा तब है जब कोई अनजान नंबर से फोन करके जल्दी जल्दी दबाव दे, या कहे कि अभी नहीं किया तो मौका चला जाएगा। देखो, ऑटो-डेबिट का मतलब है वो सीधे आपके खाते से पैसे काट लेंगे - तो पक्का समझ लो पहले कि महीने का कितना पैसा जाएगा।",
+        "chunk": "safety",
+        "journey": "credit_line",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:58:46.697Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:action:arjun:hi",
+      "value": {
+        "script": "देखो यार, अगर तुम्हें QuickCash पे पूरा भरोसा है और ये ऑटो-डेबिट वाली चीज़ समझ में आ गई है तो ही आगे बढ़ो। वरना अभी मत करो, पहले किसी बड़े से या अपने घरवालों से बात कर लो। कोई जल्दी नहीं है भाई, ये क्रेडिट लाइन कहीं भागी नहीं जा रही।",
+        "chunk": "action",
+        "journey": "credit_line",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:58:53.857Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:action:rajan:hi",
+      "value": {
+        "script": "भैया, ये बहुत बड़ा फैसला है - पचास हजार का कर्जा और हर महीने अपने आप पैसे कटेंगे। अगर आपको QuickCash वाले पर पूरा भरोसा नहीं है या सब बात समझ नहीं आई, तो अभी ना कहिये और घर में किसी समझदार को दिखाइये। जल्दबाजी मत कीजिये, गलती हुई तो पाँच सौ रुपये जुर्माना भी लगेगा।",
+        "chunk": "action",
+        "journey": "credit_line",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:59:01.534Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:credit_line:chunk:action:sunita:hi",
+      "value": {
+        "script": "बहन, ये बहुत बड़ा फैसला है - पचास हज़ार का कर्ज़ा और हर महीने अपने आप पैसा कट जाएगा। अगर आपको QuickCash पर पूरा भरोसा नहीं है या ये सब बातें साफ़ नहीं समझ आईं, तो अभी मत करिए। पहले घर में किसी भरोसे वाले को दिखा लीजिए - कोई जल्दी नहीं है।",
+        "chunk": "action",
+        "journey": "credit_line",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:59:08.320Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:collect_unknown:chunk:overview:arjun:hi",
+      "value": {
+        "script": "अरे रुको रुको! ये एक कलेक्ट रिक्वेस्ट है यार, मतलब कोई अनजान आईडी से तुम्हारे अकाउंट से पंद्रह हज़ार रुपये निकालने की कोशिश कर रहा है। अगर तुमने यूपीआई पिन डाला ना, तो सीधा पैसा कट जाएगा। फ्रॉड अलर्ट वाली आईडी दिख रही है, बिल्कुल अप्रूव मत करना!",
+        "chunk": "overview",
+        "journey": "collect_unknown",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:59:16.684Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:collect_unknown:chunk:overview:rajan:hi",
+      "value": {
+        "script": "रुको रुको! ये बहुत खतरनाक है। कोई अनजान आदमी तुम्हारे खाते से पंद्रह हजार रुपये मांग रहा है। अगर तुमने पिन डाला तो तुम्हारे पैसे चले जाएंगे। ये पक्का धोखाधड़ी है - इसे तुरंत बंद करो!",
+        "chunk": "overview",
+        "journey": "collect_unknown",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:59:26.548Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:collect_unknown:chunk:data_shared:arjun:hi",
+      "value": {
+        "script": "अरे रुक जा! अगर तू यहाँ पिन डालेगा तो तेरे अकाउंट से पंद्रह हज़ार रुपये सीधा इस फ्रॉड अलर्ट वाले बंदे के पास चले जाएंगे। ये कलेक्ट रिक्वेस्ट है यार, मतलब पैसे तुझसे जा रहे हैं उसको, आने नहीं। एक बार पिन डाला तो वापस नहीं आएंगे वो पैसे!",
+        "chunk": "data_shared",
+        "journey": "collect_unknown",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:59:39.449Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:collect_unknown:chunk:data_shared:rajan:hi",
+      "value": {
+        "script": "भैया, ये बहुत खतरनाक है! अगर आपने पिन डाला तो आपके बैंक खाते से पंद्रह हजार रुपये सीधा निकल जाएंगे। ये पैसे वापस नहीं आएंगे। ये अनजान आदमी है, बिलकुल मत करना।",
+        "chunk": "data_shared",
+        "journey": "collect_unknown",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T17:59:45.595Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:collect_unknown:chunk:reversibility:sunita:hi",
+      "value": {
+        "script": "दीदी, ये अगर एक बार आपने पिन डाल के ओके कर दिया ना, तो वापस नहीं हो सकता। पैसे सीधे आपके खाते से कट जाएंगे। इसलिए अभी बिलकुल पिन मत डालिए, ये तो किसी अनजान आदमी का रिक्वेस्ट है।",
+        "chunk": "reversibility",
+        "journey": "collect_unknown",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:00:00.252Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:collect_unknown:chunk:consequence:arjun:hi",
+      "value": {
+        "script": "अरे रुक जा यार! अगर तूने यहाँ पिन डाला ना, तो तेरे अकाउंट से पंद्रह हज़ार रुपये तुरंत कट जाएँगे और ये फ्रॉड अलर्ट वाले को चले जाएँगे। और सुन, एक बार पैसे गए तो वापस नहीं आएँगे क्योंकि यहाँ साफ़ लिखा है इररिवोकेबल यानी अनडू नहीं कर सकते।",
+        "chunk": "consequence",
+        "journey": "collect_unknown",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:00:08.535Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:collect_unknown:chunk:consequence:rajan:hi",
+      "value": {
+        "script": "रुको भाई, ये बहुत खतरनाक है। अगर तुमने पिन डाला तो तुम्हारे खाते से पंद्रह हजार रुपये तुरंत निकल जाएंगे और ये fraud_alert99@paytm वाले के पास चले जाएंगे। वापस नहीं मिलेंगे। ये जालसाज है, कभी भी अनजान आदमी का कलेक्ट रिक्वेस्ट मत मानो।",
+        "chunk": "consequence",
+        "journey": "collect_unknown",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:00:15.600Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:collect_unknown:chunk:consequence:sunita:hi",
+      "value": {
+        "script": "दीदी, अगर आप आगे बढ़ीं और पिन डाल दिया ना, तो आपके खाते से पंद्रह हजार रुपये तुरंत कट जाएंगे और ये अनजान आदमी के पास चले जाएंगे। एक बार पैसे गए तो वापस नहीं आएंगे, ये धोखाधड़ी लग रही है। कभी भी किसी अनजान के कलेक्ट रिक्वेस्ट को अप्रूव मत कीजिए।",
+        "chunk": "consequence",
+        "journey": "collect_unknown",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:00:23.205Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:collect_unknown:chunk:who_gets_data:arjun:hi",
+      "value": {
+        "script": "अरे रुक जा यार! ये पैसे तेरे अकाउंट से सीधे उस अनजान यूपीआई आईडी पर चले जाएंगे - जो है fraud_alert99@paytm। पंद्रह हज़ार रुपये भेजने से पहले तू ज़रा चेक कर ले कि ये बंदा है कौन, क्योंकि अप्रूव करते ही पैसे वापस नहीं आएंगे। अनजान सोर्स से कलेक्ट रिक्वेस्ट को कभी अप्रूव नहीं करते भाई!",
+        "chunk": "who_gets_data",
+        "journey": "collect_unknown",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:00:31.730Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:collect_unknown:chunk:who_gets_data:rajan:hi",
+      "value": {
+        "script": "भैया, ये पैसे आपके खाते से कटकर उस अनजान आदमी के पास चले जाएंगे जिसका नाम है fraud_alert99@paytm। ये बिल्कुल गलत लग रहा है - कोई भी सही आदमी ऐसे नाम से पैसे नहीं मांगता। आप इसे बिल्कुल मत करिए, ये धोखा है। पहले उस आदमी को फोन पे बात करके पक्का कर लीजिए कि वो कौन है।",
+        "chunk": "who_gets_data",
+        "journey": "collect_unknown",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:00:39.152Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:collect_unknown:chunk:who_gets_data:sunita:hi",
+      "value": {
+        "script": "दीदी, ये पैसा आपके खाते से निकलके उस फ्रॉड_अलर्ट९९@पेटीएम वाले के पास चला जाएगा। पर रुकिए, ये तो बिलकुल अनजान आदमी है और नाम भी शक वाला लग रहा है। आप पहले देख लीजिए कि ये कौन है, नहीं तो आपके पंद्रह हजार रुपये गलत हाथ में चले जाएंगे।",
+        "chunk": "who_gets_data",
+        "journey": "collect_unknown",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:00:46.318Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:collect_unknown:chunk:alternative:arjun:hi",
+      "value": {
+        "script": "रुक जाओ यार, ये कलेक्ट रिक्वेस्ट बिल्कुल स्केची लग रही है। तुम्हें कुछ भी अप्रूव करने की ज़रूरत नहीं, बस इसे रिजेक्ट करो और ब्लॉक कर दो। अगर किसी असली पेमेंट की बात है तो पहले वो बंदे को कॉल या मैसेज करके कन्फर्म करो, फिर तुम खुद उसे पैसे सेंड कर सकते हो।",
+        "chunk": "alternative",
+        "journey": "collect_unknown",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:00:53.184Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:collect_unknown:chunk:alternative:rajan:hi",
+      "value": {
+        "script": "रुकिए, ये खतरनाक है। ये अनजान आदमी आपके खाते से पैसे निकाल रहा है। आप अभी ये बंद करो, पिन मत डालो। पहले अपने बेटे या बैंक वाले को फोन करके पूछ लो ये सही है कि नहीं।",
+        "chunk": "alternative",
+        "journey": "collect_unknown",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:00:59.479Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:collect_unknown:chunk:alternative:sunita:hi",
+      "value": {
+        "script": "दीदी, ये बहुत खतरनाक है। इसे बिल्कुल मत करो। ये जालसाज़ आपके खाते से पैसे निकाल लेगा। अगर किसी को पैसे भेजने हैं तो आप खुद अपने ऐप से उसका नंबर डालकर भेजिए, कभी भी ऐसे अनजान लिंक पे पिन मत डालिए।",
+        "chunk": "alternative",
+        "journey": "collect_unknown",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:01:08.750Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:collect_unknown:chunk:safety:arjun:hi",
+      "value": {
+        "script": "देखो यार, ये बिल्कुल खतरनाक है! जब कलेक्ट रिक्वेस्ट किसी अनजान या अनवेरिफाइड पर्सन से आए तो कभी अप्रूव मत करो। और ये फ्रॉड अलर्ट वाला नाम तो पूरा स्कैम लग रहा है। अगर कोई जल्दी करने को बोले या धमकी दे तो समझ जाओ कि धोखा है।",
+        "chunk": "safety",
+        "journey": "collect_unknown",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:01:16.597Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:collect_unknown:chunk:safety:rajan:hi",
+      "value": {
+        "script": "भाईसाहब, ये बहुत खतरनाक है! ये व्यक्ति अनजान है और वेरिफाइड भी नहीं है - ये दो बड़े खतरे के निशान हैं। कोई भी अनजान आदमी आपसे पैसे मांगे तो कभी पिन मत डालिए, वरना आपके १५ हजार रुपये चले जाएंगे। ये फ्रॉड है भाई, तुरंत कैंसल करिए!",
+        "chunk": "safety",
+        "journey": "collect_unknown",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:01:24.021Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:collect_unknown:chunk:safety:sunita:hi",
+      "value": {
+        "script": "दीदी, ये बहुत खतरनाक है! देखो - जिसका नाम नहीं पता, वो पैसे माँग रहा है, और \"fraud_alert\" लिखा है नाम में। ये पक्का धोखा है। कभी भी अनजान आदमी का collect request मत करना, वरना तुम्हारे पंद्रह हज़ार रुपये निकल जाएँगे। असली collect request तो बस उसी से आए जिसे तुम जानती हो और जिसे तुमने खुद पैसे देने बोले हो।",
+        "chunk": "safety",
+        "journey": "collect_unknown",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:01:31.581Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:collect_unknown:chunk:action:arjun:hi",
+      "value": {
+        "script": "अरे रुक जा यार, ये तो बिल्कुल फ्रॉड लग रहा है! यूपीआई आईडी देख - फ्रॉड अलर्ट नाइनटीनाइन - और अननोन है पूरा। पंद्रह हज़ार रुपये सीधे तेरे अकाउंट से कट जाएंगे अगर तूने अप्रूव किया। बिल्कुल डिक्लाइन कर दे, और अगर कोई कन्फ्यूज़न है तो घर पे किसी को दिखा ले पहले।",
+        "chunk": "action",
+        "journey": "collect_unknown",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:01:39.750Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:collect_unknown:chunk:action:rajan:hi",
+      "value": {
+        "script": "भैया, ये एकदम खतरे की बात है। ये जो फ्रॉड अलर्ट वाला नंबर है, ये बिल्कुल अनजान है और आपके खाते से पंद्रह हजार रुपये निकाल लेगा। बिल्कुल मत करो ये काम। अपने बेटे या किसी भरोसे वाले को बुलाओ पहले, कोई जल्दी नहीं है।",
+        "chunk": "action",
+        "journey": "collect_unknown",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:01:46.021Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:collect_unknown:chunk:action:sunita:hi",
+      "value": {
+        "script": "दीदी, ये बिलकुल गलत लग रहा है। ये कोई अनजान आदमी आपके खाते से पैसे निकालने की कोशिश कर रहा है, पंद्रह हजार रुपये। इसको बिलकुल मत मानिए और किसी भरोसे वाले को दिखा लीजिए। कोई जल्दी नहीं है, पहले समझ लीजिए।",
+        "chunk": "action",
+        "journey": "collect_unknown",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:01:52.299Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:overview:arjun:hi",
+      "value": {
+        "script": "अरे हाँ तो ये स्क्रीन तुम्हारे लैंड पार्सल टोकन नंबर एलपीटी-४४२१ को १८० दिनों के लिए लॉक करने के बारे में है। बेसिकली इस पीरियड में तुम ये टोकन ना बेच सकोगे, ना ट्रांसफर कर सकोगे, ना कहीं कोलैटरल की तरह यूज कर सकोगे। ये पूछ रहा है कि क्या तुम अपना डिजिटल सिग्नेचर देकर इस लॉक को कन्फर्म करना चाहते हो।",
+        "chunk": "overview",
+        "journey": "token_lock",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:02:00.056Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:overview:rajan:hi",
+      "value": {
+        "script": "नमस्कार! देखिए, ये स्क्रीन आपकी ज़मीन के टोकन को १८० दिन के लिए लॉक करने के बारे में है। मतलब अगले छह महीने तक आप इस टोकन को ना बेच सकते, ना किसी को दे सकते, ना कहीं गिरवी रख सकते। आपको बस अपनी सहमति देनी है अगर आप ये करना चाहते हैं।",
+        "chunk": "overview",
+        "journey": "token_lock",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:02:06.131Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:overview:sunita:hi",
+      "value": {
+        "script": "दीदी, ये स्क्रीन आपकी ज़मीन के टोकन को १८० दिन के लिए लॉक करने के बारे में है। मतलब अगर आप हाँ करेंगी तो छह महीने तक ये टोकन न बेच पाएंगी, न किसी को दे पाएंगी। इस बीच में ज़मीन बिल्कुल फ्रीज़ रहेगी और आप इसे खोल नहीं सकतीं। आपको डिजिटल हस्ताक्षर करके इजाज़त देनी होगी।",
+        "chunk": "overview",
+        "journey": "token_lock",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:02:13.459Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:data_shared:arjun:hi",
+      "value": {
+        "script": "देख, इस ट्रांज़ैक्शन में तेरे पास से कोई पैसा नहीं जा रहा और ना ही कोई पर्सनल डेटा शेयर हो रहा। बस तेरा लैंड पार्सल टोकन नंबर एलपीटी-४४२१ अगले १८० दिन के लिए फ़्रीज़ हो जाएगा, मतलब तू उसे बेच नहीं पाएगा या लोन के लिए इस्तेमाल नहीं कर पाएगा। टोकन तेरे पास ही रहेगा, बस लॉक हो जाएगा छह महीने के लिए।",
+        "chunk": "data_shared",
+        "journey": "token_lock",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:02:21.969Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:data_shared:rajan:hi",
+      "value": {
+        "script": "अच्छा सुनिए, इसमें आपका कोई पैसा नहीं जाएगा और ना ही आपकी कोई निजी जानकारी बाहर जाएगी। बस आपकी ज़मीन का कागज़, जिसे Land Parcel Token बोलते हैं, वो १८० दिन के लिए बंद हो जाएगा - मतलब इस बीच में आप उसे बेच नहीं पाएंगे, किसी को दे नहीं पाएंगे। ज़मीन आपकी ही रहेगी, बस छह महीने तक उसपर ताला लग जाएगा।",
+        "chunk": "data_shared",
+        "journey": "token_lock",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:02:32.302Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:data_shared:sunita:hi",
+      "value": {
+        "script": "दीदी, इसमें आपका कोई पैसा बाहर नहीं जाएगा और ना ही कोई निजी जानकारी किसी को दी जाएगी। बस आपकी जमीन वाली टोकन छह महीने के लिए बंद हो जाएगी - जैसे लॉकर में रख दी हो। इस दौरान आप उसे ना बेच सकेंगी, ना किसी को दे सकेंगी, ना उसकी गारंटी पर लोन ले सकेंगी।",
+        "chunk": "data_shared",
+        "journey": "token_lock",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:02:40.084Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:reversibility:arjun:hi",
+      "value": {
+        "script": "देखो, ये जो एक बार लॉक हो गया ना, तो १८० दिन तक अनडू नहीं कर सकते। स्क्रीन पे साफ लिखा है 'इरिवोकेबल' मतलब वापस नहीं ले सकते इस पीरियड में। तो अगर पक्का यकीन है तभी आगे बढ़ो, वरना अभी रुक जाओ।",
+        "chunk": "reversibility",
+        "journey": "token_lock",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:02:48.279Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:reversibility:rajan:hi",
+      "value": {
+        "script": "नहीं भाईसाहब, ये वापस नहीं हो सकता। एक बार आपने हाँ कर दिया तो १८० दिन यानी छह महीने तक आपकी ज़मीन का टोकन बिल्कुल बंद रहेगा। इस बीच न बेच सकते, न किसी को दे सकते, न गिरवी रख सकते। पूरे छह महीने बाद ही खुलेगा।",
+        "chunk": "reversibility",
+        "journey": "token_lock",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:02:57.964Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:reversibility:sunita:hi",
+      "value": {
+        "script": "दीदी, ये १८० दिन के लिए बिल्कुल पक्का लॉक हो जाएगा, बीच में खोल नहीं सकते। मतलब छह महीने तक ये ज़मीन वाला टोकन न बेच सकेंगी, न गिरवी रख सकेंगी। हाँ, १८० दिन पूरे होने के बाद अपने आप खुल जाएगा, घबराने की बात नहीं है।",
+        "chunk": "reversibility",
+        "journey": "token_lock",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:03:04.855Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:consequence:arjun:hi",
+      "value": {
+        "script": "अगर तू आगे बढ़ा तो तेरा लैंड पार्सल टोकन #एलपीटी-४४२१ अभी सौ अस्सी दिनों के लिए लॉक हो जाएगा यार। मतलब छह महीने तक न तू इसे बेच सकता, न ट्रांसफर कर सकता, न किसी लोन के लिए इस्तेमाल कर सकता। और हां, एक बार लॉक हुआ तो वापस नहीं कर सकते बीच में, पूरे सौ अस्सी दिन रुकना पड़ेगा।",
+        "chunk": "consequence",
+        "journey": "token_lock",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:03:13.055Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:consequence:rajan:hi",
+      "value": {
+        "script": "देखिए, अगर आप हाँ करेंगे तो आपका ज़मीन का टोकन एकदम बंद हो जाएगा १८० दिन के लिए। मतलब ६ महीने तक न तो बेच पाएंगे, न किसी को दे पाएंगे, न बैंक में गिरवी रख पाएंगे। ये बीच में खोल नहीं सकते, पूरे ६ महीने बाद ही खुलेगा।",
+        "chunk": "consequence",
+        "journey": "token_lock",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:03:19.704Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:consequence:sunita:hi",
+      "value": {
+        "script": "दीदी, अगर आप हाँ करेंगी तो आपका ज़मीन वाला टोकन छह महीने के लिए बिलकुल लॉक हो जाएगा। इस बीच न तो बेच सकेंगी, न किसी को दे सकेंगी, न बैंक में गिरवी रख सकेंगी। छह महीने पूरे होने से पहले कोई रास्ता नहीं खुलेगा, ये पक्का समझ लीजिए।",
+        "chunk": "consequence",
+        "journey": "token_lock",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:03:26.137Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:who_gets_data:arjun:hi",
+      "value": {
+        "script": "अरे यार, यहाँ कोई पैसा या डेटा किसी को नहीं जा रहा है। तुम बस अपना Land Parcel Token #LPT-4421 को १८० दिन के लिए लॉक कर रहे हो, मतलब इस दौरान न तो बेच सकते हो न ही किसी को ट्रांसफर कर सकते हो। लेकिन हाँ, आगे बढ़ने से पहले ये ज़रूर चेक कर लो कि ये सही ऐप या प्लेटफॉर्म है, और तुम्हें वाकई में ये टोकन लॉक करना है या नहीं।",
+        "chunk": "who_gets_data",
+        "journey": "token_lock",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:03:34.041Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:who_gets_data:rajan:hi",
+      "value": {
+        "script": "अरे भैया, ये बहुत ज़रूरी बात है! इसमें पैसा किसी को नहीं जा रहा, बस आपकी ज़मीन का टोकन १८० दिन के लिए लॉक हो जाएगा - मतलब बेच नहीं पाओगे। पर हाँ, आगे बढ़ने से पहले ज़रूर देख लो कि ये काम किसके लिए कर रहे हो, कौन सी कंपनी है या सरकारी योजना है। एक बार लॉक हुआ तो ६ महीने तक वापस नहीं खुलेगा।",
+        "chunk": "who_gets_data",
+        "journey": "token_lock",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:03:41.871Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:who_gets_data:sunita:hi",
+      "value": {
+        "script": "दीदी, ये बहुत ज़रूरी बात है - इस स्क्रीन पर ये नहीं लिखा कि आपकी ज़मीन वाली टोकन किसको जा रही है या पैसे किसको मिलेंगे। आप एक बार फिर से पक्का कर लीजिए कि आप किस कंपनी या आदमी के साथ ये काम कर रही हैं। अगर वो भरोसेमंद नहीं है तो बिलकुल आगे मत बढ़िए, क्योंकि १८० दिन तक आप ये टोकन वापस नहीं ले सकतीं।",
+        "chunk": "who_gets_data",
+        "journey": "token_lock",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:03:51.552Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:alternative:arjun:hi",
+      "value": {
+        "script": "अरे सुनो, १८० दिन का लॉक बहुत लंबा है यार! तुम पहले छोटी अवधि के लिए पूछ सकते हो, या फिर किसी फाइनेंशियल एडवाइज़र से बात करके वेरिफाई कर लो कि यह डील सही है या नहीं। अभी कोई जल्दी नहीं है - रुक जाओ, सोच लो, और पूरी तरह समझ लो तब आगे बढ़ना।",
+        "chunk": "alternative",
+        "journey": "token_lock",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:03:58.831Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:alternative:rajan:hi",
+      "value": {
+        "script": "भाई साहब, ये जमीन का टोकन १८० दिन के लिए बंद हो जाएगा। आप चाहें तो पहले अपने गाँव के किसी पढ़े-लिखे आदमी या बैंक वाले से पूछ लें, कोई जल्दी नहीं है। अभी \"ना\" बोल दें और कल सोच-समझ के करें, ये ज्यादा सुरक्षित रहेगा।",
+        "chunk": "alternative",
+        "journey": "token_lock",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:04:05.886Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:alternative:sunita:hi",
+      "value": {
+        "script": "बहन, ये बहुत बड़ा फ़ैसला है - १८० दिन के लिए आपकी ज़मीन की टोकन पूरी तरह बंद हो जाएगी। अभी आप इसे रोक सकती हैं, किसी भरोसेमंद आदमी से पूछ सकती हैं या फिर कल सोच-समझ के करें। जल्दबाज़ी में हाँ करने की कोई ज़रूरत नहीं है।",
+        "chunk": "alternative",
+        "journey": "token_lock",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:04:19.417Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:safety:arjun:hi",
+      "value": {
+        "script": "यार देख, अगर ये तेरी खुद की जमीन है और तू किसी बैंक से लोन ले रहा है या कोई वेरिफाइड प्लेटफॉर्म है तो ठीक है। लेकिन रेड फ्लैग्स ये हैं - अगर सामने वाली पार्टी अननोन है, उनका कोई प्रूफ नहीं है, या वो बोल रहे \"अभी करो वरना डील मिस हो जाएगी\" तो भाग जा यहाँ से। वन एटी डेज का लॉक मतलब छ महीने तक तू इसे टच भी नहीं कर सकता, तो सोच समझ के ही हाँ कर।",
+        "chunk": "safety",
+        "journey": "token_lock",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:04:30.574Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:safety:rajan:hi",
+      "value": {
+        "script": "भाई साहब, ये तभी सुरक्षित है जब आप खुद जानते हो किसको और क्यों लॉक कर रहे हो - जैसे बैंक से लोन के लिए या सरकारी योजना के लिए। लेकिन अगर कोई अनजान आदमी फोन पे बोल रहा है जल्दी करो, या कोई नया ऐप डाउनलोड करवा रहा है, तो बिलकुल मत करो। एक बार लॉक हो गया तो १८० दिन तक वापस नहीं मिलेगा, बेच भी नहीं सकते।",
+        "chunk": "safety",
+        "journey": "token_lock",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:04:37.766Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:safety:sunita:hi",
+      "value": {
+        "script": "दीदी, अगर आप जानती हैं कि ये ज़मीन वाला टोकन किसको लॉक कर रही हैं और क्यों कर रही हैं, तब तो ठीक है। लेकिन खतरे की बात - अगर कोई अनजान आदमी फ़ोन पर बोल रहा है जल्दी करो नहीं तो मौका निकल जाएगा, या आपको पक्का पता नहीं कि सामने वाला कौन है, तो बिलकुल मत करना। एक बार लॉक हो गया तो छह महीने तक वापस नहीं आएगा, बेच नहीं सकते, कुछ नहीं कर सकते।",
+        "chunk": "safety",
+        "journey": "token_lock",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:04:46.242Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:token_lock:chunk:action:arjun:hi",
+      "value": {
+        "script": "देखो यार, ये लैंड पार्सल टोकन को १८० दिन के लिए लॉक करना है मतलब बीच में बेच नहीं पाओगे, ट्रांसफर नहीं कर पाओगे। अगर तुम्हें पक्का पता है कि ये किसके लिए कर रहे हो और पूरा ट्रस्ट है उस पार्टी पर, तभी आगे बढ़ो। वरना अभी मत करो, कोई जल्दी नहीं है - पहले घर पे किसी को दिखा लो जिसपे भरोसा है।",
+        "chunk": "action",
+        "journey": "token_lock",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:04:53.724Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_large_unknown:chunk:overview:rajan:hi",
+      "value": {
+        "script": "भैया, ये स्क्रीन कह रही है कि आप किसी अनजान आदमी को साढ़े आठ हजार रुपये भेजने वाले हो। ये पहली बार है जब आप इस नंबर पे पैसे भेज रहे हो, और ये आदमी वेरिफाइड भी नहीं है। अगर आपने अपना पिन डाल दिया तो पैसे चले जाएंगे और वापस नहीं आएंगे।",
+        "chunk": "overview",
+        "journey": "p2p_large_unknown",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:05:06.825Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_large_unknown:chunk:overview:sunita:hi",
+      "value": {
+        "script": "दीदी, ये स्क्रीन आपसे ८,५०० रुपये भेजने को कह रही है एक मर्चेंट के यूपीआई पर। ये पहली बार भेज रही हैं इस नंबर पे, और ये वेरिफाइड भी नहीं है। अगर यूपीआई पिन डालेंगी तो पैसे चले जाएंगे, और वापस नहीं आएंगे।",
+        "chunk": "overview",
+        "journey": "p2p_large_unknown",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:05:14.104Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_large_unknown:chunk:consequence:arjun:hi",
+      "value": {
+        "script": "अगर तू यूपीआई पिन डाल देगा ना, तो अभी ८,५०० रुपये सीधे इस मर्चेंट वाली आईडी पर चले जाएंगे और वापस नहीं आएंगे। ये पहली बार भेज रहा है इस आईडी पर और वो अनवेरिफाइड है यार, तो अगर कोई फ्रॉड हुआ तो पैसे गए समझ। बाद में बैंक या यूपीआई से रिफंड मिलना भी बहुत मुश्किल है ऐसे केस में।",
+        "chunk": "consequence",
+        "journey": "p2p_large_unknown",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:05:22.287Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_large_unknown:chunk:consequence:rajan:hi",
+      "value": {
+        "script": "भैया, अगर आपने पिन डाल दिया तो तुरंत आपके खाते से साढ़े आठ हजार रुपये कट जाएंगे और ये अनजान आदमी के पास चले जाएंगे। एक बार पैसे गए तो वापस नहीं आएंगे, और ये पहली बार भेज रहे हो इस नंबर पे तो धोखाधड़ी हो सकती है।",
+        "chunk": "consequence",
+        "journey": "p2p_large_unknown",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:05:30.991Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_large_unknown:chunk:consequence:sunita:hi",
+      "value": {
+        "script": "दीदी, अगर आप पिन डाल देंगी तो तुरंत आपके खाते से साढ़े आठ हजार रुपये कट जाएंगे और इस मर्चेंट वाले को चले जाएंगे। ये पैसे वापस नहीं आएंगे, और ये किसी अनजान को भेज रहे हो जिसका कोई भरोसा नहीं है। एक बार चला गया तो बस गया समझो।",
+        "chunk": "consequence",
+        "journey": "p2p_large_unknown",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:05:37.644Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_large_unknown:chunk:reversibility:arjun:hi",
+      "value": {
+        "script": "देखो यार, स्क्रीन पे साफ लिखा है - इररेवोकेबल वन्स सेंट। मतलब एक बार पैसे भेजे तो वापस नहीं आएंगे ऑटोमैटिकली। अगर गलती से भेज दिए तो उस मर्चेंट से ही रिफंड मांगना पड़ेगा। तो अननोन कॉन्टैक्ट है ये, सोच के करना।",
+        "chunk": "reversibility",
+        "journey": "p2p_large_unknown",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:05:45.080Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_large_unknown:chunk:reversibility:rajan:hi",
+      "value": {
+        "script": "भैया, यह बात समझ लीजिए - एक बार पैसा भेज दिया तो वापस नहीं आएगा। स्क्रीन पर भी लिखा है कि यह रद्द नहीं हो सकता। अगर गलती से भेज दिया तो वो व्यक्ति ही लौटाएगा तभी मिलेगा, बैंक कुछ नहीं कर पाएगा।",
+        "chunk": "reversibility",
+        "journey": "p2p_large_unknown",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:05:51.271Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_large_unknown:chunk:reversibility:sunita:hi",
+      "value": {
+        "script": "दीदी, ये बहुत ज़रूरी बात है - एक बार पैसा भेज दिया ना, तो वापस नहीं आएगा। स्क्रीन पर भी लिखा है 'इरिवोकेबल' मतलब पक्का हो जाएगा। इसलिए अगर ये सही जगह नहीं है या आप पक्का नहीं हैं, तो अभी रुक जाइए।",
+        "chunk": "reversibility",
+        "journey": "p2p_large_unknown",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:05:57.922Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_large_unknown:chunk:safety:arjun:hi",
+      "value": {
+        "script": "देखो यार, ये वाला तो पूरा रेड फ्लैग है - अननोन कॉन्टैक्ट, अनवेरिफाइड रेसिपिएंट, और फर्स्ट टाइम ट्रांसफर। सेफ तब है जब तुम्हें पक्का पता हो किसको भेज रहे हो, वो वेरिफाइड हो या फिर तुमने खुद से उनका यूपीआई आईडी चेक किया हो। अगर कोई फटाफट भेजने का प्रेशर दे रहा है या अनजान मर्चेंट है तो बिल्कुल मत भेजो, स्कैम हो सकता है।",
+        "chunk": "safety",
+        "journey": "p2p_large_unknown",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:06:09.910Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_large_unknown:chunk:safety:rajan:hi",
+      "value": {
+        "script": "भाई, अगर आप जानते हैं इस आदमी को और उसने कुछ सामान दिया है तब ठीक है। लेकिन ये तो दिख रहा है \"अनजान\" और \"अनवेरीफाईड\" - मतलब कोई भी हो सकता है। अगर किसी ने फोन पर जल्दी-जल्दी भेजने को कहा है या डराया है, तो पक्का धोखा है। एक बार भेज दिया तो वापस नहीं आएगा।",
+        "chunk": "safety",
+        "journey": "p2p_large_unknown",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:06:19.324Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_large_unknown:chunk:safety:sunita:hi",
+      "value": {
+        "script": "दीदी, ये बहुत खतरनाक है। देखो - \"अनजान\" और \"अनवेरिफाइड\" लिखा है, मतलब ये पता नहीं कौन है। अगर किसी ने फोन पर जल्दी-जल्दी कहा है \"अभी भेजो नहीं तो अकाउंट बंद हो जाएगा\" या \"प्राइज़ मिलेगा\", तो पक्का धोखा है। बिलकुल मत भेजो इतने पैसे अनजान को।",
+        "chunk": "safety",
+        "journey": "p2p_large_unknown",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:06:26.653Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_large_unknown:chunk:action:arjun:hi",
+      "value": {
+        "script": "अरे सुन, ये अनजान कॉन्टैक्ट है और अनवेरिफाइड भी है। अगर तुझे पक्का पता है कि ये पर्सन ठीक है तो ही भेज, वरना मत भेज यार। कोई जल्दी नहीं है, किसी ट्रस्टेड बंदे से पूछ ले पहले। वापस नहीं आएगा पैसा एक बार गया तो।",
+        "chunk": "action",
+        "journey": "p2p_large_unknown",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:06:35.505Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_large_unknown:chunk:action:rajan:hi",
+      "value": {
+        "script": "भैया, ये पहली बार इस नंबर पे पैसे भेज रहे हो और ये पक्का नहीं है कि सामने वाला सही है। अगर आपको पूरा भरोसा है इस आदमी पे, तभी भेजो, नहीं तो रुक जाओ। कोई जल्दी नहीं है, अपने घर के किसी को दिखा लो या जिसपे भरोसा हो उससे पूछ लो पहले।",
+        "chunk": "action",
+        "journey": "p2p_large_unknown",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:06:42.570Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_large_unknown:chunk:action:sunita:hi",
+      "value": {
+        "script": "दीदी, ये पहली बार भेज रही हैं इस नंबर पे और ये कोई वेरिफाइड वाला भी नहीं है। अगर आपको पक्का पता है कि ये कौन है और क्यों पैसे मांग रहा है, तभी भेजिए। नहीं तो रुक जाइए और किसी अपने भरोसे वाले से पूछ लीजिए - कोई जल्दी नहीं है।",
+        "chunk": "action",
+        "journey": "p2p_large_unknown",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:06:49.607Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:beneficiary_add:chunk:overview:arjun:hi",
+      "value": {
+        "script": "देखो यार, ये स्क्रीन एक नया बेनिफिशियरी ऐड करने के लिए है जिसका नाम अननोन ट्रेडर है। अकाउंट नंबर ७८२३ पे खत्म हो रहा है और आई एफ एस सी कोड एस बी आई एन वाला है। बस तुझे डिटेल्स चेक करके कन्फर्म करना है, फिर इस पर्सन को बाद में झटपट पैसे भेज सकेगा।",
+        "chunk": "overview",
+        "journey": "beneficiary_add",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:06:57.213Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:beneficiary_add:chunk:overview:rajan:hi",
+      "value": {
+        "script": "भाईसाहब, ये पर्दा एक नया आदमी के नाम जोड़ने के लिए है जिसको आप पैसे भेजना चाहते हैं। इसमें लिखा है \"अननोन ट्रेडर\" नाम का कोई व्यक्ति, और उसका खाता नंबर। लेकिन भाईसाहब, ये नाम तो अजीब लग रहा है - \"अननोन\" मतलब अनजान। आप इस आदमी को जानते हैं क्या?",
+        "chunk": "overview",
+        "journey": "beneficiary_add",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:07:04.381Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:beneficiary_add:chunk:overview:sunita:hi",
+      "value": {
+        "script": "दीदी, ये स्क्रीन किसी नए बंदे को अपनी बेनिफिशरी लिस्ट में जोड़ने के लिए है। इसमें \"अननोन ट्रेडर\" नाम का कोई आदमी है जिसके अकाउंट में आप पैसे भेज सकेंगी। लेकिन दीदी ध्यान से सुनिए - अगर आप इस आदमी को नहीं जानतीं तो बिल्कुल ओके मत करिए, ये धोखा हो सकता है।",
+        "chunk": "overview",
+        "journey": "beneficiary_add",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:07:11.747Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:beneficiary_add:chunk:consequence:arjun:hi",
+      "value": {
+        "script": "अगर तू प्रोसीड करेगा ना, तो ये अननोन ट्रेडर वाला बंदा तेरी बेनिफिशरी लिस्ट में ऐड हो जाएगा। फिर तू इसको डायरेक्ट पैसे भेज सकता है बिना दोबारा वेरिफिकेशन के। बस ध्यान दे, नाम अननोन है और पहली बार ऐड हो रहा है, तो अगर कोई गड़बड़ हुई ना तो पैसे वापस लाना मुश्किल होगा।",
+        "chunk": "consequence",
+        "journey": "beneficiary_add",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:07:19.536Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:beneficiary_add:chunk:consequence:rajan:hi",
+      "value": {
+        "script": "भैया, अगर आप हाँ करेंगे तो ये अनजान ट्रेडर नाम का आदमी आपकी लिस्ट में जुड़ जाएगा। फिर इसको पैसे भेजने में कोई रोक नहीं रहेगी, बिना दोबारा पूछे सीधा पैसा चला जाएगा। नाम भी अनजान दिख रहा है, तो ध्यान से सोचिए।",
+        "chunk": "consequence",
+        "journey": "beneficiary_add",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:07:26.191Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:beneficiary_add:chunk:consequence:sunita:hi",
+      "value": {
+        "script": "दीदी, अगर आप हाँ करेंगी तो ये अनजान ट्रेडर नाम का बंदा आपकी लिस्ट में जुड़ जाएगा और फिर उसको आप बिना किसी रोक-टोक के पैसे भेज सकेंगी। एक बार जुड़ गया तो बाद में उसे हटाना मुश्किल होता है और गलत आदमी को भी पैसा चला जाएगा अगर नंबर गलत हुआ। पहले पक्का कर लो कि ये सही आदमी है, नहीं तो धोखा हो सकता है।",
+        "chunk": "consequence",
+        "journey": "beneficiary_add",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:07:34.187Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:beneficiary_add:chunk:reversibility:arjun:hi",
+      "value": {
+        "script": "अरे हाँ यार, ये तो आराम से बाद में हटा सकते हो। बेनिफिशियरी ऐड करने के बाद भी डिलीट या एडिट का ऑप्शन रहता है। बस पहली बार ऐड करते वक़्त नाम और अकाउंट नंबर ध्यान से चेक करलो, क्योंकि एक बार पैसे भेज दिए तो वो वापस नहीं आते।",
+        "chunk": "reversibility",
+        "journey": "beneficiary_add",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:07:40.712Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:beneficiary_add:chunk:reversibility:rajan:hi",
+      "value": {
+        "script": "भैया, ये काम आप बाद में पलट सकते हैं। अगर गलती से ये नाम जुड़ गया तो आप इसे हटा सकते हैं या फिर इसको पैसे भेजने से मना कर सकते हैं। पर ध्यान रखिए, एक बार नाम जुड़ा तो उस नंबर पर जल्दी-जल्दी पैसे भेजे जा सकते हैं।",
+        "chunk": "reversibility",
+        "journey": "beneficiary_add",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:07:46.875Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:beneficiary_add:chunk:reversibility:sunita:hi",
+      "value": {
+        "script": "दीदी, ये बाद में हटाया जा सकता है, कोई परमानेंट चीज़ नहीं है। अगर गलत लगे तो बैंक में जाकर या ऐप में ही बाद में इस नाम को डिलीट कर सकती हैं। लेकिन एक बार जोड़ दिया तो उस नंबर पर पैसा भेजने में ओटीपी नहीं लगेगा, सीधे चला जाएगा। इसलिए नाम और नंबर अच्छे से देख लीजिये पहले।",
+        "chunk": "reversibility",
+        "journey": "beneficiary_add",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:07:54.579Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:beneficiary_add:chunk:who_gets_data:arjun:hi",
+      "value": {
+        "script": "अरे देख, ये पैसे जाएंगे \"अननोन ट्रेडर\" नाम के बंदे के अकाउंट में जो खत्म होता है ७८२३ पे। लेकिन भाई ध्यान से देख - नाम में लिखा है \"अननोन\" मतलब अनजान, तो पक्का चेक कर ले ये सच में कौन है। एक बार ऐड हो गया तो फिर बिना वेरिफिकेशन के सीधा पैसे भेज सकता है इसको, तो अभी ही पूरी डिटेल्स कन्फर्म कर ले।",
+        "chunk": "who_gets_data",
+        "journey": "beneficiary_add",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:08:03.056Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:beneficiary_add:chunk:who_gets_data:rajan:hi",
+      "value": {
+        "script": "भाईसाहब, ये जो \"अननोन ट्रेडर\" नाम लिखा है ना, इसी के खाते में आपके पैसे जाएंगे। पर ये नाम तो पता नहीं किसका है, बिलकुल अनजान आदमी लग रहा। आप पहले अच्छे से पक्का कर लीजिए कि ये कौन है, नहीं तो आपके पैसे गलत जगह चले जाएंगे।",
+        "chunk": "who_gets_data",
+        "journey": "beneficiary_add",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:08:10.097Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:beneficiary_add:chunk:who_gets_data:sunita:hi",
+      "value": {
+        "script": "दीदी, ये जो नाम लिखा है ना \"अननोन ट्रेडर\" - इसी के खाते में आपके पैसे जाएंगे। पर ये नाम तो बड़ा अजीब लग रहा है, पता नहीं कौन है। आप पक्का जानती हैं इस आदमी को? एक बार अच्छे से चेक कर लीजिए, कहीं गलत तो नहीं भेज रही।",
+        "chunk": "who_gets_data",
+        "journey": "beneficiary_add",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:08:16.755Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:beneficiary_add:chunk:safety:arjun:hi",
+      "value": {
+        "script": "देख भाई, अगर तू खुद जानता है इस बंदे को और सही में पैसे भेजने हैं तो ठीक है। लेकिन अगर नाम \"Unknown Trader\" जैसा sketchy लग रहा है, या किसी ने WhatsApp पर जल्दी करने को बोला है, तो एकदम red flag है! पहली बार add कर रहा है ना, तो double check कर कि ये सच में वही बंदा है जिसे तू पैसे देना चाहता है।",
+        "chunk": "safety",
+        "journey": "beneficiary_add",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:08:24.253Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:beneficiary_add:chunk:safety:rajan:hi",
+      "value": {
+        "script": "भैया, ये बहुत खतरनाक है! नाम देखो - \"अननोन ट्रेडर\" मतलब अनजान आदमी। जिसको नहीं जानते, जिसने दबाव डालकर जल्दी करने बोला हो, उसका नाम कभी मत जोड़ो। सिर्फ अपने जानकार लोग - परिवार, दोस्त या पक्का दुकानदार का ही अकाउंट जोड़ना चाहिए।",
+        "chunk": "safety",
+        "journey": "beneficiary_add",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:08:31.756Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:beneficiary_add:chunk:safety:sunita:hi",
+      "value": {
+        "script": "दीदी, ये तभी सुरक्षित है जब आप खुद किसी जानने वाले को पैसे भेजने के लिए जोड़ रही हों। लेकिन अगर नाम \"अननोन ट्रेडर\" जैसा अजीब है, या कोई फोन पर जल्दी-जल्दी करने को कह रहा है, तो बिल्कुल मत करिए। अगर आपने खुद ये नहीं खोला तो ये खतरनाक है - कोई आपके फोन से आपका पैसा निकाल सकता है।",
+        "chunk": "safety",
+        "journey": "beneficiary_add",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:08:40.441Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:beneficiary_add:chunk:action:arjun:hi",
+      "value": {
+        "script": "अरे रुको यार, \"अननोन ट्रेडर\" नाम थोड़ा शेडी लग रहा है। अगर तुम इस बंदे को जानते हो और ट्रस्ट करते हो तभी ऐड करो, वरना बिल्कुल मत करो। कोई जल्दी नहीं है, अपने घर वालों या किसी ट्रस्टेड दोस्त से एक बार पूछ लो।",
+        "chunk": "action",
+        "journey": "beneficiary_add",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:08:47.497Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:beneficiary_add:chunk:action:rajan:hi",
+      "value": {
+        "script": "भैया, ये \"अननोन ट्रेडर\" यानी अनजान व्यापारी का नाम दिख रहा है। अगर आप इस आदमी को नहीं जानते या पूरा भरोसा नहीं है, तो बिलकुल मत जोड़िए। अपने घर के किसी समझदार आदमी या बैंक वाले को दिखा लीजिए पहले। कोई जल्दी नहीं है भैया।",
+        "chunk": "action",
+        "journey": "beneficiary_add",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:08:54.049Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:beneficiary_add:chunk:action:sunita:hi",
+      "value": {
+        "script": "दीदी, ये बहुत ज़रूरी बात है। अगर आप इस अननोन ट्रेडर को नहीं जानतीं या पक्का भरोसा नहीं है, तो अभी मत जोड़िए। पहले किसी अपने भरोसे वाले से पूछ लीजिए, कोई जल्दी नहीं है। समझ में आया दीदी?",
+        "chunk": "action",
+        "journey": "beneficiary_add",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:09:00.035Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:aadhaar_sign:chunk:overview:arjun:hi",
+      "value": {
+        "script": "अरे हाँ तो ये स्क्रीन तुझसे प्रॉपर्टी सेल एग्रीमेंट पर आधार डिजिटल सिग्नेचर करने को बोल रही है। बेसिकली ये फिजिकल सिग्नेचर जैसा ही है पर लीगल और परमानेंट है, तेरी आधार आईडी इस डॉक्युमेंट से हमेशा के लिए लिंक हो जाएगी। बायोमेट्रिक वेरिफिकेशन भी होगा और ये रिवर्स नहीं हो सकता बाद में।",
+        "chunk": "overview",
+        "journey": "aadhaar_sign",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:09:07.976Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:aadhaar_sign:chunk:overview:rajan:hi",
+      "value": {
+        "script": "नमस्कार! देखिये, ये स्क्रीन आपके आधार से जमीन बेचने के कागज पर दस्तखत करने के लिए है। जैसे कागज पर अंगूठा लगाते हैं वैसे ही ये डिजिटल दस्तखत है, पर ये पक्का हो जाएगा और वापस नहीं हट सकता। आपको हाँ करनी है तो नीचे बटन दबाना होगा।",
+        "chunk": "overview",
+        "journey": "aadhaar_sign",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:09:14.670Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:aadhaar_sign:chunk:overview:sunita:hi",
+      "value": {
+        "script": "दीदी, ये स्क्रीन आपसे आपकी प्रॉपर्टी बेचने के कागज़ पे डिजिटल दस्तख़त माँग रही है आधार से। मतलब ये वैसा ही पक्का दस्तख़त हो जाएगा जैसे आप कलम से करती हैं, और फिर वापस नहीं ले सकते। आपको हाँ करनी है तो नीचे टिक करके अपना आधार वेरिफ़ाई करना होगा।",
+        "chunk": "overview",
+        "journey": "aadhaar_sign",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:09:22.209Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:aadhaar_sign:chunk:data_shared:arjun:hi",
+      "value": {
+        "script": "देखो यार, इस पर साइन करते ही तुम्हारा आधार नंबर, नाम, फोटो सब कुछ परमानेंटली इस प्रॉपर्टी वाले डॉक्यूमेंट से लिंक हो जाएगा। बायोमेट्रिक या ओटीपी से वेरिफाई करना पड़ेगा, मतलब तुम्हारी फिंगरप्रिंट या आईरिस डेटा यूज होगा। पैसे तो अभी नहीं जाएंगे, लेकिन ये लीगल प्रूफ बन जाएगा कि तुमने प्रॉपर्टी बेचने की एग्रीमेंट पर साइन किया है।",
+        "chunk": "data_shared",
+        "journey": "aadhaar_sign",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:09:31.323Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:aadhaar_sign:chunk:data_shared:rajan:hi",
+      "value": {
+        "script": "भैया, इसमें आपका आधार नंबर, नाम, फोटो और उंगली का निशान - ये सब इस कागज़ात से हमेशा के लिए जुड़ जाएगा। जैसे आपने अपने अंगूठे का निशान लगाया तो वो पक्का हो गया, वैसे ही ये भी पक्का हो जाएगा। पैसा तो इसमें नहीं जाता, लेकिन आपकी पूरी पहचान इस प्रॉपर्टी बेचने के कागज़ से चिपक जाएगी। एक बार किया तो वापस नहीं हो सकता।",
+        "chunk": "data_shared",
+        "journey": "aadhaar_sign",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:09:39.200Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:aadhaar_sign:chunk:data_shared:sunita:hi",
+      "value": {
+        "script": "दीदी, इसमें आपका आधार नंबर, नाम, फोटो और उंगली का निशान - ये सब इस प्रॉपर्टी के कागज़ से हमेशा के लिए जुड़ जाएगा। पैसा तो अभी नहीं जाएगा, लेकिन ये साइन करते ही आप मकान बेचने के लिए पक्की हां कह रही हो। एक बार साइन हुआ तो वापस नहीं ले सकती, कोर्ट में भी ये माना जाएगा कि आपने खुद साइन किया है।",
+        "chunk": "data_shared",
+        "journey": "aadhaar_sign",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:09:47.598Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:aadhaar_sign:chunk:reversibility:rajan:hi",
+      "value": {
+        "script": "भैया, ये बात समझ लीजिए - एक बार ई-साइन हो गया तो वापस नहीं हो सकता। ये कागज पर अंगूठा लगाने जैसा ही है, पर डिजिटल है। आपका आधार हमेशा के लिए इस कागज से जुड़ जाएगा, तो पक्का सोच लीजिए कि प्रॉपर्टी बेचनी है या नहीं।",
+        "chunk": "reversibility",
+        "journey": "aadhaar_sign",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:10:00.149Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:aadhaar_sign:chunk:reversibility:sunita:hi",
+      "value": {
+        "script": "दीदी, ये बात सच है कि एक बार आधार से दस्तखत हो गया तो वापस नहीं हो सकता। जैसे कागज़ पर दस्तखत करने के बाद मिटा नहीं सकते, वैसे ही ये भी पक्का हो जाता है। इसलिए प्रॉपर्टी सेल एग्रीमेंट वाला कागज़ अच्छे से समझ लो और जानने वालों से पूछ लो, फिर ही आगे बढ़ना।",
+        "chunk": "reversibility",
+        "journey": "aadhaar_sign",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:10:06.745Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:aadhaar_sign:chunk:consequence:rajan:hi",
+      "value": {
+        "script": "अगर आप इसपे हाँ करेंगे तो आपकी उंगली का निशान इस कागज पे लग जाएगा, जैसे पुराने जमाने में अंगूठा लगाते थे। फिर ये जमीन बेचने का कागज पक्का हो जाएगा और आप इसे वापस नहीं कर सकते। मतलब जो भी इस कागज में लिखा है वो आपने मान लिया और अब वो कानून में सही माना जाएगा।",
+        "chunk": "consequence",
+        "journey": "aadhaar_sign",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:10:22.719Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:aadhaar_sign:chunk:consequence:sunita:hi",
+      "value": {
+        "script": "दीदी, अगर आप आगे बढ़ेंगी तो ये प्रॉपर्टी बेचने वाला कागज़ पर आपका आधार से दस्तखत हो जाएगा। ये पक्का क़ानूनी दस्तखत है, वापस नहीं ले सकते, और आपका नाम हमेशा के लिए इस कागज़ से जुड़ जाएगा। मतलब जो भी इस कागज़ में लिखा है, वो सब आपने मान लिया और आप उसके लिए ज़िम्मेदार हैं।",
+        "chunk": "consequence",
+        "journey": "aadhaar_sign",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:10:30.505Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:aadhaar_sign:chunk:safety:arjun:hi",
+      "value": {
+        "script": "देखो यार, अगर तुम्हें पार्टी का नाम पता है, डॉक्यूमेंट पढ़ लिया है और सब लेजिट लग रहा है तो चिल है। लेकिन रेड फ्लैग्स ये हैं - अगर कोई अनजान पार्सन है, जल्दी-जल्दी साइन करने को बोल रहा है, या फिर डॉक्यूमेंट की डिटेल्स सस्पीशियस हैं तो बिल्कुल मत करो। ये Aadhaar e-Sign परमानेंट है भाई, रिवर्स नहीं हो सकता, तो सोच-समझकर ही करना।",
+        "chunk": "safety",
+        "journey": "aadhaar_sign",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:10:39.842Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:aadhaar_sign:chunk:safety:rajan:hi",
+      "value": {
+        "script": "भाईसाहब, ये आधार साइन तभी सुरक्षित है जब आप सामने वाले को अच्छे से जानते हों - जैसे बैंक, सरकारी दफ्तर या अपना वकील। खतरे की निशानी ये है - अगर कोई अनजान आदमी है, जल्दी-जल्दी दबाव बना रहा है \"अभी साइन करो वरना डील निकल जाएगी\", या फोन पर कह रहा है \"बस ये OTP बता दो\"। एक बार साइन हो गया तो वापस नहीं होगा, तो जब तक पूरा समझ नहीं आए और भरोसा न हो, कभी साइन मत करिए।",
+        "chunk": "safety",
+        "journey": "aadhaar_sign",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:10:49.454Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:aadhaar_sign:chunk:safety:sunita:hi",
+      "value": {
+        "script": "बहन, ये तभी सेफ है जब तुम खुद जानती हो कि किसके साथ कागज़ साइन कर रही हो - अपना घर बेच रही हो तो बायर को पहचानती हो, सब कुछ समझ आ रहा है। लेकिन अगर कोई अनजान आदमी है, या जल्दबाजी करवा रहा है \"अभी साइन करो वरना डील निकल जाएगी\" - तो रुक जाओ। आधार से साइन करने के बाद वापस नहीं हो सकता, तो पक्का समझ लो पहले कि क्या साइन कर रही हो।",
+        "chunk": "safety",
+        "journey": "aadhaar_sign",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:10:57.879Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:aadhaar_sign:chunk:action:arjun:hi",
+      "value": {
+        "script": "अरे सुनो, ये प्रॉपर्टी सेल एग्रीमेंट है और आधार से साइन करोगे तो वो परमानेंट हो जाएगा, वापस नहीं ले सकते। अगर तुम्हें पूरा भरोसा है उस पार्टी पर और समझ आ रहा है क्या हो रहा है, तभी करो। वरना अभी मत करो, कोई जल्दी नहीं है – पहले किसी ट्रस्टेड पर्सन से बात कर लो।",
+        "chunk": "action",
+        "journey": "aadhaar_sign",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:11:05.029Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:aadhaar_sign:chunk:action:rajan:hi",
+      "value": {
+        "script": "रुकिए। ये बहुत बड़ा काम है - जमीन बेचने का कागज पर आपकी पक्की मोहर लग जाएगी। अगर आपको पूरा भरोसा नहीं है कि ये लोग सही हैं और सारी बात समझ आ गई है, तो अभी मत करिए। पहले किसी अपने भरोसे वाले आदमी से - बेटे से या गांव के पढ़े-लिखे किसी से - पूछ लीजिए, कोई जल्दी नहीं है।",
+        "chunk": "action",
+        "journey": "aadhaar_sign",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:11:14.338Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:aadhaar_sign:chunk:action:sunita:hi",
+      "value": {
+        "script": "बहन, ये बहुत बड़ा काम है - जमीन बेचने के कागज पे आधार से दस्तखत करना मतलब असली दस्तखत जितना पक्का। अगर आप सामने वाले पे पूरा भरोसा नहीं है या कुछ समझ नहीं आ रहा, तो अभी मत करिए। पहले किसी अपने भरोसे वाले को - घर के बड़े या कोई पढ़ा लिखा जानने वाला - इसे दिखा लीजिए, जल्दी की कोई बात नहीं है।",
+        "chunk": "action",
+        "journey": "aadhaar_sign",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:11:22.736Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:autopay:chunk:overview:arjun:hi",
+      "value": {
+        "script": "अरे हाँ, तो ये स्ट्रीमफ्लिक्स प्रीमियम का यूपीआई ऑटोपे सेटअप है यार। बेसिकली हर महीने ₹५९९ अपने आप कट जाएगा तेरे अकाउंट से, पहली बार पिन डालने के बाद। ये स्क्रीन पूछ रही है कि तू इस ऑटो-डेबिट को अलाउ करना चाहता है या नहीं। चाहे तो बाद में यूपीआई ऐप से कैंसल भी कर सकता है।",
+        "chunk": "overview",
+        "journey": "autopay",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:11:31.234Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:autopay:chunk:overview:rajan:hi",
+      "value": {
+        "script": "नमस्कार! ये स्क्रीन स्ट्रीमफ्लिक्स के लिए हर महीने अपने आप पैसे कटने की इजाजत माँग रही है। पहली बार आपको पिन डालना होगा, उसके बाद हर महीने ५९९ रुपये अपने आप कट जाएंगे। आपको हाँ या ना करना है - हाँ करेंगे तो ये शुरू हो जाएगा।",
+        "chunk": "overview",
+        "journey": "autopay",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:11:38.096Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:autopay:chunk:overview:sunita:hi",
+      "value": {
+        "script": "दीदी, ये स्क्रीन स्ट्रीमफ्लिक्स के लिए ऑटोपे चालू करने को बोल रही है। मतलब हर महीने पाँच सौ निन्यानबे रुपये अपने आप कट जाएंगे आपके खाते से, पिन डालने की जरूरत नहीं पड़ेगी। पहली बार पिन डालना होगा, उसके बाद सब ऑटोमैटिक हो जाएगा।",
+        "chunk": "overview",
+        "journey": "autopay",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:11:45.261Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:autopay:chunk:consequence:arjun:hi",
+      "value": {
+        "script": "अगर तू अभी हाँ करेगी ना, तो पहली बार UPI पिन डालना पड़ेगा और StreamFlix Premium के लिए ₹५९९ कट जाएंगे। उसके बाद हर महीने ऑटोमैटिक ₹५९९ तेरे अकाउंट से कट जाएंगे बिना पूछे, जब तक तू खुद जाके UPI ऐप में बंद नहीं करेगी।",
+        "chunk": "consequence",
+        "journey": "autopay",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:11:52.645Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:autopay:chunk:consequence:rajan:hi",
+      "value": {
+        "script": "अगर आप हाँ करेंगे तो पहली बार तो आपको अपना पिन डालना पड़ेगा और ५९९ रुपये कटेंगे। उसके बाद हर महीने अपने आप ५९९ रुपये आपके खाते से निकल जाएंगे, बिना पूछे। जब तक आप बंद नहीं करवाते, ये चलता रहेगा।",
+        "chunk": "consequence",
+        "journey": "autopay",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:11:59.003Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:autopay:chunk:consequence:sunita:hi",
+      "value": {
+        "script": "दीदी, अगर आप हाँ करेंगी तो पहली बार पिन डालना पड़ेगा, उसके बाद हर महीने अपने आप ₹५९९ कट जाएगा आपके खाते से StreamFlix के लिए। ये हर महीने होता रहेगा जब तक आप बंद नहीं करवातीं। बंद करना हो तो अपने UPI ऐप में जाकर करना पड़ेगा।",
+        "chunk": "consequence",
+        "journey": "autopay",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:12:05.726Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:autopay:chunk:reversibility:rajan:hi",
+      "value": {
+        "script": "भईया, ये बिलकुल बदला जा सकता है, घबराने की कोई बात नहीं। जब चाहो तब अपने यूपीआई ऐप में जाकर इसे बंद कर सकते हो। StreamFlix के पैसे तभी तक कटेंगे जब तक तुम खुद इसे चालू रखोगे।",
+        "chunk": "reversibility",
+        "journey": "autopay",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:12:17.713Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:autopay:chunk:reversibility:sunita:hi",
+      "value": {
+        "script": "दीदी, ये बिलकुल बंद हो सकता है, घबराने की बात नहीं। जब चाहो अपने UPI ऐप की सेटिंग में जाकर इसे रोक सकती हो। पहली बार पैसे कटेंगे तो पिन डालना पड़ेगा, उसके बाद अपने आप कटता रहेगा हर महीने, पर तुम कभी भी बंद कर सकती हो।",
+        "chunk": "reversibility",
+        "journey": "autopay",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:12:24.890Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:autopay:chunk:safety:arjun:hi",
+      "value": {
+        "script": "देख, StreamFlix जैसी पक्की कंपनी के लिए तो बिल्कुल सेफ है यार, लेकिन अगर कोई अनजानी या अनवेरिफाइड पार्टी हो तो भागना। रेड फ्लैग्स ये हैं - कोई तुझे जल्दी करने को बोले, कंपनी का नाम पहचान में न आए, या ऐमाउंट वेरी हाई हो। बाकी StreamFlix तो चिल है, बस पहली बार पिन डालना पड़ेगा फिर ऑटो कट जाएगा हर महीने।",
+        "chunk": "safety",
+        "journey": "autopay",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:12:33.493Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:autopay:chunk:safety:rajan:hi",
+      "value": {
+        "script": "भैया, ये ऑटोपे तब सही है जब आप जानते हो कि स्ट्रीमफ्लिक्स जैसी बड़ी कंपनी है और हर महीने पैसे कटने हैं ये पक्का है। खतरा तब है जब कोई अनजान नाम दिखे, या कोई फोन पे जल्दी करने बोले, या पैसे की रकम बहुत ज्यादा लिखी हो। अगर शक हो तो मत करो, पहले किसी समझदार को दिखा लो।",
+        "chunk": "safety",
+        "journey": "autopay",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:12:41.275Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:autopay:chunk:safety:sunita:hi",
+      "value": {
+        "script": "दीदी, ऑटोपे तब सुरक्षित है जब आप जानती हों कि कंपनी असली है और आपको उसकी सर्विस चाहिए - जैसे यहाँ स्ट्रीमफ्लिक्स। खतरा तब है जब कोई अनजान व्यक्ति फोन पर जल्दी-जल्दी दबाव दे कि अभी करो, या फिर कोई सस्ता ऑफर दिखाकर बोले तुरंत ऑटोपे लगाओ। पहले हमेशा चेक करो - क्या मैंने खुद यह मांगा था, क्या कंपनी का नाम पहचानती हूँ?",
+        "chunk": "safety",
+        "journey": "autopay",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:12:50.402Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:autopay:chunk:action:arjun:hi",
+      "value": {
+        "script": "देखो यार, स्ट्रीमफ्लिक्स प्रीमियम के लिए हर महीने ऑटो पेमेंट सेट हो जाएगा। अगर तुम्हें ये सर्विस चाहिए और तुम्हें ये ट्रस्टेड लगता है तो ठीक है, वरना अभी कैंसिल करो, कोई जल्दी नहीं है। बाद में यूपीआई सेटिंग्स से भी बंद कर सकते हो। क्या तुम कन्फर्म हो इसके बारे में या किसी से पूछना चाहोगे?",
+        "chunk": "action",
+        "journey": "autopay",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:12:58.991Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:autopay:chunk:action:rajan:hi",
+      "value": {
+        "script": "देखिए भाई साहब, ये StreamFlix वाले हर महीने अपने आप आपके खाते से पाँच सौ निन्यानबे रुपये काट लेंगे। अगर आप इनको पूरा भरोसा करते हैं और समझ गए हैं कि हर महीने पैसे कटेंगे, तभी हाँ कीजिए। नहीं तो अभी मना कर दीजिए और अपने घर के किसी पढ़े-लिखे बच्चे या किसी भरोसे वाले को दिखा लीजिए, कोई जल्दी नहीं है।",
+        "chunk": "action",
+        "journey": "autopay",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:13:06.364Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:autopay:chunk:action:sunita:hi",
+      "value": {
+        "script": "दीदी, ये बहुत ज़रूरी बात है - इसमें हर महीने अपने आप पैसे कट जाएंगे आपके खाते से। अगर आपको StreamFlix के बारे में पूरा भरोसा नहीं है, या समझ नहीं आ रहा ठीक से, तो अभी मना कर दीजिए। घर में किसी भरोसे वाले को दिखा लीजिए पहले, कोई जल्दी नहीं है।",
+        "chunk": "action",
+        "journey": "autopay",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:13:13.996Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_small:chunk:overview:arjun:hi",
+      "value": {
+        "script": "अरे हाँ तो यहाँ तुम राहुल शर्मा को ₹३५० भेजने वाले हो UPI से। बस अपना UPI पिन डालना है और पेमेंट हो जाएगी। अगर गलत आईडी पे भेज दिया तो २४ घंटे में बैंक से कॉन्टैक्ट करके रिफंड मिल सकता है।",
+        "chunk": "overview",
+        "journey": "p2p_small",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:13:19.925Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_small:chunk:overview:rajan:hi",
+      "value": {
+        "script": "भैया, ये स्क्रीन पैसे भेजने की है। राहुल शर्मा को साढ़े तीन सौ रुपये भेजने हैं। अभी आपको अपना यूपीआई पिन डालना पड़ेगा, वो चार अंक का नंबर जो आपने बैंक से बनवाया था।",
+        "chunk": "overview",
+        "journey": "p2p_small",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:13:25.924Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_small:chunk:overview:sunita:hi",
+      "value": {
+        "script": "दीदी, ये पेमेंट वाली स्क्रीन है। राहुल शर्मा को साढ़े तीन सौ रुपये भेजने हैं आपको। बस अपना यूपीआई पिन डालना है, वो चार या छह नंबर का पासवर्ड जो आपने बैंक में बनाया था।",
+        "chunk": "overview",
+        "journey": "p2p_small",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:13:31.612Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_small:chunk:consequence:arjun:hi",
+      "value": {
+        "script": "अरे देख, अगर तू यूपीआई पिन डालेगा ना तो तुरंत राहुल शर्मा को ₹३५० चले जाएंगे। और हाँ, वापस लेना है तो २४ घंटे के अंदर बैंक को बोलना पड़ेगा, वो भी तभी अगर गलत आईडी पे गया हो। तो बस, एक बार पैसे गए तो गए समझ।",
+        "chunk": "consequence",
+        "journey": "p2p_small",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:13:38.733Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_small:chunk:consequence:rajan:hi",
+      "value": {
+        "script": "भैया, अगर आप अभी पिन डालेंगे तो तुरंत राहुल शर्मा के खाते में साढ़े तीन सौ रुपये चले जाएंगे। एक बार पैसे गए तो वापस लेना मुश्किल है, बैंक में चौबीस घंटे के अंदर जाना पड़ेगा। गलत आदमी को भेज दिए तो पैसे डूब सकते हैं, इसलिए पक्का देख लो कि राहुल शर्मा वाला यूपीआई सही है।",
+        "chunk": "consequence",
+        "journey": "p2p_small",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:13:45.624Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_small:chunk:consequence:sunita:hi",
+      "value": {
+        "script": "दीदी, अगर आप अभी पिन डाल देंगी तो आपके खाते से तुरंत साढ़े तीन सौ रुपये राहुल शर्मा के पास चले जाएंगे। एक बार पैसे गए तो वापस लाना मुश्किल है - गलती से भी भेज दिया तो चौबीस घंटे के अंदर बैंक में भागना पड़ेगा। पक्का देख लो कि ये राहुल शर्मा सही वाला है और रकम भी ठीक है।",
+        "chunk": "consequence",
+        "journey": "p2p_small",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:13:53.571Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_small:chunk:action:arjun:hi",
+      "value": {
+        "script": "अरे सुन, अगर तू राहुल शर्मा को जानता है और उसे पैसे भेजने हैं तो बिल्कुल भेज दे, बस यूपीआई पिन डाल के कन्फर्म कर। लेकिन अगर कोई शक है या किसी ने फोर्स किया है तो मत भेज यार, पहले किसी ट्रस्टेड बंदे से बात कर ले। कोई जल्दी नहीं है, चिल मार।",
+        "chunk": "action",
+        "journey": "p2p_small",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:14:06.476Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_small:chunk:action:rajan:hi",
+      "value": {
+        "script": "भैया, अगर आप राहुल शर्मा को जानते हैं और उनको तीन सौ पचास रुपये भेजने हैं, तभी आगे बढ़ें। अगर कोई शक है या पक्का नहीं है, तो रुक जाएं और अपने घर के किसी बड़े या भरोसे वाले आदमी से पूछ लें। जल्दबाजी की कोई बात नहीं है, पैसा आपका है।",
+        "chunk": "action",
+        "journey": "p2p_small",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:14:13.062Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2p_small:chunk:action:sunita:hi",
+      "value": {
+        "script": "दीदी, अगर आप राहुल शर्मा को जानती हैं और उनको पैसे भेजने हैं तभी आगे बढ़ें। अगर कोई फ़ोन पे बोल रहा या कोई शक है तो बिलकुल मत भेजें। किसी भरोसे वाले को दिखा लें पहले, कोई जल्दी नहीं है।",
+        "chunk": "action",
+        "journey": "p2p_small",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:14:19.012Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2m_qr:chunk:overview:arjun:hi",
+      "value": {
+        "script": "अरे हाँ, तो तूने अभी Fresh Mart Store का क्यूआर कोड स्कैन किया है ना। ये स्क्रीन बोल रही है कि बारह सौ रुपये पे करने हैं, और ये वेरिफाइड मर्चेंट है तो टेंशन नहीं। बस अपना यूपीआई पिन डालना है और पेमेंट हो जाएगी।",
+        "chunk": "overview",
+        "journey": "p2m_qr",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:14:38.794Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2m_qr:chunk:overview:rajan:hi",
+      "value": {
+        "script": "भैया, ये स्क्रीन फ्रेश मार्ट स्टोर को पैसे देने के लिए है। आपने क्यूआर कोड स्कैन किया है और अब बारह सौ रुपये भरने हैं। पेमेंट करने के लिए आपको अपना यूपीआई पिन डालना पड़ेगा।",
+        "chunk": "overview",
+        "journey": "p2m_qr",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:14:43.965Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2m_qr:chunk:overview:sunita:hi",
+      "value": {
+        "script": "दीदी, ये स्क्रीन फ्रेश मार्ट स्टोर को पेमेंट करने के लिए है। आपने क्यूआर कोड स्कैन किया है और अब बारह सौ रुपये भरने हैं। बस अपना यूपीआई पिन डालना है, फिर पैसे चले जाएंगे।",
+        "chunk": "overview",
+        "journey": "p2m_qr",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:14:50.301Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2m_qr:chunk:consequence:arjun:hi",
+      "value": {
+        "script": "अगर तू यूपीआई पिन डालेगा तो अभी तेरे अकाउंट से बारह सौ रुपये कट जाएंगे और फ्रेश मार्ट स्टोर को मिल जाएंगे। ये वेरिफाइड मर्चेंट है तो सेफ है, बस अपना स्टेटमेंट चेक करना बाद में कि पैसे सही गए या नहीं।",
+        "chunk": "consequence",
+        "journey": "p2m_qr",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:14:58.188Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2m_qr:chunk:consequence:rajan:hi",
+      "value": {
+        "script": "अगर आप अपना पिन डालेंगे तो तुरंत बारह सौ रुपये आपके खाते से कट जाएंगे और फ्रेश मार्ट स्टोर वाले को चले जाएंगे। ये पैसे वापस नहीं आएंगे, बस दुकानदार को मिल जाएंगे। आपके फोन पर मेसेज आएगा कि पैसे गए।",
+        "chunk": "consequence",
+        "journey": "p2m_qr",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:15:04.536Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2m_qr:chunk:consequence:sunita:hi",
+      "value": {
+        "script": "दीदी, अगर आप अपना पिन डाल देंगी तो अभी तुरंत आपके खाते से बारह सौ रुपये कट जाएंगे और फ्रेश मार्ट स्टोर वाले को चले जाएंगे। ये पैसे वापस नहीं आएंगे, तो पक्का देख लीजिए कि सामान लिया है और दाम सही है।",
+        "chunk": "consequence",
+        "journey": "p2m_qr",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:15:11.192Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2m_qr:chunk:action:arjun:hi",
+      "value": {
+        "script": "अरे सुन, फ्रेश मार्ट स्टोर वेरिफाइड है तो ठीक है, लेकिन बारह सौ रुपये देने से पहले एक बार चेक कर ले कि तूने वाकई में कुछ खरीदा है वहाँ से। अगर तुझे किसी ने रैंडमली क्यूआर कोड स्कैन करने को बोला है तो मत कर, पहले किसी भरोसेमंद बंदे से पूछ ले। कोई जल्दी नहीं है यार, पक्का हो तभी पेमेंट कर।",
+        "chunk": "action",
+        "journey": "p2m_qr",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:15:18.981Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2m_qr:chunk:action:rajan:hi",
+      "value": {
+        "script": "भईया, ये फ्रेश मार्ट स्टोर को बारह सौ रुपये भेजने का पेमेंट है। अगर आप इस दुकान को जानते हैं और वहाँ से सामान लिया है तो ठीक है, पिन डाल दीजिए। लेकिन अगर कोई शक है या समझ नहीं आ रहा तो रुक जाइए, किसी भरोसे वाले आदमी को दिखा लीजिए पहले। जल्दबाजी की कोई बात नहीं है।",
+        "chunk": "action",
+        "journey": "p2m_qr",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:15:26.710Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:p2m_qr:chunk:action:sunita:hi",
+      "value": {
+        "script": "दीदी, अगर आप फ्रेश मार्ट स्टोर को जानती हैं और बारह सौ रुपये का हिसाब सही लग रहा है, तो पिन डालकर पेमेंट कर सकती हैं। लेकिन अगर कोई शक है या समझ नहीं आ रहा, तो अभी मत करिए - किसी भरोसे वाले इंसान से पूछ लीजिए पहले। जल्दबाजी की कोई बात नहीं है।",
+        "chunk": "action",
+        "journey": "p2m_qr",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:15:33.640Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ondc:chunk:overview:arjun:hi",
+      "value": {
+        "script": "यो देख, ये ऑर्डर कन्फर्म करने की स्क्रीन है। किसान डायरेक्ट फार्म से पाँच किलो ऑर्गेनिक राइस का ऑर्डर है, साढ़े चार सौ रुपये में। ये ओएनडीसी नेटवर्क से आ रहा है तो यूपीआई से पे करके कन्फर्म कर सकते हो।",
+        "chunk": "overview",
+        "journey": "ondc",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:15:40.633Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ondc:chunk:overview:rajan:hi",
+      "value": {
+        "script": "भैया, ये स्क्रीन आपको बता रही है कि आप किसानडायरेक्ट फार्म से पाँच किलो जैविक चावल साढ़े चार सौ रुपये में मंगवा रहे हैं। ये ओएनडीसी नेटवर्क से आएगा और यूपीआई से पैसे देने होंगे। अगर आप राजी हैं तो नीचे बटन दबाकर ऑर्डर पक्का कर सकते हैं।",
+        "chunk": "overview",
+        "journey": "ondc",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:15:48.467Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ondc:chunk:overview:sunita:hi",
+      "value": {
+        "script": "दीदी, ये आर्डर का पेज है। आप किसानडायरेक्ट फार्म वाले से पाँच किलो चावल मँगवा रही हैं, चार सौ पचास रुपये में। नीचे बटन दबाएँगी तो यूपीआई से पैसे कटेंगे और आर्डर हो जाएगा।",
+        "chunk": "overview",
+        "journey": "ondc",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:15:54.961Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ondc:chunk:consequence:arjun:hi",
+      "value": {
+        "script": "अगर तू अभी प्रोसीड करेगा तो तेरे यूपीआई से ₹४५० कट जाएगा और KisanDirect Farm को तेरा ऑर्डर मिल जाएगा। बस ध्यान रख, ये ओएनडीसी नेटवर्क है, तो अगर कोई प्रॉब्लम हुई तो अमेज़न-फ्लिपकार्ट जैसा सीधा रिफंड नहीं मिलेगा — सेलर की पॉलिसी के हिसाब से चलेगा।",
+        "chunk": "consequence",
+        "journey": "ondc",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:16:02.529Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ondc:chunk:consequence:rajan:hi",
+      "value": {
+        "script": "अगर आप हाँ करोगे तो अभी तुरंत तुम्हारे यूपीआई से साढ़े चार सौ रुपये कट जाएंगे और किसानडायरेक्ट फार्म को चावल भेजने का ऑर्डर चला जाएगा। ओएनडीसी नेटवर्क से सामान आएगा, अगर कोई दिक्कत हुई तो रिफंड के लिए दुकानदार से ही बात करनी पड़ेगी, फ्लिपकार्ट-अमेज़न जैसा नहीं होगा। बस इतना समझ लो कि पैसे गए तो फौरन गए, वापसी में वक्त लग सकता है।",
+        "chunk": "consequence",
+        "journey": "ondc",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:16:10.995Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ondc:chunk:consequence:sunita:hi",
+      "value": {
+        "script": "दीदी, अभी आप हाँ करेंगी तो चार सौ पचास रुपये आपके यूपीआई से कट जाएंगे और पाँच किलो चावल का ऑर्डर हो जाएगा। ये किसानडायरेक्ट फार्म वाले भेजेंगे आपके घर। बस ध्यान रखना, अगर कोई दिक्कत हुई तो ये ओएनडीसी नेटवर्क है, तो रिफंड का झंझट दुकानदार से सीधे निपटाना पड़ेगा, फ्लिपकार्ट-अमेज़न जैसा आसान नहीं होगा।",
+        "chunk": "consequence",
+        "journey": "ondc",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:16:19.903Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ondc:chunk:action:arjun:hi",
+      "value": {
+        "script": "देखो यार, अगर तुम्हें किसानडायरेक्ट फार्म पे भरोसा है और ओएनडीसी का सिस्टम समझ आ रहा है तो चलो ऑर्डर करो। लेकिन अगर कोई कन्फ्यूज़न है तो कोई हड़बड़ी नहीं - पहले किसी ट्रस्टेड बंदे से पूछ लो। याद रखना, ये ओपन नेटवर्क है तो डिस्प्यूट वाला प्रॉसेस अमेज़न-फ्लिपकार्ट जैसा नहीं होगा।",
+        "chunk": "action",
+        "journey": "ondc",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:16:28.709Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ondc:chunk:action:rajan:hi",
+      "value": {
+        "script": "भाई साहब, अगर आपको किसानडायरेक्ट फार्म पर भरोसा है और चावल का दाम ठीक लग रहा है तो आर्डर कर सकते हैं। लेकिन अगर मन में कोई शक है या समझ नहीं आ रहा, तो कोई जल्दी नहीं है - पहले अपने घर के किसी समझदार को दिखा लें। ओएनडीसी नेटवर्क है तो शिकायत का तरीका थोड़ा अलग है, यह भी जान लें।",
+        "chunk": "action",
+        "journey": "ondc",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:16:36.223Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:ondc:chunk:action:sunita:hi",
+      "value": {
+        "script": "दीदी, अगर आप किसानडायरेक्ट फार्म को जानती हैं या किसी ने बताया है तो ठीक है, नहीं तो मत करिए अभी। ओएनडीसी में अगर कोई दिक्कत हुई तो शिकायत का तरीका अलग है, जैसे फ्लिपकार्ट या अमेज़न जैसा नहीं। किसी भरोसे वाले को दिखा लीजिए एक बार, जल्दी कुछ नहीं है।",
+        "chunk": "action",
+        "journey": "ondc",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:16:43.746Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:balance:chunk:overview:arjun:hi",
+      "value": {
+        "script": "अरे हाँ देख, ये बस तेरा बैंक बैलेन्स चेक करने का स्क्रीन है। तुझे अपना यूपीआई पिन डालना है और फिर तेरा अवेलेबल बैलेन्स दिख जाएगा। चिल मार, इसमें कोई पैसा कट नहीं रहा, बस बैलेन्स देखने के लिए है। फ्री है पूरा, टेंशन मत ले।",
+        "chunk": "overview",
+        "journey": "balance",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:16:50.405Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:balance:chunk:overview:rajan:hi",
+      "value": {
+        "script": "देखिए, ये स्क्रीन आपके खाते में कितना पैसा पड़ा है वो देखने के लिए है। आपको बस अपना यूपीआई पिन डालना है, फिर आपका बैलेंस दिख जाएगा। घबराइए मत, इसमें कोई पैसा कटेगा नहीं, सिर्फ देखने के लिए है।",
+        "chunk": "overview",
+        "journey": "balance",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:16:55.847Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:balance:chunk:overview:sunita:hi",
+      "value": {
+        "script": "दीदी, ये स्क्रीन आपका बैलेंस चेक करने के लिए है। इसमें कोई पैसा कटेगा नहीं, बस देखने के लिए है कि आपके अकाउंट में कितना पैसा पड़ा है। आपको अपना यूपीआई पिन डालना होगा, वो चार या छह नंबर वाला जो एटीएम से पैसा निकालते वक्त डालते हो।",
+        "chunk": "overview",
+        "journey": "balance",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:17:02.603Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:balance:chunk:consequence:arjun:hi",
+      "value": {
+        "script": "अरे देख, अगर तू यहाँ अपना यूपीआई पिन डालेगा ना, तो बस तेरे अकाउंट का बैलेंस दिख जाएगा। कोई पैसा कहीं नहीं जाएगा, बिल्कुल फ्री है ये। बस एक बार बैलेंस चेक हो जाएगा और बात खत्म।",
+        "chunk": "consequence",
+        "journey": "balance",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:17:08.376Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:balance:chunk:consequence:rajan:hi",
+      "value": {
+        "script": "अगर आप अभी यूपीआई पिन डालेंगे तो बस आपके खाते में कितने पैसे हैं वो दिख जाएगा। कोई पैसा कहीं नहीं जाएगा, सिर्फ बैलेंस देखने के लिए है। इससे आगे कुछ नहीं होगा, बस एक बार देख लेंगे कितना पैसा पड़ा है खाते में।",
+        "chunk": "consequence",
+        "journey": "balance",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:17:14.496Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:balance:chunk:consequence:sunita:hi",
+      "value": {
+        "script": "दीदी, अगर आप अपना पिन डालेंगी तो बस आपको दिख जाएगा कि आपके खाते में कितने पैसे पड़े हैं। कोई पैसा कहीं नहीं जाएगा, सिर्फ देखने के लिए है। इसमें कोई चार्ज भी नहीं लगता।",
+        "chunk": "consequence",
+        "journey": "balance",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:17:22.052Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:balance:chunk:action:arjun:hi",
+      "value": {
+        "script": "देखो यार, ये बैलेंस चेक करने का स्क्रीन है जो बिल्कुल सेफ है। लेकिन अपना यूपीआई पिन तभी डालो जब तुम्हें पक्का यकीन हो कि ये ऐप या वेबसाइट ट्रस्टेड है। अगर थोड़ा भी शक है तो रुको, किसी एक्सपर्ट दोस्त या फैमिली से पूछ लो पहले। कोई जल्दी नहीं है भाई!",
+        "chunk": "action",
+        "journey": "balance",
+        "persona": "arjun",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:17:29.535Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:balance:chunk:action:rajan:hi",
+      "value": {
+        "script": "देखिए, ये सिर्फ आपका बैलेंस देखने के लिए है, पैसे नहीं कटेंगे। लेकिन अगर आपको ये ऐप या वेबसाइट पक्की नहीं लगती, तो अभी पिन मत डालिए। पहले अपने बेटे या किसी भरोसे वाले को दिखा लीजिए, कोई जल्दी नहीं है।",
+        "chunk": "action",
+        "journey": "balance",
+        "persona": "rajan",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:17:35.679Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    },
+    {
+      "key": "klh:balance:chunk:action:sunita:hi",
+      "value": {
+        "script": "दीदी, ये सिर्फ आपका बैलेंस देखने के लिए है, पैसे नहीं कटेंगे। लेकिन अगर आपको पक्का भरोसा नहीं है कि किसने भेजा है ये, तो अभी मत करिए। पहले घर में किसी को दिखा लीजिए या जिस पर भरोसा हो उनसे पूछ लीजिए। कोई जल्दी नहीं है।",
+        "chunk": "action",
+        "journey": "balance",
+        "persona": "sunita",
+        "language": "hi",
+        "generated_at": "2026-06-22T18:17:42.232Z",
+        "model": "claude-sonnet-4-5",
+        "tier": 1
+      }
+    }
+  ]
+}
