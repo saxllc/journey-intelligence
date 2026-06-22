@@ -491,17 +491,32 @@ function renderPredictor(j){
 
 function showConsequence(jid,atype){const j=JOURNEYS.find(x=>x.id===jid),a=j.actions.find(x=>x.type===atype);const panel=document.getElementById('conseqPanel'),inner=document.getElementById('conseqInner');inner.innerHTML='<span class="risk-tag" style="background:'+riskColor(a.risk)+'">'+a.risk.toUpperCase()+'</span><p style="font-size:.78rem;line-height:1.5;margin-top:6px">'+a.consequence+'</p>';panel.classList.add('show');}
 
-function renderDecoder(j){if(!j||j.density<THRESHOLD){document.getElementById('narrationOut').innerHTML='<div class="narration-box no-content">No narration needed — density '+(j?j.density.toFixed(3):'0')+' below 0.15.</div>';document.getElementById('wordCount').textContent='';return;}const key=j.id+'|'+S.persona+'|'+S.verbosity;const text=NR[key]||'Template not available.';const words=text.split(/\s+/).length;document.getElementById('narrationOut').innerHTML='<div class="narration-box has-content">'+text+'</div>';document.getElementById('wordCount').textContent=words+' words · '+S.persona+' · '+S.verbosity;document.getElementById('sheetScript').textContent=text;}
+function renderDecoder(j){if(!j||j.density<THRESHOLD){document.getElementById('narrationOut').innerHTML='<div class="narration-box no-content">No narration needed — density '+(j?j.density.toFixed(3):'0')+' below 0.15.</div>';document.getElementById('wordCount').textContent='';return;}const key=j.id+'|'+S.persona+'|'+S.verbosity;const text=NR[key]||'Template not available.';const words=text.split(/\s+/).length;document.getElementById('narrationOut').innerHTML='<div class="narration-box has-content">'+text+'</div>';document.getElementById('wordCount').textContent=words+' words · '+S.persona+' · '+S.verbosity+' · loading…';document.getElementById('sheetScript').textContent=text;}
+
+// Fetch language-appropriate narration from API (cache T1 or live T2) and update both displays
+const LANG_NAMES={hi:'Hindi — USE DEVANAGARI SCRIPT ONLY, never Roman/Latin transliteration',en:'English',kn:'Kannada — USE KANNADA SCRIPT ONLY',ta:'Tamil — USE TAMIL SCRIPT ONLY'};
+const PERSONA_PROFILES={arjun:'GenZ, Hinglish, casual',rajan:'Farmer, Hindi, grade 4, Vidarbha',sunita:'Migrant, colloquial Hindi, simple'};
+function fetchNarration(j){
+  if(!j||j.density<THRESHOLD)return;
+  fetch('/api/klh-script',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({screen_content:j.screen,persona_profile:PERSONA_PROFILES[S.persona],language:LANG_NAMES[S.ttsLang],verbosity:S.verbosity})}).then(r=>r.json()).then(d=>{
+    if(d.script){
+      document.getElementById('sheetScript').textContent=d.script;
+      var words=d.script.split(/\s+/).length;
+      document.getElementById('narrationOut').innerHTML='<div class="narration-box has-content">'+d.script+'</div>';
+      document.getElementById('wordCount').textContent=words+' words · '+S.persona+' · '+S.verbosity+' · '+(d.source==='cache'?'T1 cached':'T2 live');
+    }
+  }).catch(function(){});
+}
 
 function renderJourneyPills(id){const el=document.getElementById(id);if(!el)return;let h='';for(const j of JOURNEYS){const c=(S.selectedJourney&&S.selectedJourney.id===j.id)?'pill active':'pill';h+='<button class="'+c+'" onclick="selectJourney(\''+j.id+'\')">'+j.name+'</button>';}el.innerHTML=h;}
 function renderPersonaPills(){const el=document.getElementById('personaPills');let h='';[{id:'arjun',l:'Arjun (GenZ)'},{id:'rajan',l:'Rajan (Farmer)'},{id:'sunita',l:'Sunita (Migrant)'}].forEach(p=>{h+='<button class="pill '+(S.persona===p.id?'active':'')+'" onclick="setPersona(\''+p.id+'\')">'+p.l+'</button>';});el.innerHTML=h;}
 function renderVerbPills(){const el=document.getElementById('verbPills');let h='';['LOW','MEDIUM','HIGH'].forEach(v=>{h+='<button class="pill '+(S.verbosity===v?'active':'')+'" onclick="setVerbosity(\''+v+'\')">'+v+'</button>';});el.innerHTML=h;}
 function renderLangPills(){const el=document.getElementById('langPills');let h='';[{id:'hi',l:'हि Hindi'},{id:'en',l:'EN Eng'},{id:'kn',l:'ಕ Kan'},{id:'ta',l:'த Tam'}].forEach(l=>{h+='<button class="sh-pill '+(S.ttsLang===l.id?'active':'')+'" onclick="setLang(\''+l.id+'\')">'+l.l+'</button>';});el.innerHTML=h;}
 
-function selectJourney(id){const j=JOURNEYS.find(x=>x.id===id);if(!j)return;S.selectedJourney=j;renderBreakdown(j);renderJourneyPills('breakdownPills');renderJourneyPills('klhJourneyPills');renderPredictor(j);renderDecoder(j);}
-function setPersona(p){S.persona=p;renderPersonaPills();updateSidebarConfig();if(S.selectedJourney)renderDecoder(S.selectedJourney);}
-function setVerbosity(v){S.verbosity=v;renderVerbPills();updateSidebarConfig();if(S.selectedJourney)renderDecoder(S.selectedJourney);}
-function setLang(l){S.ttsLang=l;renderLangPills();if(S.selectedJourney&&S.selectedJourney.density>=THRESHOLD){const ln={hi:'Hindi — USE DEVANAGARI SCRIPT ONLY, never Roman/Latin transliteration',en:'English',kn:'Kannada — USE KANNADA SCRIPT ONLY',ta:'Tamil — USE TAMIL SCRIPT ONLY'};const pp={arjun:'GenZ, Hinglish, casual',rajan:'Farmer, Hindi, grade 4, Vidarbha',sunita:'Migrant, colloquial Hindi, simple'};fetch('/api/klh-script',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({screen_content:S.selectedJourney.screen,persona_profile:pp[S.persona],language:ln[l],verbosity:S.verbosity})}).then(r=>r.json()).then(d=>{if(d.script)document.getElementById('sheetScript').textContent=d.script;}).catch(()=>{});}}
+function selectJourney(id){const j=JOURNEYS.find(x=>x.id===id);if(!j)return;S.selectedJourney=j;renderBreakdown(j);renderJourneyPills('breakdownPills');renderJourneyPills('klhJourneyPills');renderPredictor(j);renderDecoder(j);fetchNarration(j);}
+function setPersona(p){S.persona=p;renderPersonaPills();updateSidebarConfig();if(S.selectedJourney){renderDecoder(S.selectedJourney);fetchNarration(S.selectedJourney);}}
+function setVerbosity(v){S.verbosity=v;renderVerbPills();updateSidebarConfig();if(S.selectedJourney){renderDecoder(S.selectedJourney);fetchNarration(S.selectedJourney);}}
+function setLang(l){S.ttsLang=l;renderLangPills();if(S.selectedJourney){renderDecoder(S.selectedJourney);fetchNarration(S.selectedJourney);}}
 
 document.querySelectorAll('.tab-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));btn.classList.add('active');document.getElementById('tab-'+btn.dataset.tab).classList.add('active');});});
 
