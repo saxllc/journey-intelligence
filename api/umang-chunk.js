@@ -3,27 +3,33 @@
 // Modes:
 //   compare  → first run / chip. One CAS dim (kya_likha_hai | faida). Page calls
 //              twice (cache + nocache) to fill Tier 1 and Tier 2.
-//   followon → free-text follow-up. PHASE 1: fast indexed TF-IDF match against the
+//   followon → free-text follow-up. PHASE 1: fast KEYWORD-COVERAGE match against the
 //              prebuilt index (umang:idx:{journey}:{persona}, one GET). If best ≥
 //              threshold → Haiku rephrases the cached text (Tier 1). Else returns
 //              { tier:2, needLive:true, notice } WITHOUT calling the LLM (fast) so the
 //              page can show the "checking online" modal and then call:
 //   live     → PHASE 2: generate the Tier-2 answer from the curated provider table.
 //
+// Matching = query coverage: of the query keywords that exist in the cache vocabulary,
+// what idf-weighted fraction does a narrative contain? (Cosine was wrong here — it
+// length-normalizes by the long doc, so short questions never scored high.) Query
+// words absent from the whole corpus carry no signal and are ignored, so genuine
+// off-topic questions still route to Tier 2.
+//
 // Cache namespace (isolated from klh:, same Upstash DB):
 //   umang:{journeyId}:{dim}:{persona}:{verbosity}:hi
 //   umang:idx:{journeyId}:{persona}   (match index, built by scripts/build-umang-index.js)
 //
 // Env: UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN, ANTHROPIC_API_KEY
-// Tune match strictness with UMANG_MATCH_THRESHOLD (default 0.55).
+// Tune match strictness with UMANG_MATCH_THRESHOLD (default 0.5 = half the in-vocab
+// query keywords must be covered by the best narrative).
 
 const UPSTASH_URL = process.env.UPSTASH_REDIS_REST_URL;
 const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
-const THRESHOLD = parseFloat(process.env.UMANG_MATCH_THRESHOLD || '0.55');
+const THRESHOLD = parseFloat(process.env.UMANG_MATCH_THRESHOLD || '0.5');
 const SONNET = 'claude-sonnet-4-5';
 const HAIKU = 'claude-haiku-4-5-20251001';
 
-// Tier-2 "no ready answer" notice (shown as a modal on the page; not appended to the pane).
 const NOTICE = 'मेरे पास इसका तैयार जवाब नहीं है। सही समाधान के लिए मैं ऑनलाइन देखता हूँ…';
 
 const SCREENS = {
@@ -83,29 +89,33 @@ function extractKeywords(s) {
   return out;
 }
 
-// Indexed scoring: query vs prebuilt index blob → ranked docs
+// Indexed KEYWORD-COVERAGE scoring. Only query terms present in the corpus vocabulary
+// (idx.idf) count; off-corpus words are ignored. score = idf-weighted fraction of those
+// in-vocab query terms that the narrative contains (0..1).
 function rankWithIndex(query, idx) {
-  const qt = tokenize(query); const qtf = {}; qt.forEach(t => qtf[t] = (qtf[t] || 0) + 1);
-  const qvec = {}; let qsum = 0;
-  for (const t in qtf) { const w = qtf[t] * (idx.idf[t] != null ? idx.idf[t] : idx.defaultIdf); qvec[t] = w; qsum += w * w; }
-  const qnorm = Math.sqrt(qsum) || 1e-9;
+  const qk = Array.from(new Set(tokenize(query)));
+  const inVocab = qk.filter(t => idx.idf[t] != null);
+  const denom = inVocab.reduce((s, t) => s + idx.idf[t], 0) || 1e-9;
   return idx.docs.map(d => {
-    let dot = 0; for (const t in qvec) if (d.vec[t]) dot += qvec[t] * d.vec[t];
-    return { key: d.key, dim: d.dim, verbosity: d.verbosity, text: d.text, score: dot / (qnorm * d.norm) };
+    let num = 0;
+    if (inVocab.length) for (const t of inVocab) { if (d.vec[t]) num += idx.idf[t]; }
+    return { key: d.key, dim: d.dim, verbosity: d.verbosity, text: d.text, score: inVocab.length ? num / denom : 0 };
   }).sort((a, b) => b.score - a.score);
 }
-// Fallback on-the-fly scoring when no index exists yet
+// Fallback coverage scoring when no prebuilt index exists yet.
 function rankOnTheFly(query, docs) {
-  const qTokens = tokenize(query); const docTokens = docs.map(d => tokenize(d.text));
-  const N = docs.length + 1, df = {};
-  [qTokens, ...docTokens].forEach(toks => new Set(toks).forEach(t => df[t] = (df[t] || 0) + 1));
-  const idf = t => Math.log(N / (1 + (df[t] || 0))) + 1;
-  const tf = toks => { const m = {}; toks.forEach(t => m[t] = (m[t] || 0) + 1); return m; };
-  const vec = toks => { const f = tf(toks), v = {}; for (const t in f) v[t] = f[t] * idf(t); return v; };
-  const dot = (a, b) => { let s = 0; for (const t in a) if (b[t]) s += a[t] * b[t]; return s; };
-  const norm = a => Math.sqrt(dot(a, a)) || 1e-9;
-  const qv = vec(qTokens);
-  return docs.map((d, i) => { const dv = vec(docTokens[i]); return { ...d, score: dot(qv, dv) / (norm(qv) * norm(dv)) }; }).sort((a, b) => b.score - a.score);
+  const docTokenSets = docs.map(d => new Set(tokenize(d.text)));
+  const N = docs.length, df = {};
+  docTokenSets.forEach(s => s.forEach(t => df[t] = (df[t] || 0) + 1));
+  const idf = t => Math.log((N + 1) / (1 + (df[t] || 0))) + 1;
+  const qk = Array.from(new Set(tokenize(query)));
+  const inVocab = qk.filter(t => df[t] != null);
+  const denom = inVocab.reduce((s, t) => s + idf(t), 0) || 1e-9;
+  return docs.map((d, i) => {
+    let num = 0;
+    if (inVocab.length) for (const t of inVocab) { if (docTokenSets[i].has(t)) num += idf(t); }
+    return { ...d, score: inVocab.length ? num / denom : 0 };
+  }).sort((a, b) => b.score - a.score);
 }
 
 async function cacheGet(key) {
@@ -184,7 +194,6 @@ export default async function handler(req, res) {
   const mode = ['followon', 'live'].includes(body.mode) ? body.mode : 'compare';
 
   try {
-    // ───────── COMPARE ─────────
     if (mode === 'compare') {
       const dim = DIMS[body.dim] ? body.dim : 'kya_likha_hai';
       const key = dimKey(journey, dim, persona, verb);
@@ -197,14 +206,13 @@ export default async function handler(req, res) {
       return res.status(200).json({ tier: 2, source: 'live', dim, script, tts: speakable(script), cache_key: key, journeyId: journey, latency_ms: Date.now() - t0 });
     }
 
-    // ───────── LIVE (phase 2 of a follow-on) ─────────
     if (mode === 'live') {
       const q = (body.transcript || '').trim();
       const { answer, provider } = await liveAnswer(journey, q);
       return res.status(200).json({ tier: 2, source: 'live', script: answer, tts: speakable(answer), notice: NOTICE, provider, journeyId: journey, latency_ms: Date.now() - t0 });
     }
 
-    // ───────── FOLLOW-ON (phase 1: indexed match) ─────────
+    // FOLLOW-ON (phase 1: indexed keyword-coverage match)
     const q = (body.transcript || '').trim();
     const exclude = Array.isArray(body.exclude) ? body.exclude : [];
     const repeatAsked = /\b(repeat|dobara|dubara|phir se|fir se|firse|samajh nahi|samjha nahi|nahi samjha|didn'?t understand|samajh)\b/i.test(q)
@@ -240,7 +248,6 @@ Output ONLY the reworded spoken answer.`;
       });
     }
 
-    // No good match → tell the page to show the modal + call mode:'live'. No LLM here (fast).
     return res.status(200).json({
       tier: 2, needLive: true, notice: NOTICE, source: 'live',
       match_score: best ? Number(best.score.toFixed(3)) : 0, keywords, journeyId: journey, latency_ms: Date.now() - t0,
