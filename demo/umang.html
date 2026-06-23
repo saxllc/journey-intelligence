@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QKKSDLY59C"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-QKKSDLY59C');</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kya Likha Hai — Umang Tier Compare</title>
+<link rel="stylesheet" href="/shared/sax-design.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+.layout{display:grid;grid-template-columns:min-content 1fr;flex:1;min-height:0}
+
+/* ───── Phone column (full height, reduced bezel) ───── */
+.phone-col{background:#111827;border-right:1px solid #1E293B;padding:7px 8px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.sax-phone{height:calc(100vh - 14px);aspect-ratio:300/620;width:auto;padding:4px;flex-shrink:0}
+
+/* App header inside phone */
+.u-appbar{text-align:center;padding:4px 0 6px}
+.u-appbar .u-logo{font-size:15px;font-weight:800;letter-spacing:.3px;color:var(--text-color)}
+.u-appbar .u-gov{font-size:9px;color:var(--text-sec);font-weight:500}
+/* persona + verbosity inside phone */
+.u-controls{display:flex;align-items:center;gap:8px;padding:6px 10px;margin:0 6px 6px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px}
+.u-controls select{flex:1;min-width:0;background:transparent;border:none;color:var(--text-color);font-size:11px;font-weight:600;outline:none}
+.u-controls .vb{display:flex;align-items:center;gap:5px}
+.u-controls .vb span{font-size:8px;color:var(--text-sec);text-transform:uppercase;letter-spacing:.5px}
+.u-controls input[type=range]{width:62px;accent-color:#6366F1}
+
+/* Home pages (swipe + dots) */
+.u-home{display:flex;flex-direction:column;flex:1;min-height:0}
+.u-pages{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;flex:1;scrollbar-width:none}
+.u-pages::-webkit-scrollbar{display:none}
+.u-page{flex:0 0 100%;scroll-snap-align:center;padding:2px 10px 6px;display:flex;flex-direction:column}
+.u-risk{text-align:center;font-size:10px;font-weight:700;padding:4px;border-radius:8px;margin-bottom:8px;letter-spacing:.3px}
+.u-risk.low{background:rgba(46,204,113,.16);color:#2ecc71}
+.u-risk.med{background:rgba(243,156,18,.16);color:#f39c12}
+.u-risk.high{background:rgba(231,76,60,.16);color:#e74c3c}
+.u-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px 8px;align-content:start}
+.u-app{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.u-app .ic{width:54px;height:54px;border-radius:14px;background:var(--card-bg);border:1px solid var(--card-border);display:flex;align-items:center;justify-content:center;font-size:26px;transition:transform .12s}
+.u-app:active .ic{transform:scale(.92)}
+.u-app .lb{font-size:9px;color:var(--text-color);text-align:center;line-height:1.2;font-weight:500}
+.u-dots{display:flex;gap:6px;justify-content:center;padding:6px 0 2px;flex-shrink:0}
+.u-dot{width:7px;height:7px;border-radius:50%;background:var(--card-border);cursor:pointer;transition:all .15s}
+.u-dot.on{background:#6366F1;width:18px;border-radius:4px}
+
+/* App screen (selected journey) */
+.u-app-screen{display:none;flex-direction:column;flex:1;min-height:0;overflow-y:auto;padding:2px 12px 12px}
+.u-app-screen.show{display:flex}
+.u-back{display:flex;align-items:center;gap:5px;font-size:11px;color:#0A84FF;font-weight:600;padding:2px 0 6px;cursor:pointer}
+.j-mat{align-self:center;font-size:9px;font-weight:700;padding:3px 10px;border-radius:6px;color:#fff;letter-spacing:.4px;margin-bottom:4px}
+.mat-L1{background:#2ecc71}.mat-L2{background:#3498db}.mat-L3{background:#f39c12}.mat-L4{background:#e74c3c}
+.j-hero{text-align:center;padding:2px 0 4px}
+.j-hero .icon{font-size:30px;line-height:1}
+.j-hero h3{font-size:15px;font-weight:700;color:var(--text-color)}
+.j-hero p{font-size:10px;color:var(--text-sec)}
+.ios-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:9px 12px;font-size:11px;color:var(--text-color);margin-top:6px}
+.ios-card .card-label{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-sec);font-weight:600;margin-bottom:4px}
+.ios-card-row{display:flex;justify-content:space-between;gap:10px;padding:4px 0}
+.ios-card-row+.ios-card-row{border-top:1px solid var(--card-border)}
+.ios-card-row span:last-child{color:var(--text-sec);text-align:right}
+.otp-row{display:flex;gap:6px;justify-content:center;margin-top:6px}
+.otp-box{width:26px;height:32px;border-radius:7px;background:var(--chip-bg);border:1px solid var(--card-border);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--text-color)}
+.ios-warn{background:var(--warn-bg);color:var(--warn-color);border-radius:12px;padding:9px 10px;text-align:center;font-size:10px;font-weight:500;line-height:1.45;margin-top:6px}
+.ios-btn{display:block;width:100%;padding:10px;border-radius:12px;font-size:14px;font-weight:600;border:none;margin-top:6px}
+.ios-btn-primary{background:#007AFF;color:#FFF}
+.ios-btn-primary.risk-critical{background:#FF3B30}.ios-btn-primary.risk-high{background:#FF9500}
+.ios-btn-secondary{background:transparent;color:#0A84FF;font-size:13px}
+
+/* ───── Right: compare area ───── */
+.compare-area{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+/* Apple-style header */
+.u-head{padding:14px 20px 10px;border-bottom:1px solid #1E293B;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.u-h1{font-family:-apple-system,'SF Pro Display','DM Sans',var(--sax-font);font-size:26px;font-weight:800;letter-spacing:-.5px;color:#F8FAFC;line-height:1}
+.u-h1 .sub{display:block;font-size:11px;font-weight:500;letter-spacing:0;color:#64748B;margin-top:3px}
+.btn-compare{background:#6366F1;color:#FFF;border:none;padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
+.btn-compare:hover{background:#4F46E5}
+.btn-compare:disabled{opacity:.5;cursor:not-allowed}
+.u-chips{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.u-chip{background:#1E293B;color:#CBD5E1;border:1px solid #334155;border-radius:16px;padding:7px 14px;font-size:12px;cursor:pointer;font-weight:600;transition:all .15s}
+.u-chip:hover{border-color:#6366F1;color:#fff}
+.u-chip.active{background:#312E81;border-color:#6366F1;color:#fff}
+.u-followon{display:flex;gap:6px;align-items:center;margin-left:auto}
+.mic-btn{width:34px;height:34px;border-radius:50%;border:1.5px solid #334155;background:#1E293B;color:#E2E8F0;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mic-btn:hover{border-color:#6366F1}
+.mic-btn.recording{background:#EF4444;border-color:#EF4444}
+.text-input{background:#1E293B;border:1px solid #334155;color:#E2E8F0;padding:9px 13px;border-radius:9px;font-size:12px;outline:none;width:230px}
+.text-input:focus{border-color:#6366F1}
+.text-input::placeholder{color:#475569}
+.ask-btn{background:#334155;border:none;color:#E2E8F0;padding:9px 14px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer}
+.ask-btn:hover{background:#475569}
+
+/* Arena: two panels, stats/controls on TOP */
+.arena{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px 20px;flex:1;min-height:0}
+.u-panel{border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-height:0;border:1.5px solid #1E293B}
+.u-titlebar{padding:9px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.u-panel.cache .u-titlebar{background:#04231A}
+.u-panel.live .u-titlebar{background:#2A1605}
+.u-tier{font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase}
+.u-panel.cache .u-tier{color:#6EE7B7}
+.u-panel.live .u-tier{color:#FCD34D}
+.u-tier .sub{display:block;font-size:9px;font-weight:500;color:rgba(255,255,255,.55);letter-spacing:0;text-transform:none}
+.u-ctrlbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#1E293B;flex-shrink:0}
+.u-metrics{display:flex;gap:10px;flex:1}
+.u-metric{display:flex;flex-direction:column;line-height:1.1}
+.u-metric .v{font-size:13px;font-weight:700}
+.u-metric .l{font-size:7px;color:#64748B;text-transform:uppercase;letter-spacing:.4px}
+.u-panel.cache .u-metric .v{color:#34D399}
+.u-panel.live .u-metric .v{color:#FBBF24}
+.u-audio{display:flex;gap:5px}
+.play-btn,.stop-btn{background:#0F172A;border:1px solid #334155;color:#E2E8F0;padding:5px 9px;border-radius:7px;font-size:11px;cursor:pointer}
+.play-btn:hover,.stop-btn:hover{background:#334155}
+.play-btn:disabled,.stop-btn:disabled{opacity:.35;cursor:not-allowed}
+.play-btn.on{border-color:#6366F1;background:#312E81;color:#fff}
+/* light conversation area */
+.u-convo{flex:1;overflow-y:auto;background:#F1F5F9;padding:13px;display:flex;flex-direction:column;gap:10px;min-height:0}
+.u-empty{margin:auto;text-align:center;color:#94A3B8;font-size:12px;font-style:italic;padding:16px}
+.u-q{align-self:flex-end;background:#4F46E5;color:#fff;font-size:11px;padding:6px 11px;border-radius:12px;border-bottom-right-radius:4px;max-width:88%}
+.u-a{align-self:flex-start;background:#FFFFFF;color:#0F172A;font-size:12px;line-height:1.55;padding:9px 13px;border-radius:12px;border-bottom-left-radius:4px;max-width:94%;box-shadow:0 1px 2px rgba(0,0,0,.06);white-space:pre-wrap}
+.u-a a{color:#1D4ED8;font-weight:600}
+.u-meta{align-self:flex-start;font-size:9px;color:#64748B;padding-left:4px}
+.u-badge{display:inline-block;font-size:8px;padding:1px 5px;border-radius:3px;font-weight:700;text-transform:uppercase;margin-left:3px}
+.u-badge.cache{background:#D1FAE5;color:#065F46}
+.u-badge.live{background:#FEF3C7;color:#92400E}
+.typing{align-self:flex-start;display:flex;gap:4px;padding:8px 12px}
+.typing span{width:7px;height:7px;background:#94A3B8;border-radius:50%;animation:bnc .6s infinite alternate}
+.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+@keyframes bnc{to{transform:translateY(-5px);background:#475569}}
+
+.status-bar{font-size:10px;color:#475569;text-align:center;padding:5px;background:#0F172A;border-top:1px solid #1E293B;flex-shrink:0}
+.status-bar b{color:#64748B}
+.sax-phone-placeholder{background:transparent}
+
+@media(max-width:920px){
+  body{overflow:auto;height:auto;min-height:100vh}
+  .layout{grid-template-columns:1fr;overflow:visible}
+  .phone-col{border-right:none;border-bottom:1px solid #1E293B}
+  .sax-phone{height:auto;width:min(330px,86vw);aspect-ratio:300/620}
+  .arena{grid-template-columns:1fr;gap:12px}
+  .u-panel{min-height:300px}
+  .u-followon{margin-left:0}
+  .text-input{width:150px}
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- LEFT: phone -->
+  <div class="phone-col">
+    <div class="sax-phone" data-theme="light" id="iphone">
+      <div class="sax-phone-content">
+        <div class="u-appbar"><div class="u-logo">Umang</div><div class="u-gov">Government of India</div></div>
+        <div class="u-controls">
+          <select id="sel-persona" onchange="onPersonaChange()">
+            <option value="arjun">Arjun · GenZ</option>
+            <option value="rajan" selected>Rajan · Farmer</option>
+            <option value="sunita">Sunita · Migrant</option>
+          </select>
+          <div class="vb"><span>Detail</span><input type="range" id="sel-verbosity" min="0" max="2" value="1" step="1" oninput="onVerbosity()"></div>
+        </div>
+
+        <div class="u-home" id="u-home">
+          <div class="u-pages" id="u-pages"><!-- pages rendered by JS --></div>
+          <div class="u-dots" id="u-dots"></div>
+        </div>
+
+        <div class="u-app-screen" id="u-app-screen">
+          <div class="u-back" onclick="backHome()">‹ Home</div>
+          <div id="app-content"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: compare -->
+  <div class="compare-area">
+    <div class="u-head">
+      <div class="u-h1">Kya Likha Hai<span class="sub">Tier 1 cache vs Tier 2 live · comprehension &amp; action</span></div>
+      <button class="btn-compare" id="btn-compare" onclick="runCompare()">Compare</button>
+      <div class="u-chips">
+        <span class="u-chip active" id="chip-kya" onclick="pickChip('kya_likha_hai')">क्या लिखा है</span>
+        <span class="u-chip" id="chip-faida" onclick="pickChip('faida')">इसमें फ़ायदा क्या है</span>
+      </div>
+      <div class="u-followon">
+        <button class="mic-btn" id="mic-btn" onclick="toggleMic()">🎤</button>
+        <input class="text-input" id="text-input" placeholder="Follow-up question…" onkeydown="if(event.key==='Enter')sendFollowon()">
+        <button class="ask-btn" onclick="sendFollowon()">Ask</button>
+      </div>
+    </div>
+
+    <div class="arena">
+      <div class="u-panel cache">
+        <div class="u-titlebar"><div class="u-tier">Tier 1 · Cache<span class="sub">Precomputed · Upstash Redis</span></div><div style="font-size:18px">⚡</div></div>
+        <div class="u-ctrlbar">
+          <div class="u-metrics">
+            <div class="u-metric"><span class="v" id="cache-latency">—</span><span class="l">Latency</span></div>
+            <div class="u-metric"><span class="v" id="cache-cost">—</span><span class="l">Cost</span></div>
+            <div class="u-metric"><span class="v" id="cache-source">—</span><span class="l">Source</span></div>
+          </div>
+          <div class="u-audio">
+            <button class="play-btn" id="cache-play" disabled onclick="playToggle('cache')">🔊 Play</button>
+            <button class="stop-btn" id="cache-stop" disabled onclick="stopAudio('cache')">⏹</button>
+          </div>
+        </div>
+        <div class="u-convo" id="convo-cache"></div>
+      </div>
+
+      <div class="u-panel live">
+        <div class="u-titlebar"><div class="u-tier">Tier 2 · Live<span class="sub">Claude Sonnet → Sarvam</span></div><div style="font-size:18px">🧠</div></div>
+        <div class="u-ctrlbar">
+          <div class="u-metrics">
+            <div class="u-metric"><span class="v" id="live-latency">—</span><span class="l">Latency</span></div>
+            <div class="u-metric"><span class="v" id="live-cost">—</span><span class="l">Cost</span></div>
+            <div class="u-metric"><span class="v" id="live-source">—</span><span class="l">Source</span></div>
+          </div>
+          <div class="u-audio">
+            <button class="play-btn" id="live-play" disabled onclick="playToggle('live')">🔊 Play</button>
+            <button class="stop-btn" id="live-stop" disabled onclick="stopAudio('live')">⏹</button>
+          </div>
+        </div>
+        <div class="u-convo" id="convo-live"></div>
+      </div>
+    </div>
+
+    <div class="status-bar" id="status-bar"><b>Ready.</b> Pick an app, then Compare or tap a chip. Type a follow-up for the cache-match / live-lookup flow.</div>
+  </div>
+</div>
+
+<script src="/shared/sax-phone.js"></script>
+<script>
+const JOURNEYS=[
+{id:'balance',name:'Balance Check',mat:1,upiTitle:'Check Balance',fields:[{label:'Account',value:'SBI ****4521'},{label:'Action',value:'Balance Enquiry'}],actions:[{label:'Check Balance',type:'primary',risk:'none'},{label:'Cancel',type:'secondary',risk:'none'}]},
+{id:'p2p_small',name:'P2P Send <₹500',mat:2,upiTitle:'Send Money',fields:[{label:'To',value:'Rahul Sharma'},{label:'UPI ID',value:'rahul@okaxis'},{label:'Amount',value:'₹350'}],actions:[{label:'Pay ₹350',type:'primary',risk:'low'},{label:'Cancel',type:'secondary',risk:'none'}]},
+{id:'p2p_large_unknown',name:'P2P >₹5K Unknown',mat:3,upiTitle:'Send Money',fields:[{label:'To',value:'Unknown'},{label:'UPI ID',value:'merchant8847@ybl'},{label:'Amount',value:'₹8,500'},{label:'Status',value:'⚠ First time'}],actions:[{label:'Pay ₹8,500',type:'primary',risk:'high'},{label:'Decline',type:'secondary',risk:'none'}]},
+{id:'p2m_qr',name:'P2M QR Scan',mat:2,upiTitle:'Pay Merchant',fields:[{label:'Merchant',value:'Fresh Mart ✓'},{label:'Amount',value:'₹1,200'},{label:'Method',value:'QR Scan'}],actions:[{label:'Pay ₹1,200',type:'primary',risk:'low'},{label:'Cancel',type:'secondary',risk:'none'}]},
+{id:'collect_unknown',name:'Collect Request',mat:4,upiTitle:'Collect Request',fields:[{label:'From',value:'⚠ fraud_alert99@paytm'},{label:'Amount',value:'₹15,000'},{label:'Type',value:'COLLECT (money leaves YOU)'},{label:'Status',value:'🚨 Unverified'}],actions:[{label:'Approve ₹15,000',type:'primary',risk:'critical'},{label:'Decline',type:'secondary',risk:'none'}]},
+{id:'beneficiary_add',name:'Beneficiary Add',mat:3,upiTitle:'Add Beneficiary',fields:[{label:'Name',value:'Unknown Trader'},{label:'Account',value:'****7823'},{label:'IFSC',value:'SBIN0001234'},{label:'Status',value:'⚠ First time'}],actions:[{label:'Add',type:'primary',risk:'medium'},{label:'Cancel',type:'secondary',risk:'none'}]},
+{id:'nach_mandate',name:'NACH Mandate',mat:4,upiTitle:'NACH e-Mandate',fields:[{label:'Creditor',value:'QuickLoan NBFC'},{label:'Amount',value:'≤₹25,000/mo'},{label:'Duration',value:'3 years'},{label:'Type',value:'Auto-Debit'}],actions:[{label:'Sign Mandate',type:'primary',risk:'critical'},{label:'Decline',type:'secondary',risk:'none'}]},
+{id:'autopay',name:'UPI AutoPay',mat:4,upiTitle:'UPI AutoPay',fields:[{label:'Merchant',value:'StreamFlix'},{label:'Amount',value:'₹599/mo'},{label:'Type',value:'Recurring'},{label:'PIN',value:'First time only'}],actions:[{label:'Enable AutoPay',type:'primary',risk:'high'},{label:'Skip',type:'secondary',risk:'none'}]},
+{id:'ekyc',name:'eKYC Aadhaar',mat:4,upiTitle:'eKYC Verification',fields:[{label:'Full Name',value:'From Aadhaar'},{label:'Address',value:'From Aadhaar'},{label:'Photo',value:'From Aadhaar'},{label:'DOB',value:'From Aadhaar'},{label:'Aadhaar No.',value:'12 digits'}],actions:[{label:'Verify with Aadhaar',type:'primary',risk:'critical'},{label:'Cancel',type:'secondary',risk:'none'}]},
+{id:'credit_line',name:'Credit Line',mat:4,upiTitle:'Activate Credit',fields:[{label:'Lender',value:'QuickCash NBFC'},{label:'Limit',value:'₹50,000'},{label:'Interest',value:'18% APR'},{label:'Penalty',value:'₹500/late'}],actions:[{label:'Activate Credit',type:'primary',risk:'critical'},{label:'Decline',type:'secondary',risk:'none'}]},
+{id:'ondc',name:'ONDC Order',mat:3,upiTitle:'ONDC Order',fields:[{label:'Seller',value:'KisanDirect'},{label:'Item',value:'Rice 5kg'},{label:'Price',value:'₹450'},{label:'Network',value:'ONDC (Open)'}],actions:[{label:'Pay ₹450',type:'primary',risk:'medium'},{label:'Cancel',type:'secondary',risk:'none'}]},
+{id:'token_lock',name:'Token Lock',mat:4,upiTitle:'Finternet Token Lock',fields:[{label:'Asset',value:'Land Token #LPT-4421'},{label:'Lock',value:'180 days'},{label:'Limits',value:'No transfer/sale'},{label:'Reversible',value:'❌'}],actions:[{label:'Lock Token',type:'primary',risk:'critical'},{label:'Cancel',type:'secondary',risk:'none'}]},
+{id:'aadhaar_sign',name:'Aadhaar e-Sign',mat:4,upiTitle:'Aadhaar e-Sign',fields:[{label:'Document',value:'Property Sale'},{label:'Method',value:'Aadhaar e-Sign'},{label:'Legal',value:'IT Act 2000'},{label:'Reversible',value:'❌'}],actions:[{label:'Sign Document',type:'primary',risk:'critical'},{label:'Decline',type:'secondary',risk:'none'}]},
+];
+const J={};JOURNEYS.forEach(j=>J[j.id]=j);
+const META={
+  ekyc:{icon:'🛡️',sub:'Verify identity electronically',otp:true,warn:'⚠ Irrevocable — Aadhaar data cannot be recalled once shared.'},
+  nach_mandate:{icon:'📝',sub:'Recurring auto-debit',warn:'⚠ Binding 3 years. Up to ₹9,00,000 exposure. Irrevocable.'},
+  credit_line:{icon:'🏦',sub:'Pre-approved loan',warn:'⚠ A LOAN at 18% APR. EMI auto-debit. Affects CIBIL.'},
+  collect_unknown:{icon:'🚨',sub:'Money requested FROM you',warn:'🚨 Approving DEBITS ₹15,000 from YOUR account. #1 UPI fraud.'},
+  token_lock:{icon:'🔒',sub:'Freeze a tokenized asset',warn:'⚠ Frozen 180 days. No sale/transfer/collateral. Irrevocable.'},
+  p2p_large_unknown:{icon:'⚠️',sub:'Unverified first transfer',warn:'⚠ Unverified recipient. ₹8,500 irrevocable once sent.'},
+  beneficiary_add:{icon:'➕',sub:'Add a payee',warn:'⚠ Future transfers skip verification. Check details.'},
+  aadhaar_sign:{icon:'✍️',sub:'Legally binding e-signature',otp:true,warn:'⚠ Same as a physical signature (IT Act 2000). Irrevocable.'},
+  autopay:{icon:'🔁',sub:'Recurring without PIN',warn:'⚠ ₹599 auto-debits monthly. Cancel manually.'},
+  p2p_small:{icon:'💸',sub:'Small instant transfer'},
+  p2m_qr:{icon:'🏪',sub:'Pay a verified merchant'},
+  ondc:{icon:'🛒',sub:'Open-network order',warn:'ⓘ Open network — seller handles disputes.'},
+  balance:{icon:'💰',sub:'Read-only — no money moves'},
+};
+const PAGES=[
+  {tier:'L2',risk:'low', label:'L2 · Low risk · informational', ids:['balance','p2p_small','p2m_qr','ondc']},
+  {tier:'L3',risk:'med', label:'L3 · Medium risk · transactional', ids:['p2p_large_unknown','beneficiary_add','aadhaar_sign','autopay']},
+  {tier:'L4',risk:'high',label:'L4 · High risk · consequential', ids:['ekyc','nach_mandate','credit_line','collect_unknown','token_lock']},
+];
+const VERB=['LOW','MEDIUM','HIGH'];
+
+let current=null, activeDim='kya_likha_hai';
+const lastScript={cache:'',live:''};
+const lastTts={cache:'',live:''};
+let lastMatchedKeys=[];
+function persona(){return document.getElementById('sel-persona').value;}
+function verbosity(){return VERB[+document.getElementById('sel-verbosity').value]||'MEDIUM';}
+
+/* iOS-safe audio */
+const ttsAudio=new Audio();ttsAudio.playsInline=true;ttsAudio.setAttribute('playsinline','');
+let audioUnlocked=false;
+function unlockAudio(){if(audioUnlocked)return;ttsAudio.src='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';ttsAudio.play().then(()=>{audioUnlocked=true;}).catch(()=>{});}
+document.addEventListener('touchstart',unlockAudio,{once:true});
+document.addEventListener('click',unlockAudio,{once:true});
+
+/* ───── Home grid ───── */
+function renderHome(){
+  let h='';
+  PAGES.forEach(pg=>{
+    h+='<div class="u-page"><div class="u-risk '+pg.risk+'">'+pg.label+'</div><div class="u-grid">';
+    pg.ids.forEach(id=>{
+      h+='<div class="u-app" onclick="openApp(\''+id+'\')"><div class="ic">'+(META[id]||{}).icon+'</div><div class="lb">'+J[id].name+'</div></div>';
+    });
+    h+='</div></div>';
+  });
+  document.getElementById('u-pages').innerHTML=h;
+  let d='';PAGES.forEach((p,i)=>{d+='<div class="u-dot'+(i===0?' on':'')+'" onclick="goPage('+i+')"></div>';});
+  document.getElementById('u-dots').innerHTML=d;
+}
+function goPage(i){const pages=document.getElementById('u-pages');pages.scrollTo({left:i*pages.clientWidth,behavior:'smooth'});}
+function syncDots(){const pages=document.getElementById('u-pages');const i=Math.round(pages.scrollLeft/pages.clientWidth);document.querySelectorAll('.u-dot').forEach((d,k)=>d.classList.toggle('on',k===i));}
+
+/* ───── App screen ───── */
+function openApp(id){
+  current=id;
+  const j=J[id],m=META[id]||{};
+  let h='';
+  h+='<div class="j-mat mat-L'+j.mat+'">L'+j.mat+'</div>';
+  h+='<div class="j-hero"><div class="icon">'+(m.icon||'📱')+'</div><h3>'+j.name+'</h3><p>'+(m.sub||'')+'</p></div>';
+  h+='<div class="ios-card"><div class="card-label">'+(id==='ekyc'?'Information shared':'Details')+'</div>';
+  j.fields.forEach(f=>{h+='<div class="ios-card-row"><span>'+f.label+'</span><span>'+f.value+'</span></div>';});
+  h+='</div>';
+  if(m.otp){h+='<div class="ios-card"><div class="card-label">Aadhaar OTP · ****1234</div><div class="otp-row"><div class="otp-box">4</div><div class="otp-box">8</div><div class="otp-box">1</div><div class="otp-box">•</div><div class="otp-box">•</div><div class="otp-box">•</div></div></div>';}
+  if(m.warn){h+='<div class="ios-warn">'+m.warn+'</div>';}
+  j.actions.forEach(a=>{
+    if(a.type==='primary'){const rc=a.risk==='critical'?' risk-critical':a.risk==='high'?' risk-high':'';h+='<button class="ios-btn ios-btn-primary'+rc+'">'+a.label+'</button>';}
+    else h+='<button class="ios-btn ios-btn-secondary">'+a.label+'</button>';
+  });
+  document.getElementById('app-content').innerHTML=h;
+  document.getElementById('u-home').style.display='none';
+  document.getElementById('u-app-screen').classList.add('show');
+  resetConvos();
+  setStatus('Opened '+j.name+' · pick a chip or Compare');
+}
+function backHome(){
+  document.getElementById('u-app-screen').classList.remove('show');
+  document.getElementById('u-home').style.display='flex';
+}
+
+/* ───── Conversation rendering ───── */
+function badge(src){const c=src==='cache'||src==='cache-rephrased'?'cache':'live';return '<span class="u-badge '+c+'">'+(c==='cache'?'⚡ cache':'🧠 live')+'</span>';}
+function emptyMsg(side){return '<div class="u-empty">'+(side==='cache'?'Cache answers (and cache-matched follow-ups) appear here.':'Live answers (no cache match) appear here.')+'</div>';}
+function clearEmpty(side){const t=document.getElementById('convo-'+side);const e=t.querySelector('.u-empty');if(e)e.remove();}
+function addTyping(side){clearEmpty(side);const t=document.getElementById('convo-'+side);const d=document.createElement('div');d.className='typing';d.id='typing-'+side;d.innerHTML='<span></span><span></span><span></span>';t.appendChild(d);t.scrollTop=t.scrollHeight;}
+function removeTyping(side){const d=document.getElementById('typing-'+side);if(d)d.remove();}
+function linkify(s){
+  s=s.replace(/(https?:\/\/[^\s)]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
+  s=s.replace(/([\w.+-]+@[\w-]+\.[\w.-]+)/g,'<a href="mailto:$1">$1</a>');
+  return s;
+}
+function addTurn(side,qText,data){
+  const t=document.getElementById('convo-'+side);clearEmpty(side);
+  const ms=data.client_ms||data.latency_ms||0;const msLabel=ms<1000?ms+'ms':(ms/1000).toFixed(1)+'s';
+  const d=document.createElement('div');d.className='turn';
+  let inner='';
+  if(qText)inner+='<div class="u-q">'+qText+'</div>';
+  inner+='<div class="u-a">'+linkify(data.script||'(no answer)')+'</div>';
+  inner+='<div class="u-meta">'+(data.dim||data.intent||'')+(data.match_score!=null?' · match '+data.match_score:'')+' · '+msLabel+' '+badge(data.source)+'</div>';
+  d.innerHTML=inner;t.appendChild(d);t.scrollTop=t.scrollHeight;
+}
+function setMetrics(side,data){
+  const ms=data.client_ms||0;
+  document.getElementById(side+'-latency').textContent=ms<1000?ms+'ms':(ms/1000).toFixed(1)+'s';
+  const isCache=data.source==='cache'||data.source==='cache-rephrased';
+  document.getElementById(side+'-cost').textContent=isCache?'~$0':'~$0.01';
+  document.getElementById(side+'-source').textContent=isCache?(data.source==='cache-rephrased'?'Redis+':'Redis'):'Claude';
+}
+
+/* ───── Compare (both tiers) ───── */
+function pickChip(dim){activeDim=dim;document.getElementById('chip-kya').classList.toggle('active',dim==='kya_likha_hai');document.getElementById('chip-faida').classList.toggle('active',dim==='faida');runCompare();}
+let running=false;
+async function runCompare(){
+  if(!current){setStatus('Open an app from the phone first.');return;}
+  if(running)return;running=true;
+  document.getElementById('btn-compare').disabled=true;
+  const label=activeDim==='kya_likha_hai'?'क्या लिखा है':'इसमें फ़ायदा क्या है';
+  const payload={mode:'compare',dim:activeDim,journeyId:current,persona:persona(),verbosity:verbosity()};
+  clearEmpty('cache');clearEmpty('live');addTyping('cache');addTyping('live');
+  const t0=Date.now();
+  const cacheP=fetch('/api/umang-chunk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(r=>r.json()).then(d=>({...d,client_ms:Date.now()-t0})).catch(e=>({error:e.message}));
+  const t1=Date.now();
+  const liveP=fetch('/api/umang-chunk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...payload,nocache:true})}).then(r=>r.json()).then(d=>({...d,client_ms:Date.now()-t1})).catch(e=>({error:e.message}));
+  const [cd,ld]=await Promise.all([cacheP,liveP]);
+  removeTyping('cache');removeTyping('live');
+  if(!cd.error){addTurn('cache',label,cd);setMetrics('cache',cd);lastScript.cache=cd.script||'';lastTts.cache=cd.tts||cd.script||'';document.getElementById('cache-play').disabled=!cd.script;}
+  if(!ld.error){addTurn('live',label,ld);setMetrics('live',ld);lastScript.live=ld.script||'';lastTts.live=ld.tts||ld.script||'';document.getElementById('live-play').disabled=!ld.script;}
+  updateAudioUI();
+  if(cd&&cd.script)startPlay('cache');   // first-run: cache plays immediately
+  setStatus('Compared "'+label+'" · cache '+(cd.client_ms||0)+'ms vs live '+(ld.client_ms||0)+'ms');
+  running=false;document.getElementById('btn-compare').disabled=false;
+}
+
+/* ───── Follow-on (routed) ───── */
+async function sendFollowon(){
+  const el=document.getElementById('text-input');const q=el.value.trim();if(!q)return;el.value='';
+  if(!current){setStatus('Open an app first.');return;}
+  const payload={mode:'followon',transcript:q,journeyId:current,persona:persona(),verbosity:verbosity(),exclude:lastMatchedKeys};
+  const t0=Date.now();
+  // we don't yet know which tier — show typing in cache (checked first)
+  clearEmpty('cache');addTyping('cache');
+  setStatus('Parsing follow-up · matching cache…');
+  let d;
+  try{const r=await fetch('/api/umang-chunk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});d=await r.json();d.client_ms=Date.now()-t0;}
+  catch(e){d={error:e.message};}
+  removeTyping('cache');
+  if(d.error){setStatus('Error: '+d.error);return;}
+  const side=d.tier===1?'cache':'live';
+  if(d.matched_key){lastMatchedKeys=[d.matched_key,...lastMatchedKeys].slice(0,6);}
+  addTurn(side,q,d);setMetrics(side,d);
+  lastScript[side]=d.script||'';lastTts[side]=d.tts||d.script||'';
+  document.getElementById(side+'-play').disabled=!d.script;
+  updateAudioUI();
+  if(d.script)startPlay(side);
+  setStatus(d.tier===1?('Cache match '+(d.match_score!=null?Math.round(d.match_score*100)+'%':'')+' · rephrased in Tier 1'):'No cache match · Tier 2 live lookup');
+}
+
+/* ───── Audio engine (play/pause/stop) ───── */
+let audioSide=null, audioState='idle';
+ttsAudio.onended=function(){audioState='idle';audioSide=null;updateAudioUI();};
+function updateAudioUI(){
+  ['cache','live'].forEach(function(s){
+    const play=document.getElementById(s+'-play'),stop=document.getElementById(s+'-stop');
+    if(!play||!stop)return;const has=!!lastTts[s];
+    if(audioSide===s&&audioState==='playing'){play.disabled=false;play.classList.add('on');play.innerHTML='⏸ Pause';stop.disabled=false;}
+    else if(audioSide===s&&audioState==='paused'){play.disabled=false;play.classList.add('on');play.innerHTML='▶ Resume';stop.disabled=false;}
+    else if(audioSide===s&&audioState==='loading'){play.disabled=true;play.classList.remove('on');play.innerHTML='⏳';stop.disabled=true;}
+    else{play.disabled=!has;play.classList.remove('on');play.innerHTML='🔊 Play';stop.disabled=true;}
+  });
+}
+async function startPlay(side){
+  const text=lastTts[side];if(!text)return;
+  try{ttsAudio.pause();}catch(e){}
+  audioSide=side;audioState='loading';updateAudioUI();
+  try{
+    const r=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,500),language:'hi-IN',speaker:'anushka'})});
+    const data=await r.json();
+    if(!data.data_uri){audioState='idle';audioSide=null;updateAudioUI();return;}
+    ttsAudio.currentTime=0;ttsAudio.src=data.data_uri;await ttsAudio.play();
+    audioState='playing';updateAudioUI();
+  }catch(e){audioState='idle';audioSide=null;updateAudioUI();}
+}
+function playToggle(side){
+  if(audioSide===side&&audioState==='playing'){ttsAudio.pause();audioState='paused';updateAudioUI();}
+  else if(audioSide===side&&audioState==='paused'){ttsAudio.play();audioState='playing';updateAudioUI();}
+  else startPlay(side);
+}
+function stopAudio(side){try{ttsAudio.pause();ttsAudio.currentTime=0;}catch(e){}audioState='idle';audioSide=null;updateAudioUI();}
+
+/* ───── STT ───── */
+let mediaRecorder=null,audioChunks=[],isRecording=false;
+async function toggleMic(){if(isRecording){if(mediaRecorder&&mediaRecorder.state!=='inactive')mediaRecorder.stop();isRecording=false;document.getElementById('mic-btn').className='mic-btn';setStatus('⏳ Transcribing…');}else{
+  try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});mediaRecorder=new MediaRecorder(stream,{mimeType:'audio/webm;codecs=opus'});audioChunks=[];
+    mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data);};
+    mediaRecorder.onstop=async()=>{stream.getTracks().forEach(t=>t.stop());const blob=new Blob(audioChunks,{type:'audio/webm'});try{const r=await fetch('/api/stt',{method:'POST',headers:{'Content-Type':'audio/webm'},body:blob});const data=await r.json();if(data.transcript){document.getElementById('text-input').value=data.transcript;sendFollowon();}else setStatus('Could not transcribe.');}catch(e){setStatus('STT error');}};
+    mediaRecorder.start();isRecording=true;document.getElementById('mic-btn').className='mic-btn recording';setStatus('🔴 Recording — tap mic to stop');
+  }catch(e){setStatus('Mic error: '+e.message);}
+}}
+
+/* ───── Reset / misc ───── */
+function resetConvos(){
+  try{ttsAudio.pause();ttsAudio.currentTime=0;}catch(e){}audioSide=null;audioState='idle';lastMatchedKeys=[];
+  ['cache','live'].forEach(s=>{document.getElementById('convo-'+s).innerHTML=emptyMsg(s);document.getElementById(s+'-latency').textContent='—';document.getElementById(s+'-cost').textContent='—';document.getElementById(s+'-source').textContent='—';lastScript[s]='';lastTts[s]='';});
+  updateAudioUI();
+}
+function onPersonaChange(){if(current)resetConvos();setStatus('Persona: '+persona());}
+function onVerbosity(){setStatus('Detail: '+verbosity());}
+function setStatus(t){document.getElementById('status-bar').innerHTML='<b>'+t+'</b>';}
+
+/* init */
+renderHome();
+document.getElementById('u-pages').addEventListener('scroll',syncDots,{passive:true});
+resetConvos();
+</script>
+</body>
+</html>
