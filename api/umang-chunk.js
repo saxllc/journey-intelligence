@@ -1,28 +1,30 @@
 // /api/umang-chunk — Umang (Kya Likha Hai) endpoint.
 //
-// Two modes:
-//   mode:'compare'  → first run / chip press. Returns one tier's answer for a CAS
-//                     dimension (kya_likha_hai | faida). Page calls it twice
-//                     (cache + nocache) to fill Tier 1 and Tier 2 side by side.
-//   mode:'followon' → free-text follow-up. Runs explicit NLP: keyword extraction +
-//                     TF-IDF cosine vs this journey's cached narratives. If the best
-//                     score ≥ threshold → Haiku rephrases the cached text (Tier 1).
-//                     Else → Tier 2 live answer built from a curated provider table.
+// Modes:
+//   compare  → first run / chip. One CAS dim (kya_likha_hai | faida). Page calls
+//              twice (cache + nocache) to fill Tier 1 and Tier 2.
+//   followon → free-text follow-up. PHASE 1: fast indexed TF-IDF match against the
+//              prebuilt index (umang:idx:{journey}:{persona}, one GET). If best ≥
+//              threshold → Haiku rephrases the cached text (Tier 1). Else returns
+//              { tier:2, needLive:true, notice } WITHOUT calling the LLM (fast) so the
+//              page can show the "checking online" modal and then call:
+//   live     → PHASE 2: generate the Tier-2 answer from the curated provider table.
 //
-// Cache namespace (isolated from the existing klh: cache, same Upstash DB):
+// Cache namespace (isolated from klh:, same Upstash DB):
 //   umang:{journeyId}:{dim}:{persona}:{verbosity}:hi
-//
-// NOTE on "embeddings": no neural-embedding provider key is configured, so the
-// similarity here is lexical TF-IDF cosine. Set UMANG_MATCH_THRESHOLD to tune.
-// Wire a Voyage/OpenAI key + swap scoreSimilarity() to upgrade to semantic 85%.
+//   umang:idx:{journeyId}:{persona}   (match index, built by scripts/build-umang-index.js)
 //
 // Env: UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN, ANTHROPIC_API_KEY
+// Tune match strictness with UMANG_MATCH_THRESHOLD (default 0.55).
 
 const UPSTASH_URL = process.env.UPSTASH_REDIS_REST_URL;
 const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
 const THRESHOLD = parseFloat(process.env.UMANG_MATCH_THRESHOLD || '0.55');
 const SONNET = 'claude-sonnet-4-5';
 const HAIKU = 'claude-haiku-4-5-20251001';
+
+// Tier-2 "no ready answer" notice (shown as a modal on the page; not appended to the pane).
+const NOTICE = 'मेरे पास इसका तैयार जवाब नहीं है। सही समाधान के लिए मैं ऑनलाइन देखता हूँ…';
 
 const SCREENS = {
   balance: 'Check your account balance. Your available balance will be shown after UPI PIN verification. Balance enquiry is free. No money is moved.',
@@ -40,7 +42,6 @@ const SCREENS = {
   aadhaar_sign: 'Sign Property Sale Agreement with Aadhaar e-Sign. Legally binding electronic signature, enforceable under IT Act 2000. Irrevocable; Aadhaar identity permanently linked to the document.',
 };
 
-// Two CAS dimensions behind the two chips
 const DIMS = {
   kya_likha_hai: 'COMPREHENSION. Explain plainly what this screen says and is asking the user to do — the key facts, data, amounts, and whether it can be undone. Help them simply understand what is written.',
   faida: 'ACTION / BENEFIT. Explain what the user gains or risks here and what they should do — is it worth it, what is the benefit versus the cost, and the practical next step.',
@@ -53,7 +54,6 @@ const PERSONA_PROFILE = {
 };
 const VERBOSITY = { LOW: '40-60 words.', MEDIUM: '60-100 words.', HIGH: '100-150 words, cover every risk and number.' };
 
-// Curated provider lookup for Tier-2 fallback. Replace [PLACEHOLDER] with verified data.
 const PROVIDERS = {
   ekyc: { name: 'UIDAI', phone: '1947', email: 'help@uidai.gov.in', link: 'https://uidai.gov.in', fee: 'Aadhaar eKYC is free for residents', note: 'Aadhaar issuing authority' },
   aadhaar_sign: { name: 'UIDAI e-Sign', phone: '1947', email: 'help@uidai.gov.in', link: 'https://uidai.gov.in', fee: 'e-Sign fee set by the e-Sign Service Provider', note: '' },
@@ -70,11 +70,10 @@ const PROVIDERS = {
   balance: { name: 'Your bank', phone: '[bank support number]', email: '', link: '', fee: 'Balance enquiry is free', note: 'PLACEHOLDER' },
 };
 
-// ── NLP: tokenize (Hindi + English, keep combining marks), stopwords, TF-IDF cosine ──
+// ── NLP tokenizer (keeps Devanagari combining marks) ──────────────────────────
 const STOP = new Set(('the a an is are was of to in on for and or that this it me my you your i we what how do does '
   + 'ye yeh kya hai ka ki ke ko se me mein hi bhi to na nahi ha haan aur ya jo wo woh is us ek hona kar karu karna '
   + 'है हैं का की के को से में ये यह क्या कैसे और या जो वो वह इस उस एक मैं मेरा आप कर करना है').split(/\s+/));
-
 function tokenize(s) {
   return (s || '').toLowerCase().split(/[^\p{L}\p{N}\p{M}]+/u).filter(t => t && !STOP.has(t) && t.length > 1);
 }
@@ -83,35 +82,39 @@ function extractKeywords(s) {
   for (const t of tokenize(s)) { if (!seen.has(t)) { seen.add(t); out.push(t); } }
   return out;
 }
-function tf(tokens) { const m = {}; for (const t of tokens) m[t] = (m[t] || 0) + 1; return m; }
-function scoreSimilarity(query, docs) {
-  // docs: [{key, text}] → returns same with .score (TF-IDF cosine vs query)
-  const qTokens = tokenize(query);
-  const docTokens = docs.map(d => tokenize(d.text));
-  const N = docs.length + 1;
-  const df = {};
-  [qTokens, ...docTokens].forEach(toks => { new Set(toks).forEach(t => df[t] = (df[t] || 0) + 1); });
+
+// Indexed scoring: query vs prebuilt index blob → ranked docs
+function rankWithIndex(query, idx) {
+  const qt = tokenize(query); const qtf = {}; qt.forEach(t => qtf[t] = (qtf[t] || 0) + 1);
+  const qvec = {}; let qsum = 0;
+  for (const t in qtf) { const w = qtf[t] * (idx.idf[t] != null ? idx.idf[t] : idx.defaultIdf); qvec[t] = w; qsum += w * w; }
+  const qnorm = Math.sqrt(qsum) || 1e-9;
+  return idx.docs.map(d => {
+    let dot = 0; for (const t in qvec) if (d.vec[t]) dot += qvec[t] * d.vec[t];
+    return { key: d.key, dim: d.dim, verbosity: d.verbosity, text: d.text, score: dot / (qnorm * d.norm) };
+  }).sort((a, b) => b.score - a.score);
+}
+// Fallback on-the-fly scoring when no index exists yet
+function rankOnTheFly(query, docs) {
+  const qTokens = tokenize(query); const docTokens = docs.map(d => tokenize(d.text));
+  const N = docs.length + 1, df = {};
+  [qTokens, ...docTokens].forEach(toks => new Set(toks).forEach(t => df[t] = (df[t] || 0) + 1));
   const idf = t => Math.log(N / (1 + (df[t] || 0))) + 1;
+  const tf = toks => { const m = {}; toks.forEach(t => m[t] = (m[t] || 0) + 1); return m; };
   const vec = toks => { const f = tf(toks), v = {}; for (const t in f) v[t] = f[t] * idf(t); return v; };
   const dot = (a, b) => { let s = 0; for (const t in a) if (b[t]) s += a[t] * b[t]; return s; };
   const norm = a => Math.sqrt(dot(a, a)) || 1e-9;
   const qv = vec(qTokens);
-  return docs.map((d, i) => {
-    const dv = vec(docTokens[i]);
-    return { ...d, score: dot(qv, dv) / (norm(qv) * norm(dv)) };
-  }).sort((a, b) => b.score - a.score);
+  return docs.map((d, i) => { const dv = vec(docTokens[i]); return { ...d, score: dot(qv, dv) / (norm(qv) * norm(dv)) }; }).sort((a, b) => b.score - a.score);
 }
 
-// ── Upstash REST (double-encoded; matches existing cacheGet) ──────────────────
 async function cacheGet(key) {
   if (!UPSTASH_URL || !UPSTASH_TOKEN) return null;
   try {
     const r = await fetch(`${UPSTASH_URL}/get/${encodeURIComponent(key)}`, { headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` } });
     if (!r.ok) return null;
-    const d = await r.json();
-    if (!d.result) return null;
-    let p = JSON.parse(d.result); if (typeof p === 'string') p = JSON.parse(p);
-    return p;
+    const d = await r.json(); if (!d.result) return null;
+    let p = JSON.parse(d.result); if (typeof p === 'string') p = JSON.parse(p); return p;
   } catch { return null; }
 }
 async function cacheSet(key, entry) {
@@ -123,7 +126,6 @@ async function cacheSet(key, entry) {
     });
   } catch {}
 }
-
 async function claude(model, prompt, maxTokens) {
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -131,19 +133,14 @@ async function claude(model, prompt, maxTokens) {
     body: JSON.stringify({ model, max_tokens: maxTokens || 500, messages: [{ role: 'user', content: prompt }] }),
   });
   if (!r.ok) throw new Error('Claude ' + r.status);
-  const d = await r.json();
-  return d.content?.[0]?.text?.trim() || '';
+  const d = await r.json(); return d.content?.[0]?.text?.trim() || '';
 }
-
-// Spoken version: never read URLs or emails aloud
 function speakable(text) {
   let t = text.replace(/https?:\/\/[^\s)]+/g, 'नीचे दिया गया लिंक दबाएँ');
   t = t.replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, 'दिया गया ईमेल पता दबाएँ');
   return t;
 }
-
 function dimKey(journey, dim, persona, verbosity) { return `umang:${journey}:${dim}:${persona}:${verbosity}:hi`; }
-
 async function generateDim(journey, dim, personaSlug, verb) {
   const prompt = `You are GATO, the DPIx Journey Intelligence agent, talking to the user about a financial consent screen in the Umang-style app.
 
@@ -153,6 +150,23 @@ FOCUS: ${DIMS[dim] || DIMS.kya_likha_hai}
 LENGTH: ${VERBOSITY[verb] || VERBOSITY.MEDIUM}
 LANGUAGE: Hindi, Devanagari only. Conversational, spoken register, no filler. Output ONLY the spoken words.`;
   return claude(SONNET, prompt, 700);
+}
+async function liveAnswer(journey, q) {
+  const p = PROVIDERS[journey] || {};
+  const facts = [
+    p.name && `Provider: ${p.name}`, p.phone && `Support phone: ${p.phone}`, p.email && `Email: ${p.email}`,
+    p.fee && `Fee: ${p.fee}`, p.link && `Reference link: ${p.link}`, p.note && `Note: ${p.note}`,
+  ].filter(Boolean).join('\n');
+  const prompt = `The user asked a follow-up the cache could not answer. Compose a short helpful Hindi (Devanagari) answer using ONLY the provider facts below. If a phone/email/link is relevant, include it verbatim. 2-4 sentences, spoken register, no filler.
+
+USER QUESTION: "${q}"
+SCREEN: ${SCREENS[journey]}
+PROVIDER FACTS:
+${facts || 'No provider data on file.'}
+
+Output ONLY the spoken answer.`;
+  const answer = await claude(SONNET, prompt, 500);
+  return { answer, provider: p };
 }
 
 export default async function handler(req, res) {
@@ -167,46 +181,52 @@ export default async function handler(req, res) {
   const journey = SCREENS[body.journeyId] ? body.journeyId : 'ekyc';
   const persona = PERSONA_PROFILE[body.persona] ? body.persona : 'rajan';
   const verb = VERBOSITY[body.verbosity] ? body.verbosity : 'MEDIUM';
-  const mode = body.mode === 'followon' ? 'followon' : 'compare';
+  const mode = ['followon', 'live'].includes(body.mode) ? body.mode : 'compare';
 
   try {
-    // ───────── COMPARE: one CAS dimension, cache or forced live ─────────
+    // ───────── COMPARE ─────────
     if (mode === 'compare') {
       const dim = DIMS[body.dim] ? body.dim : 'kya_likha_hai';
       const key = dimKey(journey, dim, persona, verb);
       if (!body.nocache) {
         const hit = await cacheGet(key);
-        if (hit && hit.script) {
-          return res.status(200).json({ tier: 1, source: 'cache', dim, script: hit.script, tts: speakable(hit.script), cache_key: key, journeyId: journey, latency_ms: Date.now() - t0 });
-        }
+        if (hit && hit.script) return res.status(200).json({ tier: 1, source: 'cache', dim, script: hit.script, tts: speakable(hit.script), cache_key: key, journeyId: journey, latency_ms: Date.now() - t0 });
       }
       const script = await generateDim(journey, dim, persona, verb);
       if (!body.nocache && script) await cacheSet(key, { script, dim, journey, persona, verbosity: verb, language: 'hi', generated_at: new Date().toISOString(), model: SONNET, tier: 1 });
       return res.status(200).json({ tier: 2, source: 'live', dim, script, tts: speakable(script), cache_key: key, journeyId: journey, latency_ms: Date.now() - t0 });
     }
 
-    // ───────── FOLLOW-ON: NLP match → Tier 1 rephrase, else Tier 2 live ─────────
+    // ───────── LIVE (phase 2 of a follow-on) ─────────
+    if (mode === 'live') {
+      const q = (body.transcript || '').trim();
+      const { answer, provider } = await liveAnswer(journey, q);
+      return res.status(200).json({ tier: 2, source: 'live', script: answer, tts: speakable(answer), notice: NOTICE, provider, journeyId: journey, latency_ms: Date.now() - t0 });
+    }
+
+    // ───────── FOLLOW-ON (phase 1: indexed match) ─────────
     const q = (body.transcript || '').trim();
     const exclude = Array.isArray(body.exclude) ? body.exclude : [];
     const repeatAsked = /\b(repeat|dobara|dubara|phir se|fir se|firse|samajh nahi|samjha nahi|nahi samjha|didn'?t understand|samajh)\b/i.test(q)
       || /फिर से|दोबारा|समझ नहीं|दुबारा/.test(q);
 
-    // candidate cached narratives for this journey (both dims × all verbosity)
-    const cand = [];
-    for (const dim of Object.keys(DIMS)) for (const v of Object.keys(VERBOSITY)) {
-      const key = dimKey(journey, dim, persona, v);
-      const hit = await cacheGet(key);
-      if (hit && hit.script) cand.push({ key, dim, text: hit.script });
+    let ranked = [];
+    const idx = await cacheGet(`umang:idx:${journey}:${persona}`);
+    if (idx && idx.docs && idx.docs.length) {
+      ranked = rankWithIndex(q, idx);
+    } else {
+      const cand = [];
+      for (const dim of Object.keys(DIMS)) for (const v of Object.keys(VERBOSITY)) {
+        const key = dimKey(journey, dim, persona, v);
+        const hit = await cacheGet(key);
+        if (hit && hit.script) cand.push({ key, dim, text: hit.script });
+      }
+      if (cand.length) ranked = rankOnTheFly(q, cand);
     }
     const keywords = extractKeywords(q);
-    let best = null;
-    if (cand.length) {
-      const ranked = scoreSimilarity(q, cand).filter(c => repeatAsked || !exclude.includes(c.key));
-      best = ranked[0] || null;
-    }
+    const best = ranked.filter(c => repeatAsked || !exclude.includes(c.key))[0] || null;
 
     if (best && best.score >= THRESHOLD) {
-      // Tier 1 — rephrase the cached narrative to fit the follow-on (content stays cache-sourced)
       const prompt = `Rephrase the cached explanation below to directly answer the user's follow-up. Keep the SAME facts and meaning — do not add new claims. Hindi, Devanagari only, 2-4 sentences, spoken register.
 
 USER FOLLOW-UP: "${q}"
@@ -220,26 +240,10 @@ Output ONLY the reworded spoken answer.`;
       });
     }
 
-    // Tier 2 — no good cache match: "searching…" + curated provider lookup
-    const p = PROVIDERS[journey] || {};
-    const facts = [
-      p.name && `Provider: ${p.name}`, p.phone && `Support phone: ${p.phone}`, p.email && `Email: ${p.email}`,
-      p.fee && `Fee: ${p.fee}`, p.link && `Reference link: ${p.link}`, p.note && `Note: ${p.note}`,
-    ].filter(Boolean).join('\n');
-    const prompt = `The user asked a follow-up the cache could not answer. Compose a short helpful Hindi (Devanagari) answer using ONLY the provider facts below. If a phone/email/link is relevant, include it verbatim. 2-4 sentences, spoken register, no filler.
-
-USER QUESTION: "${q}"
-SCREEN: ${SCREENS[journey]}
-PROVIDER FACTS:
-${facts || 'No provider data on file.'}
-
-Output ONLY the spoken answer.`;
-    const answer = await claude(SONNET, prompt, 500);
-    const preface = 'मेरे पास इसका तैयार जवाब नहीं है। मैं सही जानकारी ढूँढता हूँ… खोज रहा हूँ…';
-    const script = preface + '\n\n' + answer;
+    // No good match → tell the page to show the modal + call mode:'live'. No LLM here (fast).
     return res.status(200).json({
-      tier: 2, source: 'live', keywords, match_score: best ? Number(best.score.toFixed(3)) : 0,
-      provider: p, script, tts: speakable(preface + ' ' + answer), journeyId: journey, latency_ms: Date.now() - t0,
+      tier: 2, needLive: true, notice: NOTICE, source: 'live',
+      match_score: best ? Number(best.score.toFixed(3)) : 0, keywords, journeyId: journey, latency_ms: Date.now() - t0,
     });
   } catch (e) {
     return res.status(500).json({ error: e.message, journeyId: journey });

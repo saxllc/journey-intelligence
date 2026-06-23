@@ -14,22 +14,20 @@ body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;d
 
 .layout{display:grid;grid-template-columns:min-content 1fr;flex:1;min-height:0}
 
-/* ───── Phone column (full height, reduced bezel) ───── */
+/* ───── Phone column (full height, fixed 300:620 aspect) ───── */
 .phone-col{background:#111827;border-right:1px solid #1E293B;padding:7px 8px;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.sax-phone{height:calc(100vh - 14px);aspect-ratio:300/620;width:auto;padding:4px;flex-shrink:0}
+.sax-phone{--ph:min(calc(100vh - 16px), 880px);height:var(--ph);width:calc(var(--ph) * 0.4839);padding:4px;flex-shrink:0}
 
 /* App header inside phone */
 .u-appbar{text-align:center;padding:4px 0 6px}
 .u-appbar .u-logo{font-size:15px;font-weight:800;letter-spacing:.3px;color:var(--text-color)}
 .u-appbar .u-gov{font-size:9px;color:var(--text-sec);font-weight:500}
-/* persona + verbosity inside phone */
 .u-controls{display:flex;align-items:center;gap:8px;padding:6px 10px;margin:0 6px 6px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px}
 .u-controls select{flex:1;min-width:0;background:transparent;border:none;color:var(--text-color);font-size:11px;font-weight:600;outline:none}
 .u-controls .vb{display:flex;align-items:center;gap:5px}
 .u-controls .vb span{font-size:8px;color:var(--text-sec);text-transform:uppercase;letter-spacing:.5px}
 .u-controls input[type=range]{width:62px;accent-color:#6366F1}
 
-/* Home pages (swipe + dots) */
 .u-home{display:flex;flex-direction:column;flex:1;min-height:0}
 .u-pages{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;flex:1;scrollbar-width:none}
 .u-pages::-webkit-scrollbar{display:none}
@@ -47,7 +45,6 @@ body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;d
 .u-dot{width:7px;height:7px;border-radius:50%;background:var(--card-border);cursor:pointer;transition:all .15s}
 .u-dot.on{background:#6366F1;width:18px;border-radius:4px}
 
-/* App screen (selected journey) */
 .u-app-screen{display:none;flex-direction:column;flex:1;min-height:0;overflow-y:auto;padding:2px 12px 12px}
 .u-app-screen.show{display:flex}
 .u-back{display:flex;align-items:center;gap:5px;font-size:11px;color:#0A84FF;font-weight:600;padding:2px 0 6px;cursor:pointer}
@@ -72,7 +69,6 @@ body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;d
 
 /* ───── Right: compare area ───── */
 .compare-area{display:flex;flex-direction:column;min-height:0;overflow:hidden}
-/* Apple-style header */
 .u-head{padding:14px 20px 10px;border-bottom:1px solid #1E293B;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .u-h1{font-family:-apple-system,'SF Pro Display','DM Sans',var(--sax-font);font-size:26px;font-weight:800;letter-spacing:-.5px;color:#F8FAFC;line-height:1}
 .u-h1 .sub{display:block;font-size:11px;font-weight:500;letter-spacing:0;color:#64748B;margin-top:3px}
@@ -93,7 +89,6 @@ body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;d
 .ask-btn{background:#334155;border:none;color:#E2E8F0;padding:9px 14px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer}
 .ask-btn:hover{background:#475569}
 
-/* Arena: two panels, stats/controls on TOP */
 .arena{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px 20px;flex:1;min-height:0}
 .u-panel{border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-height:0;border:1.5px solid #1E293B}
 .u-titlebar{padding:9px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
@@ -115,7 +110,6 @@ body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;d
 .play-btn:hover,.stop-btn:hover{background:#334155}
 .play-btn:disabled,.stop-btn:disabled{opacity:.35;cursor:not-allowed}
 .play-btn.on{border-color:#6366F1;background:#312E81;color:#fff}
-/* light conversation area */
 .u-convo{flex:1;overflow-y:auto;background:#F1F5F9;padding:13px;display:flex;flex-direction:column;gap:10px;min-height:0}
 .u-empty{margin:auto;text-align:center;color:#94A3B8;font-size:12px;font-style:italic;padding:16px}
 .u-q{align-self:flex-end;background:#4F46E5;color:#fff;font-size:11px;padding:6px 11px;border-radius:12px;border-bottom-right-radius:4px;max-width:88%}
@@ -130,6 +124,16 @@ body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;d
 .typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
 @keyframes bnc{to{transform:translateY(-5px);background:#475569}}
 
+/* ───── Modal info dialog ───── */
+.u-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:9999}
+.u-modal.show{display:flex}
+.u-modal-card{background:#FFFFFF;color:#0F172A;border-radius:16px;padding:24px 26px;max-width:380px;width:86%;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.45)}
+.u-modal-ico{font-size:28px;margin-bottom:8px}
+.u-modal-msg{font-size:14px;line-height:1.55;margin-bottom:8px;font-weight:500}
+.u-modal-hint{font-size:10px;color:#94A3B8;margin-bottom:16px}
+.u-modal-ok{background:#6366F1;color:#fff;border:none;padding:8px 24px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer}
+.u-modal-ok:hover{background:#4F46E5}
+
 .status-bar{font-size:10px;color:#475569;text-align:center;padding:5px;background:#0F172A;border-top:1px solid #1E293B;flex-shrink:0}
 .status-bar b{color:#64748B}
 .sax-phone-placeholder{background:transparent}
@@ -138,7 +142,7 @@ body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;d
   body{overflow:auto;height:auto;min-height:100vh}
   .layout{grid-template-columns:1fr;overflow:visible}
   .phone-col{border-right:none;border-bottom:1px solid #1E293B}
-  .sax-phone{height:auto;width:min(330px,86vw);aspect-ratio:300/620}
+  .sax-phone{width:min(330px,86vw);height:auto;aspect-ratio:300/620}
   .arena{grid-template-columns:1fr;gap:12px}
   .u-panel{min-height:300px}
   .u-followon{margin-left:0}
@@ -149,7 +153,6 @@ body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;d
 <body>
 
 <div class="layout">
-  <!-- LEFT: phone -->
   <div class="phone-col">
     <div class="sax-phone" data-theme="light" id="iphone">
       <div class="sax-phone-content">
@@ -164,7 +167,7 @@ body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;d
         </div>
 
         <div class="u-home" id="u-home">
-          <div class="u-pages" id="u-pages"><!-- pages rendered by JS --></div>
+          <div class="u-pages" id="u-pages"></div>
           <div class="u-dots" id="u-dots"></div>
         </div>
 
@@ -176,7 +179,6 @@ body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;d
     </div>
   </div>
 
-  <!-- RIGHT: compare -->
   <div class="compare-area">
     <div class="u-head">
       <div class="u-h1">Kya Likha Hai<span class="sub">Tier 1 cache vs Tier 2 live · comprehension &amp; action</span></div>
@@ -230,6 +232,15 @@ body{font-family:var(--sax-font);background:#0B0F1A;color:#E2E8F0;height:100vh;d
   </div>
 </div>
 
+<div class="u-modal" id="u-modal">
+  <div class="u-modal-card">
+    <div class="u-modal-ico">🔎</div>
+    <div class="u-modal-msg" id="u-modal-msg"></div>
+    <div class="u-modal-hint">Closes when the answer appears · OK or Esc to dismiss</div>
+    <button class="u-modal-ok" onclick="hideModal()">OK</button>
+  </div>
+</div>
+
 <script src="/shared/sax-phone.js"></script>
 <script>
 const JOURNEYS=[
@@ -277,21 +288,18 @@ let lastMatchedKeys=[];
 function persona(){return document.getElementById('sel-persona').value;}
 function verbosity(){return VERB[+document.getElementById('sel-verbosity').value]||'MEDIUM';}
 
-/* iOS-safe audio */
 const ttsAudio=new Audio();ttsAudio.playsInline=true;ttsAudio.setAttribute('playsinline','');
 let audioUnlocked=false;
 function unlockAudio(){if(audioUnlocked)return;ttsAudio.src='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';ttsAudio.play().then(()=>{audioUnlocked=true;}).catch(()=>{});}
 document.addEventListener('touchstart',unlockAudio,{once:true});
 document.addEventListener('click',unlockAudio,{once:true});
 
-/* ───── Home grid ───── */
+/* Home grid */
 function renderHome(){
   let h='';
   PAGES.forEach(pg=>{
     h+='<div class="u-page"><div class="u-risk '+pg.risk+'">'+pg.label+'</div><div class="u-grid">';
-    pg.ids.forEach(id=>{
-      h+='<div class="u-app" onclick="openApp(\''+id+'\')"><div class="ic">'+(META[id]||{}).icon+'</div><div class="lb">'+J[id].name+'</div></div>';
-    });
+    pg.ids.forEach(id=>{h+='<div class="u-app" onclick="openApp(\''+id+'\')"><div class="ic">'+(META[id]||{}).icon+'</div><div class="lb">'+J[id].name+'</div></div>';});
     h+='</div></div>';
   });
   document.getElementById('u-pages').innerHTML=h;
@@ -301,10 +309,9 @@ function renderHome(){
 function goPage(i){const pages=document.getElementById('u-pages');pages.scrollTo({left:i*pages.clientWidth,behavior:'smooth'});}
 function syncDots(){const pages=document.getElementById('u-pages');const i=Math.round(pages.scrollLeft/pages.clientWidth);document.querySelectorAll('.u-dot').forEach((d,k)=>d.classList.toggle('on',k===i));}
 
-/* ───── App screen ───── */
+/* App screen */
 function openApp(id){
-  current=id;
-  const j=J[id],m=META[id]||{};
+  current=id;const j=J[id],m=META[id]||{};
   let h='';
   h+='<div class="j-mat mat-L'+j.mat+'">L'+j.mat+'</div>';
   h+='<div class="j-hero"><div class="icon">'+(m.icon||'📱')+'</div><h3>'+j.name+'</h3><p>'+(m.sub||'')+'</p></div>';
@@ -323,28 +330,20 @@ function openApp(id){
   resetConvos();
   setStatus('Opened '+j.name+' · pick a chip or Compare');
 }
-function backHome(){
-  document.getElementById('u-app-screen').classList.remove('show');
-  document.getElementById('u-home').style.display='flex';
-}
+function backHome(){document.getElementById('u-app-screen').classList.remove('show');document.getElementById('u-home').style.display='flex';}
 
-/* ───── Conversation rendering ───── */
-function badge(src){const c=src==='cache'||src==='cache-rephrased'?'cache':'live';return '<span class="u-badge '+c+'">'+(c==='cache'?'⚡ cache':'🧠 live')+'</span>';}
+/* Conversation rendering */
+function badge(src){const c=(src==='cache'||src==='cache-rephrased')?'cache':'live';return '<span class="u-badge '+c+'">'+(c==='cache'?'⚡ cache':'🧠 live')+'</span>';}
 function emptyMsg(side){return '<div class="u-empty">'+(side==='cache'?'Cache answers (and cache-matched follow-ups) appear here.':'Live answers (no cache match) appear here.')+'</div>';}
 function clearEmpty(side){const t=document.getElementById('convo-'+side);const e=t.querySelector('.u-empty');if(e)e.remove();}
 function addTyping(side){clearEmpty(side);const t=document.getElementById('convo-'+side);const d=document.createElement('div');d.className='typing';d.id='typing-'+side;d.innerHTML='<span></span><span></span><span></span>';t.appendChild(d);t.scrollTop=t.scrollHeight;}
 function removeTyping(side){const d=document.getElementById('typing-'+side);if(d)d.remove();}
-function linkify(s){
-  s=s.replace(/(https?:\/\/[^\s)]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
-  s=s.replace(/([\w.+-]+@[\w-]+\.[\w.-]+)/g,'<a href="mailto:$1">$1</a>');
-  return s;
-}
+function linkify(s){s=s.replace(/(https?:\/\/[^\s)]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');s=s.replace(/([\w.+-]+@[\w-]+\.[\w.-]+)/g,'<a href="mailto:$1">$1</a>');return s;}
 function addTurn(side,qText,data){
   const t=document.getElementById('convo-'+side);clearEmpty(side);
   const ms=data.client_ms||data.latency_ms||0;const msLabel=ms<1000?ms+'ms':(ms/1000).toFixed(1)+'s';
   const d=document.createElement('div');d.className='turn';
-  let inner='';
-  if(qText)inner+='<div class="u-q">'+qText+'</div>';
+  let inner='';if(qText)inner+='<div class="u-q">'+qText+'</div>';
   inner+='<div class="u-a">'+linkify(data.script||'(no answer)')+'</div>';
   inner+='<div class="u-meta">'+(data.dim||data.intent||'')+(data.match_score!=null?' · match '+data.match_score:'')+' · '+msLabel+' '+badge(data.source)+'</div>';
   d.innerHTML=inner;t.appendChild(d);t.scrollTop=t.scrollHeight;
@@ -357,13 +356,17 @@ function setMetrics(side,data){
   document.getElementById(side+'-source').textContent=isCache?(data.source==='cache-rephrased'?'Redis+':'Redis'):'Claude';
 }
 
-/* ───── Compare (both tiers) ───── */
+/* Modal */
+function showModal(msg){document.getElementById('u-modal-msg').textContent=msg||'…';document.getElementById('u-modal').classList.add('show');}
+function hideModal(){document.getElementById('u-modal').classList.remove('show');}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')hideModal();});
+
+/* Compare (both tiers) */
 function pickChip(dim){activeDim=dim;document.getElementById('chip-kya').classList.toggle('active',dim==='kya_likha_hai');document.getElementById('chip-faida').classList.toggle('active',dim==='faida');runCompare();}
 let running=false;
 async function runCompare(){
   if(!current){setStatus('Open an app from the phone first.');return;}
-  if(running)return;running=true;
-  document.getElementById('btn-compare').disabled=true;
+  if(running)return;running=true;document.getElementById('btn-compare').disabled=true;
   const label=activeDim==='kya_likha_hai'?'क्या लिखा है':'इसमें फ़ायदा क्या है';
   const payload={mode:'compare',dim:activeDim,journeyId:current,persona:persona(),verbosity:verbosity()};
   clearEmpty('cache');clearEmpty('live');addTyping('cache');addTyping('live');
@@ -376,36 +379,41 @@ async function runCompare(){
   if(!cd.error){addTurn('cache',label,cd);setMetrics('cache',cd);lastScript.cache=cd.script||'';lastTts.cache=cd.tts||cd.script||'';document.getElementById('cache-play').disabled=!cd.script;}
   if(!ld.error){addTurn('live',label,ld);setMetrics('live',ld);lastScript.live=ld.script||'';lastTts.live=ld.tts||ld.script||'';document.getElementById('live-play').disabled=!ld.script;}
   updateAudioUI();
-  if(cd&&cd.script)startPlay('cache');   // first-run: cache plays immediately
+  if(cd&&cd.script)startPlay('cache');
   setStatus('Compared "'+label+'" · cache '+(cd.client_ms||0)+'ms vs live '+(ld.client_ms||0)+'ms');
   running=false;document.getElementById('btn-compare').disabled=false;
 }
 
-/* ───── Follow-on (routed) ───── */
+/* Follow-on: phase 1 indexed match → phase 2 live (with modal) */
 async function sendFollowon(){
   const el=document.getElementById('text-input');const q=el.value.trim();if(!q)return;el.value='';
   if(!current){setStatus('Open an app first.');return;}
-  const payload={mode:'followon',transcript:q,journeyId:current,persona:persona(),verbosity:verbosity(),exclude:lastMatchedKeys};
-  const t0=Date.now();
-  // we don't yet know which tier — show typing in cache (checked first)
-  clearEmpty('cache');addTyping('cache');
-  setStatus('Parsing follow-up · matching cache…');
-  let d;
-  try{const r=await fetch('/api/umang-chunk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});d=await r.json();d.client_ms=Date.now()-t0;}
-  catch(e){d={error:e.message};}
+  const base={journeyId:current,persona:persona(),verbosity:verbosity()};
+  clearEmpty('cache');addTyping('cache');setStatus('Parsing follow-up · matching cache…');
+  let m;const t0=Date.now();
+  try{const r=await fetch('/api/umang-chunk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...base,mode:'followon',transcript:q,exclude:lastMatchedKeys})});m=await r.json();m.client_ms=Date.now()-t0;}catch(e){m={error:e.message};}
   removeTyping('cache');
+  if(m.error){setStatus('Error: '+m.error);return;}
+  if(m.tier===1){
+    if(m.matched_key)lastMatchedKeys=[m.matched_key,...lastMatchedKeys].slice(0,6);
+    addTurn('cache',q,m);setMetrics('cache',m);lastScript.cache=m.script||'';lastTts.cache=m.tts||m.script||'';document.getElementById('cache-play').disabled=!m.script;updateAudioUI();
+    if(m.script)startPlay('cache');
+    setStatus('Cache match '+(m.match_score!=null?Math.round(m.match_score*100)+'%':'')+' · Tier 1');
+    return;
+  }
+  // No cache match → modal + live (Tier 2 focus)
+  showModal(m.notice||'मैं ऑनलाइन देखता हूँ…');
+  addTyping('live');setStatus('No cache match · checking online…');
+  let d;const t1=Date.now();
+  try{const r=await fetch('/api/umang-chunk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...base,mode:'live',transcript:q})});d=await r.json();d.client_ms=Date.now()-t1;}catch(e){d={error:e.message};}
+  removeTyping('live');hideModal();
   if(d.error){setStatus('Error: '+d.error);return;}
-  const side=d.tier===1?'cache':'live';
-  if(d.matched_key){lastMatchedKeys=[d.matched_key,...lastMatchedKeys].slice(0,6);}
-  addTurn(side,q,d);setMetrics(side,d);
-  lastScript[side]=d.script||'';lastTts[side]=d.tts||d.script||'';
-  document.getElementById(side+'-play').disabled=!d.script;
-  updateAudioUI();
-  if(d.script)startPlay(side);
-  setStatus(d.tier===1?('Cache match '+(d.match_score!=null?Math.round(d.match_score*100)+'%':'')+' · rephrased in Tier 1'):'No cache match · Tier 2 live lookup');
+  addTurn('live',q,d);setMetrics('live',d);lastScript.live=d.script||'';lastTts.live=d.tts||d.script||'';document.getElementById('live-play').disabled=!d.script;updateAudioUI();
+  if(d.script)startPlay('live');
+  setStatus('Tier 2 live lookup · provider info');
 }
 
-/* ───── Audio engine (play/pause/stop) ───── */
+/* Audio engine */
 let audioSide=null, audioState='idle';
 ttsAudio.onended=function(){audioState='idle';audioSide=null;updateAudioUI();};
 function updateAudioUI(){
@@ -437,7 +445,7 @@ function playToggle(side){
 }
 function stopAudio(side){try{ttsAudio.pause();ttsAudio.currentTime=0;}catch(e){}audioState='idle';audioSide=null;updateAudioUI();}
 
-/* ───── STT ───── */
+/* STT */
 let mediaRecorder=null,audioChunks=[],isRecording=false;
 async function toggleMic(){if(isRecording){if(mediaRecorder&&mediaRecorder.state!=='inactive')mediaRecorder.stop();isRecording=false;document.getElementById('mic-btn').className='mic-btn';setStatus('⏳ Transcribing…');}else{
   try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});mediaRecorder=new MediaRecorder(stream,{mimeType:'audio/webm;codecs=opus'});audioChunks=[];
@@ -447,7 +455,7 @@ async function toggleMic(){if(isRecording){if(mediaRecorder&&mediaRecorder.state
   }catch(e){setStatus('Mic error: '+e.message);}
 }}
 
-/* ───── Reset / misc ───── */
+/* Reset / misc */
 function resetConvos(){
   try{ttsAudio.pause();ttsAudio.currentTime=0;}catch(e){}audioSide=null;audioState='idle';lastMatchedKeys=[];
   ['cache','live'].forEach(s=>{document.getElementById('convo-'+s).innerHTML=emptyMsg(s);document.getElementById(s+'-latency').textContent='—';document.getElementById(s+'-cost').textContent='—';document.getElementById(s+'-source').textContent='—';lastScript[s]='';lastTts[s]='';});
