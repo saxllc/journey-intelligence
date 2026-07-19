@@ -109,7 +109,7 @@ The approach borrows Wise's confidence (bold weights, tight headings, pill butto
 - All inputs use `flex: 1; min-width: 0` — never fixed pixel widths
 - Aadhaar: 3 groups, `gap: 6px`, `height: 48px`, `font-size: 18px`, `letter-spacing: 2px`, `padding: 0 4px`
 - OTP: 6 single-digit boxes, `flex: 1; min-width: 0`, `height: 50px`, `font-size: 20px`, `gap: 6px`
-- Consent: checkbox 22px + label, `gap: 10px`
+- Acceptance: checkbox 22px + label, `gap: 10px`
 - Focus: `border-color: #2563EB`
 - OTP filled: `border-color: #9fe870; background: #F7FDF4`
 - Radius: 10-12px matching card inner elements

@@ -133,11 +133,11 @@ body{font-family:'Noto Sans','Noto Sans Devanagari',sans-serif;background:#0d0d1
 .photo-zone-text{font-size:13px;color:#7986cb;font-weight:500}
 .photo-zone-sub{font-size:11px;color:#aaa;margin-top:4px}
 .photo-preview-img{width:100%;border-radius:10px;max-height:180px;object-fit:cover;display:none;margin-top:8px}
-.consent-row{display:flex;align-items:flex-start;gap:12px;padding:12px;background:#f8f9ff;border:1.5px solid #e8eaff;border-radius:12px;cursor:pointer;margin-top:8px;transition:border .15s}
-.consent-row:has(input:checked){border-color:#1a237e;background:#e8eaf6}
-.consent-chk{width:22px;height:22px;flex-shrink:0;accent-color:#1a237e;margin-top:1px}
-.consent-text{font-size:13px;line-height:1.6;color:#333}
-.consent-text-large{font-size:15px;line-height:1.7}
+.acceptance-row{display:flex;align-items:flex-start;gap:12px;padding:12px;background:#f8f9ff;border:1.5px solid #e8eaff;border-radius:12px;cursor:pointer;margin-top:8px;transition:border .15s}
+.acceptance-row:has(input:checked){border-color:#1a237e;background:#e8eaf6}
+.acceptance-chk{width:22px;height:22px;flex-shrink:0;accent-color:#1a237e;margin-top:1px}
+.acceptance-text{font-size:13px;line-height:1.6;color:#333}
+.acceptance-text-large{font-size:15px;line-height:1.7}
 .settle-opts{display:flex;gap:8px;margin-bottom:14px}
 .settle-opt{flex:1;padding:11px 8px;border:2px solid #dde0ef;border-radius:10px;background:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:#888;transition:all .15s;text-align:center}
 .settle-opt.active{border-color:#1a237e;background:#e8eaf6;color:#1a237e}
@@ -355,8 +355,8 @@ function steps() {
       obj:{ id:'asset_digitization', title:'Asset Digitization — Tokenizing the Asset',
         description:`Document and digitize ${a.name} (${a.value}) for tokenization on the Finternet unified ledger. This creates a unique digital twin of the physical asset.`,
         action:'Upload asset photograph or documents. Verify ownership.', asset:a.name, value:a.value } },
-    { id:'id_consent', title:'Identity & Consent', sub:'Aadhaar + Account Aggregator', mat:'CONSEQUENTIAL', icon:'🪪',
-      obj:{ id:'identity_consent', title:'Identity Verification & AA Consent',
+    { id:'id_acceptance', title:'Identity & Acceptance', sub:'Aadhaar + Account Aggregator', mat:'CONSEQUENTIAL', icon:'🪪',
+      obj:{ id:'identity_acceptance', title:'Identity Verification & AA Consent',
         description:'Verify identity using Aadhaar OTP. Grant Account Aggregator consent for the lending institution to access your financial history.',
         action:'Enter Aadhaar OTP. Review and approve data sharing consent.',
         legal:'Your financial data will be shared with the lending institution under AA framework.' } },
@@ -590,9 +590,9 @@ function stepInputsHtml(n) {
       <input class="inp inp-otp" type="tel" id="inp-otp" maxlength="6" placeholder="------" inputmode="numeric" style="font-size:${large?'26px':'22px'}">
       <div class="field-divider"></div>
       <div class="sec-label" style="margin-top:0;font-size:12px;color:#1a237e;margin-bottom:8px">🤝 ${simple?'Ijazat dena':'Account Aggregator Consent'}</div>
-      <label class="consent-row">
-        <input type="checkbox" class="consent-chk" id="inp-consent">
-        <span class="consent-text ${large?'consent-text-large':''}">
+      <label class="acceptance-row">
+        <input type="checkbox" class="acceptance-chk" id="inp-acceptance">
+        <span class="acceptance-text ${large?'acceptance-text-large':''}">
           ${simple
             ? 'Haan, mujhe theek lagta hai. Meri bank ki jaankari loan ke liye dekhi jaaye.'
             : 'I consent to sharing my financial data with the lending institution via the Account Aggregator framework.'}
@@ -605,9 +605,9 @@ function stepInputsHtml(n) {
     return `
     <div class="inp-card">
       <div class="sec-label" style="margin-top:0;font-size:12px;color:#c62828;margin-bottom:8px">⚠️ ${simple?'Samjho aur haan kaho':'Accept Terms'}</div>
-      <label class="consent-row">
-        <input type="checkbox" class="consent-chk" id="inp-terms">
-        <span class="consent-text ${large?'consent-text-large':''}">
+      <label class="acceptance-row">
+        <input type="checkbox" class="acceptance-chk" id="inp-terms">
+        <span class="acceptance-text ${large?'acceptance-text-large':''}">
           ${simple
             ? 'Haan mujhe samajh aa gaya. Agar main samay pe paisa nahi deta/deti toh meri chiz le li jaayegi.'
             : 'I have read and understood the collateral terms. I accept that my asset may be partially liquidated if I default beyond 90 days.'}
@@ -620,9 +620,9 @@ function stepInputsHtml(n) {
     return `
     <div class="inp-card">
       <div class="sec-label" style="margin-top:0;font-size:12px;color:#1a237e;margin-bottom:8px">🎙 ${simple?'Kya tune suna?':'Confirm Understanding'}</div>
-      <label class="consent-row">
-        <input type="checkbox" class="consent-chk" id="inp-klh">
-        <span class="consent-text ${large?'consent-text-large':''}">
+      <label class="acceptance-row">
+        <input type="checkbox" class="acceptance-chk" id="inp-klh">
+        <span class="acceptance-text ${large?'acceptance-text-large':''}">
           ${simple
             ? 'Haan, maine sun liya. Mujhe samajh aa gaya kya hoga.'
             : 'I have listened to the explanation and I understand what I am agreeing to.'}
@@ -715,8 +715,8 @@ function validateAndNext(n) {
       otp.focus();
       return;
     }
-    const consent = document.getElementById('inp-consent');
-    if (consent && !consent.checked) {
+    const acceptance = document.getElementById('inp-acceptance');
+    if (acceptance && !acceptance.checked) {
       alert(simple ? 'Neeche wale box mein tick karo — ijazat zaroori hai' : 'Please provide Account Aggregator consent to proceed');
       return;
     }

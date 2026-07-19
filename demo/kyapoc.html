@@ -689,25 +689,25 @@ body {
   transition: width 0.06s linear;
 }
 
-/* Consent sheet */
-.consent-overlay {
+/* Acceptance sheet */
+.acceptance-overlay {
   background: rgba(0,0,0,0.5);
   align-items: flex-end;
 }
-.consent-sheet {
+.acceptance-sheet {
   background: #fff;
   border-radius: 20px 20px 0 0;
   padding: 24px 20px;
   width: 100%;
   animation: sheetUp 0.25s ease;
 }
-.consent-header {
+.acceptance-header {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 12px;
 }
-.consent-shield {
+.acceptance-shield {
   width: 32px;
   height: 32px;
   display: flex;
@@ -716,33 +716,33 @@ body {
   color: var(--green);
   font-size: 22px;
 }
-.consent-title {
+.acceptance-title {
   font-size: 16px;
   font-weight: 700;
   font-family: var(--font-hindi);
 }
-.consent-body {
+.acceptance-body {
   font-size: 13px;
   color: var(--ink-secondary);
   line-height: 1.6;
   margin-bottom: 12px;
   font-family: var(--font-hindi);
 }
-.consent-meta {
+.acceptance-meta {
   padding: 10px;
   background: var(--surface);
   border-radius: 8px;
   font-size: 11px;
   margin-bottom: 12px;
 }
-.consent-purpose { font-weight: 600; margin-bottom: 4px; }
-.consent-rights { color: var(--ink-secondary); }
-.consent-act { font-size: 10px; color: var(--ink-tertiary); margin-bottom: 16px; }
-.consent-buttons {
+.acceptance-purpose { font-weight: 600; margin-bottom: 4px; }
+.acceptance-rights { color: var(--ink-secondary); }
+.acceptance-act { font-size: 10px; color: var(--ink-tertiary); margin-bottom: 16px; }
+.acceptance-buttons {
   display: flex;
   gap: 10px;
 }
-.consent-btn {
+.acceptance-btn {
   flex: 1;
   padding: 14px;
   border-radius: 8px;
@@ -751,8 +751,8 @@ body {
   cursor: pointer;
   font-family: var(--font-hindi);
 }
-.consent-btn.deny { background: #fff; border: 1px solid var(--border); color: var(--ink); }
-.consent-btn.allow { background: var(--green); border: none; color: #fff; }
+.acceptance-btn.deny { background: #fff; border: 1px solid var(--border); color: var(--ink); }
+.acceptance-btn.allow { background: var(--green); border: none; color: #fff; }
 
 /* Success overlay */
 .success-overlay {
@@ -1592,23 +1592,23 @@ function startQR() {
 }
 
 function startFaceAuth() {
-  scanState = 'consent';
+  scanState = 'acceptance';
   document.getElementById('overlayContainer').innerHTML = `
-    <div class="overlay consent-overlay">
-      <div class="consent-sheet">
-        <div class="consent-header">
-          <div class="consent-shield">🛡️</div>
-          <div class="consent-title">चेहरा प्रमाणीकरण सहमति</div>
+    <div class="overlay acceptance-overlay">
+      <div class="acceptance-sheet">
+        <div class="acceptance-header">
+          <div class="acceptance-shield">🛡️</div>
+          <div class="acceptance-title">चेहरा प्रमाणीकरण सहमति</div>
         </div>
-        <div class="consent-body">DPDP अधिनियम 2023 के तहत चेहरे की पहचान सत्यापन के लिए कैमरा उपयोग किया जाएगा।</div>
-        <div class="consent-meta">
-          <div class="consent-purpose">उद्देश्य: आधार चेहरा प्रमाणीकरण द्वारा पहचान सत्यापन</div>
-          <div class="consent-rights">आप सेटिंग्स से कभी भी सहमति वापस ले सकते हैं।</div>
+        <div class="acceptance-body">DPDP अधिनियम 2023 के तहत चेहरे की पहचान सत्यापन के लिए कैमरा उपयोग किया जाएगा।</div>
+        <div class="acceptance-meta">
+          <div class="acceptance-purpose">उद्देश्य: आधार चेहरा प्रमाणीकरण द्वारा पहचान सत्यापन</div>
+          <div class="acceptance-rights">आप सेटिंग्स से कभी भी सहमति वापस ले सकते हैं।</div>
         </div>
-        <div class="consent-act">DPDP Act 2023 · Section 6 · Data Principal Rights</div>
-        <div class="consent-buttons">
-          <button class="consent-btn deny" onclick="closeScan()">रद्द करें</button>
-          <button class="consent-btn allow" onclick="startFaceCamera()">अनुमति दें</button>
+        <div class="acceptance-act">DPDP Act 2023 · Section 6 · Data Principal Rights</div>
+        <div class="acceptance-buttons">
+          <button class="acceptance-btn deny" onclick="closeScan()">रद्द करें</button>
+          <button class="acceptance-btn allow" onclick="startFaceCamera()">अनुमति दें</button>
         </div>
       </div>
     </div>`;

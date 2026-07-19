@@ -68,6 +68,24 @@ async function cacheGet(key) {
   } catch { return null; }
 }
 
+<<<<<<< HEAD
+=======
+// Write-back: repopulate the cache after a live miss so a flushed/empty
+// Redis self-heals instead of serving live forever. Stored single-encoded;
+// cacheGet's defensive double-parse handles both single- and double-encoded values.
+async function cacheSet(key, entry) {
+  if (!UPSTASH_URL || !UPSTASH_TOKEN) return false;
+  try {
+    const r = await fetch(`${UPSTASH_URL}/set/${encodeURIComponent(key)}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${UPSTASH_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry),
+    });
+    return r.ok;
+  } catch { return false; }
+}
+
+>>>>>>> db8f43e (retire index-klh, redirect to journey-intelligence hub)
 // ── Main handler ─────────────────────────────────────────────
 export default async function handler(req, res) {
   // CORS
@@ -86,14 +104,27 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing required fields: screen_content, persona_profile, language' });
   }
 
+<<<<<<< HEAD
   // ── Tier 1: cache lookup (skip if nocache flag set) ────────
+=======
+  // Resolve cache identity once — reused for both lookup and write-back.
+>>>>>>> db8f43e (retire index-klh, redirect to journey-intelligence hub)
   const journeyId = resolveJourney(screen_content);
   const personaSlug = resolvePersona(persona_profile);
   const langCode = resolveLang(language);
   const vLevel = verbosity || 'MEDIUM';
+<<<<<<< HEAD
 
   if (!nocache && journeyId && personaSlug && langCode) {
     const cacheKey = `klh:${journeyId}:${personaSlug}:${vLevel}:${langCode}`;
+=======
+  const cacheKey = (journeyId && personaSlug && langCode)
+    ? `klh:${journeyId}:${personaSlug}:${vLevel}:${langCode}`
+    : null;
+
+  // ── Tier 1: cache lookup (skip if nocache flag set) ────────
+  if (!nocache && cacheKey) {
+>>>>>>> db8f43e (retire index-klh, redirect to journey-intelligence hub)
     const cached = await cacheGet(cacheKey);
     if (cached && cached.script) {
       return res.status(200).json({
@@ -167,11 +198,37 @@ Return ONLY the script text. No JSON. No labels. No explanation. Just the words 
     const data = await r.json();
     const script = data.content?.[0]?.text?.trim() || '';
 
+<<<<<<< HEAD
+=======
+    // ── Write-back: repopulate cache so the system self-heals ──
+    // Runs on every successful live generation that maps to a known
+    // cache key — including nocache (Tier-2 comparison) calls, so the
+    // comparison view also re-warms a flushed cache as a side effect.
+    let cached_back = false;
+    if (cacheKey && script) {
+      cached_back = await cacheSet(cacheKey, {
+        script,
+        journey: journeyId,
+        persona: personaSlug,
+        verbosity: vLevel,
+        language: langCode,
+        generated_at: new Date().toISOString(),
+        model: 'claude-sonnet-4-5',
+        tier: 1,
+      });
+    }
+
+>>>>>>> db8f43e (retire index-klh, redirect to journey-intelligence hub)
     return res.status(200).json({
       script,
       source: 'live',
       tier: 2,
       latency_ms: Date.now() - t0,
+<<<<<<< HEAD
+=======
+      cache_key: cacheKey,
+      cached_back,
+>>>>>>> db8f43e (retire index-klh, redirect to journey-intelligence hub)
     });
 
   } catch (e) {

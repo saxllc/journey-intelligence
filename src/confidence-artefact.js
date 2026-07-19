@@ -49,7 +49,7 @@ function generateAadhaarKYCArtefact(kycResult = {}) {
       changed: [
         'Identity verified via Aadhaar OTP',
         'KYC status: Approved',
-        'Consent recorded'
+        'Acceptance recorded'
       ],
       next_actions: [
         { label: 'Download receipt', action_id: 'download-receipt' },
@@ -60,7 +60,7 @@ function generateAadhaarKYCArtefact(kycResult = {}) {
     },
     {
       what_happened:
-        'Your Aadhaar eKYC is complete. Your identity has been verified and shared with consent.'
+        'Your Aadhaar eKYC is complete. Your identity has been verified and shared with your acceptance.'
     }
   );
 }
