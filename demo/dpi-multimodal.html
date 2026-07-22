@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multimodal DPI — Sarvam-wired</title>
+<style>
+  :root{
+    --bg:#0e1116; --panel:#161b22; --panel2:#1c2230; --line:#2a3140;
+    --ink:#e8edf4; --muted:#9aa7b8; --accent:#3b82f6; --accent2:#22c55e;
+    --warn:#f59e0b; --bad:#ef4444; --good:#22c55e; --chip:#243044;
+    --radius:14px; font-synthesis:none;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);}
+  .wrap{display:grid;grid-template-columns:320px 1fr 340px;min-height:100vh;}
+  @media(max-width:1100px){.wrap{grid-template-columns:1fr;}}
+  header.top{grid-column:1/-1;padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  header.top h1{font-size:16px;margin:0;font-weight:600;letter-spacing:.2px;}
+  header.top .tag{font-size:11px;color:var(--muted);background:var(--chip);padding:3px 9px;border-radius:20px;}
+  aside{padding:18px;border-right:1px solid var(--line);}
+  aside.right{border-right:none;border-left:1px solid var(--line);}
+  .grouplbl{font-size:11px;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);margin:18px 0 8px;}
+  .seg{display:flex;flex-direction:column;gap:8px;}
+  .segbtn{text-align:left;background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:11px 12px;border-radius:10px;cursor:pointer;font-size:13px;transition:.15s;}
+  .segbtn:hover{border-color:var(--accent);}
+  .segbtn.active{background:linear-gradient(90deg,rgba(59,130,246,.18),transparent);border-color:var(--accent);}
+  .segbtn small{display:block;color:var(--muted);font-size:11px;margin-top:2px;}
+  .row{display:flex;gap:8px;flex-wrap:wrap;}
+  .lang{flex:1;min-width:64px;background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:8px;border-radius:9px;cursor:pointer;font-size:13px;text-align:center;}
+  .lang.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .cond{background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:9px 10px;border-radius:9px;cursor:pointer;font-size:12px;text-align:left;display:flex;align-items:center;gap:8px;}
+  .cond.active{border-color:var(--warn);background:linear-gradient(90deg,rgba(245,158,11,.16),transparent);}
+  .cond .dot{width:9px;height:9px;border-radius:50%;background:var(--muted);}
+  .cond.active .dot{background:var(--warn);}
+
+  .stage{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:26px 18px;gap:14px;}
+  .phone{width:330px;height:660px;background:#000;border-radius:40px;padding:12px;box-shadow:0 30px 70px rgba(0,0,0,.6),inset 0 0 0 2px #2b3240;position:relative;}
+  .notch{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:130px;height:22px;background:#000;border-radius:0 0 16px 16px;z-index:20;}
+  .screen{width:100%;height:100%;background:#f4f6fb;border-radius:30px;overflow:hidden;position:relative;color:#111827;display:flex;flex-direction:column;}
+  .sbar{height:34px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:11px;color:#111827;background:#f4f6fb;}
+  .appbar{padding:12px 16px;background:#fff;border-bottom:1px solid #e6e9f0;display:flex;align-items:center;gap:10px;}
+  .appbar .back{font-size:18px;color:#374151;}
+  .appbar .title{font-weight:600;font-size:15px;}
+  .body{flex:1;overflow-y:auto;padding:14px 14px 90px;}
+  .foot{position:absolute;left:0;right:0;bottom:0;padding:12px 14px 16px;background:linear-gradient(to top,#fff 70%,rgba(255,255,255,0));}
+
+  .audiobar{display:flex;align-items:center;gap:10px;background:#eef2ff;border:1px solid #dbe3ff;border-radius:12px;padding:9px 11px;margin-bottom:12px;}
+  .spk{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;border:none;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;flex:0 0 auto;position:relative;}
+  .spk.playing::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid var(--accent);animation:pulse 1s infinite;}
+  @keyframes pulse{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.5);opacity:0}}
+  .caption{font-size:12.5px;color:#1f2937;line-height:1.5;flex:1;}
+  .caption .hl{background:#fde68a;border-radius:4px;padding:0 2px;}
+  .replay{font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;flex:0 0 auto;}
+
+  .doc{display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid #e6e9f0;border-radius:12px;padding:12px;margin-bottom:10px;cursor:pointer;transition:.15s;}
+  .doc.narrating{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,.12);}
+  .doc.sel{border-color:var(--good);background:#f0fdf4;}
+  .doc .ic{width:42px;height:42px;border-radius:10px;background:#eef2ff;display:flex;align-items:center;justify-content:center;font-size:22px;flex:0 0 auto;}
+  .doc .nm{font-weight:600;font-size:14px;}
+  .doc .sub{font-size:11.5px;color:#6b7280;margin-top:2px;}
+  .doc .mini{margin-left:auto;width:30px;height:30px;border-radius:50%;border:1px solid #dbe3ff;background:#eef2ff;color:var(--accent);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;}
+
+  .share-item{display:flex;align-items:center;gap:11px;background:#fff;border:1.5px solid #e6e9f0;border-radius:12px;padding:11px 12px;margin-bottom:9px;}
+  .share-item.narrating{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,.12);}
+  .share-item .ic{width:36px;height:36px;border-radius:9px;background:#eef2ff;display:flex;align-items:center;justify-content:center;font-size:18px;}
+  .share-item .txt{flex:1;}
+  .share-item .txt b{font-size:13.5px;}
+  .share-item .txt small{display:block;color:#6b7280;font-size:11px;margin-top:1px;}
+  .toggle{width:44px;height:26px;border-radius:20px;background:#22c55e;position:relative;cursor:pointer;flex:0 0 auto;transition:.15s;}
+  .toggle.off{background:#cbd5e1;}
+  .toggle::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.15s;}
+  .toggle.off::after{left:auto;right:3px;}
+  .legalcard{background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:11px 12px;font-size:11.5px;color:#7c2d12;margin:4px 0 12px;line-height:1.5;}
+  .reviewnote{font-size:11px;color:#6b7280;text-align:center;margin:6px 0;}
+
+  .btn{width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:600;cursor:pointer;}
+  .btn.primary{background:var(--accent);color:#fff;}
+  .btn.primary:disabled{background:#c7d2e5;color:#fff;cursor:not-allowed;}
+  .btn.ghost{background:#fff;border:1.5px solid #e6e9f0;color:#374151;margin-top:8px;}
+
+  .cam{position:relative;flex:1;background:#0b0f16;overflow:hidden;}
+  .camfeed{position:absolute;inset:0;background:radial-gradient(circle at 50% 42%,#3a4a5f,#141a24 70%);transition:.3s;}
+  .camfeed.lowlight{filter:brightness(.35) contrast(.9);}
+  .face{position:absolute;top:38%;left:50%;transform:translate(-50%,-50%);width:120px;height:150px;border-radius:50% 50% 48% 48%;background:radial-gradient(circle at 50% 40%,#cf9f7a,#8a6247);transition:.3s;}
+  .face.off{left:32%;top:52%;}
+  .face2{position:absolute;top:44%;left:74%;transform:translate(-50%,-50%);width:88px;height:110px;border-radius:50% 50% 48% 48%;background:radial-gradient(circle at 50% 40%,#b89078,#6f5340);display:none;}
+  .oval{position:absolute;top:38%;left:50%;transform:translate(-50%,-50%);width:180px;height:230px;border:3px dashed var(--good);border-radius:50%;transition:.3s;z-index:5;}
+  .oval.bad{border-color:var(--bad);border-style:solid;}
+  .oval.warnc{border-color:var(--warn);}
+  .hud{position:absolute;left:0;right:0;bottom:0;padding:14px;background:linear-gradient(to top,rgba(0,0,0,.85),transparent);color:#fff;z-index:8;}
+  .hud .state{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;margin-bottom:8px;}
+  .hud .state .badge{width:10px;height:10px;border-radius:50%;background:var(--good);}
+  .hud .state.bad .badge{background:var(--bad);}
+  .hud .state.warnc .badge{background:var(--warn);}
+  .hud .why{font-size:11.5px;color:#d1d5db;line-height:1.5;margin-bottom:10px;}
+  .meters{display:flex;gap:8px;margin-bottom:10px;}
+  .meter{flex:1;font-size:9px;color:#cbd5e1;text-transform:uppercase;letter-spacing:.5px;}
+  .meter .bar{height:6px;border-radius:6px;background:rgba(255,255,255,.2);margin-top:3px;overflow:hidden;}
+  .meter .bar i{display:block;height:100%;border-radius:6px;background:var(--good);transition:.3s;}
+  .meter .bar i.warn{background:var(--warn);}
+  .meter .bar i.bad{background:var(--bad);}
+  .hud .fallback{display:flex;align-items:center;gap:8px;font-size:11px;color:#fde68a;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);border-radius:9px;padding:7px 9px;margin-bottom:10px;}
+  .topaudio{position:absolute;top:12px;left:12px;right:12px;z-index:9;display:flex;align-items:center;gap:9px;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);border-radius:11px;padding:8px 10px;}
+  .topaudio .spk{width:30px;height:30px;font-size:13px;}
+  .topaudio .caption{color:#fff;font-size:11.5px;}
+  .haptic{display:inline-flex;align-items:center;gap:5px;}
+  .haptic .buzz{width:8px;height:8px;border-radius:50%;background:#fde68a;animation:buzz .4s infinite;}
+  @keyframes buzz{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+  .capwrap{position:absolute;top:12px;right:12px;z-index:9;}
+
+  .ptag{display:inline-block;font-size:9px;font-weight:700;color:#fff;background:var(--accent);border-radius:5px;padding:1px 5px;margin-left:6px;vertical-align:middle;cursor:help;}
+  .ptag.p2{background:#8b5cf6}.ptag.p3{background:#ec4899}.ptag.p7{background:#0ea5e9}.ptag.p8{background:#f59e0b}.ptag.p9{background:#14b8a6}
+
+  .prin{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:9px;}
+  .prin h4{margin:0 0 4px;font-size:12.5px;display:flex;align-items:center;gap:7px;}
+  .prin .n{width:20px;height:20px;border-radius:6px;background:var(--accent);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;font-weight:700;}
+  .prin p{margin:0;font-size:11.5px;color:var(--muted);line-height:1.55;}
+  .prin .apply{font-size:10.5px;color:#7dd3fc;margin-top:5px;}
+  .hint{font-size:11px;color:var(--muted);line-height:1.5;margin-top:6px;}
+  .foot-note{grid-column:1/-1;border-top:1px solid var(--line);padding:12px 22px;font-size:11px;color:var(--muted);}
+  #toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1c2230;border:1px solid var(--line);color:var(--ink);font-size:12px;padding:9px 14px;border-radius:10px;opacity:0;transition:.25s;pointer-events:none;z-index:99;}
+  #toast.show{opacity:1;}
+  .ttsflag{font-size:10px;color:var(--muted);}
+  .ttsflag b{color:#7dd3fc;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Multimodal DPI — Sarvam TTS via /api/tts, calibrated to how the ear and eye hold attention</h1>
+    <span class="tag">billion users · million journeys</span>
+    <span class="tag ttsflag">voice: <b id="ttsMode">Sarvam Bulbul v2</b></span>
+  </header>
+
+  <aside class="left">
+    <div class="grouplbl">Flow</div>
+    <div class="seg" id="flows">
+      <button class="segbtn active" data-flow="doc">Choose a document<small>Comprehension under low literacy</small></button>
+      <button class="segbtn" data-flow="consent">eKYC consent<small>Understanding, not tap-through</small></button>
+      <button class="segbtn" data-flow="face">Face authentication<small>Variable environmental conditions</small></button>
+    </div>
+
+    <div class="grouplbl">Language <span style="text-transform:none;color:#7dd3fc">(switch anytime, no progress lost)</span></div>
+    <div class="row" id="langs">
+      <button class="lang active" data-lang="en">EN</button>
+      <button class="lang" data-lang="hi">हिंदी</button>
+      <button class="lang" data-lang="kn">ಕನ್ನಡ</button>
+      <button class="lang" data-lang="ta">தமிழ்</button>
+    </div>
+
+    <div id="condwrap" style="display:none">
+      <div class="grouplbl">Environment (face auth)</div>
+      <div class="seg" id="conds">
+        <button class="cond active" data-cond="ok"><span class="dot"></span>Good conditions</button>
+        <button class="cond" data-cond="low"><span class="dot"></span>Low light</button>
+        <button class="cond" data-cond="off"><span class="dot"></span>Face off-centre / focus</button>
+        <button class="cond" data-cond="multi"><span class="dot"></span>Multiple persons in frame</button>
+      </div>
+    </div>
+
+    <div class="grouplbl">How to read this</div>
+    <p class="hint">Tap a flow. Tap the blue speaker to hear the guide — voice comes from <b>Sarvam /api/tts</b> when deployed; the caption highlights while it plays (channels bound). Coloured <span class="ptag">P#</span> tags mark which principle each element demonstrates. For face auth, change the environment to see the interface degrade gracefully instead of dead-ending.</p>
+    <p class="hint">Opened as a local file (no <code>/api/tts</code>), it falls back to the browser's built-in TTS and the badge above flips to “Browser fallback”.</p>
+  </aside>
+
+  <div class="stage">
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen" id="screen"></div>
+    </div>
+    <div style="font-size:11px;color:var(--muted)">Interactive · click through the flow</div>
+  </div>
+
+  <aside class="right">
+    <div class="grouplbl" id="prinTitle">Principles in view</div>
+    <div id="principles"></div>
+  </aside>
+
+  <div class="foot-note">Deploy target: <b>applicationator</b> (public/). Voice served by existing <code>/api/tts</code> (Sarvam Bulbul v2) using the project's Vercel env vars. Languages aligned to the contract: hi-IN / en-IN / kn-IN / ta-IN. Speaker locked to <code>anushka</code>.</div>
+</div>
+<div id="toast"></div>
+
+<script>
+/* ---------- i18n strings ---------- */
+const T = {
+  en:{
+    docTitle:"Choose your ID", docGuide:"Choose the document you want to use for verification. Tap the speaker on any card to hear its name.",
+    docs:[["🪪","Aadhaar","12-digit ID"],["💳","PAN card","Tax ID"],["🚗","Driving licence","Issued by RTO"],["🗳️","Voter ID","Election card"]],
+    pick:"Continue",
+    consentTitle:"Confirm what you share", consentGuide:"You are about to share these details from your ID. Review each one. Turn off anything you do not want to share.",
+    items:[["👤","Name","As printed on your ID"],["🎂","Date of birth","Day, month, year"],["🏠","Address","Your current address"],["🖼️","Photograph","The photo on your ID"]],
+    legal:"This is a consent — a legal record of what you agreed to share, with whom, and for how long. It is not the same as simply tapping ‘Agree’.",
+    review:"Scroll through all items to enable Approve",
+    approve:"Give consent", decline:"Not now",
+    faceGuide:"Hold your phone at eye level. Keep your face inside the circle.",
+    st_ok:["Looking good","Hold steady — capturing"],
+    st_low:["Too dark to verify","Move to brighter light, or turn on a lamp. We can’t confirm it’s you in low light."],
+    st_off:["Face not centred","Move your face into the circle and hold the phone straight."],
+    st_multi:["More than one face","Only you should be in the frame. Ask others to step aside."],
+    fb_low:"Voice + vibration guiding you — screen is hard to read in this light",
+    capture:"Capture"
+  },
+  hi:{
+    docTitle:"अपनी पहचान चुनें", docGuide:"सत्यापन के लिए जिस दस्तावेज़ का उपयोग करना है उसे चुनें। नाम सुनने के लिए स्पीकर दबाएँ।",
+    docs:[["🪪","आधार","12 अंकों की पहचान"],["💳","पैन कार्ड","कर पहचान"],["🚗","ड्राइविंग लाइसेंस","आरटीओ द्वारा जारी"],["🗳️","वोटर आईडी","चुनाव कार्ड"]],
+    pick:"आगे बढ़ें",
+    consentTitle:"आप क्या साझा कर रहे हैं", consentGuide:"आप अपनी पहचान से ये विवरण साझा करने वाले हैं। हर एक को देखें। जो साझा नहीं करना उसे बंद कर दें।",
+    items:[["👤","नाम","आपकी आईडी पर छपा हुआ"],["🎂","जन्म तिथि","दिन, माह, वर्ष"],["🏠","पता","आपका वर्तमान पता"],["🖼️","फोटो","आपकी आईडी की फोटो"]],
+    legal:"यह एक सहमति है — एक कानूनी रिकॉर्ड कि आपने क्या, किसके साथ, और कितने समय के लिए साझा करने पर सहमति दी। यह केवल ‘सहमत’ दबाने जैसा नहीं है।",
+    review:"स्वीकृति सक्षम करने के लिए सभी को देखें",
+    approve:"सहमति दें", decline:"अभी नहीं",
+    faceGuide:"फोन को आँखों के स्तर पर रखें। अपना चेहरा घेरे के अंदर रखें।",
+    st_ok:["सब ठीक है","स्थिर रहें — कैप्चर हो रहा है"],
+    st_low:["सत्यापन के लिए बहुत अंधेरा","अधिक रोशनी में जाएँ या दीपक जलाएँ। कम रोशनी में हम पुष्टि नहीं कर सकते।"],
+    st_off:["चेहरा केंद्र में नहीं","अपना चेहरा घेरे में लाएँ और फोन सीधा रखें।"],
+    st_multi:["एक से अधिक चेहरे","फ्रेम में केवल आप होने चाहिए। दूसरों को हटने को कहें।"],
+    fb_low:"आवाज़ और कंपन आपका मार्गदर्शन कर रहे हैं — इस रोशनी में स्क्रीन पढ़ना कठिन है",
+    capture:"कैप्चर"
+  },
+  kn:{
+    docTitle:"ನಿಮ್ಮ ಗುರುತನ್ನು ಆರಿಸಿ", docGuide:"ಪರಿಶೀಲನೆಗಾಗಿ ಬಳಸಲು ಬಯಸುವ ದಾಖಲೆಯನ್ನು ಆರಿಸಿ. ಹೆಸರನ್ನು ಕೇಳಲು ಸ್ಪೀಕರ್ ಒತ್ತಿರಿ.",
+    docs:[["🪪","ಆಧಾರ್","12 ಅಂಕಿಯ ಗುರುತು"],["💳","ಪ್ಯಾನ್ ಕಾರ್ಡ್","ತೆರಿಗೆ ಗುರುತು"],["🚗","ಚಾಲನಾ ಪರವಾನಗಿ","RTO ನೀಡಿದೆ"],["🗳️","ಮತದಾರರ ಗುರುತು","ಚುನಾವಣಾ ಕಾರ್ಡ್"]],
+    pick:"ಮುಂದುವರಿಸಿ",
+    consentTitle:"ನೀವು ಏನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದ್ದೀರಿ", consentGuide:"ನಿಮ್ಮ ಗುರುತಿನಿಂದ ಈ ವಿವರಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲಿದ್ದೀರಿ. ಪ್ರತಿಯೊಂದನ್ನೂ ನೋಡಿ. ಹಂಚಿಕೊಳ್ಳಲು ಬಯಸದಿರುವುದನ್ನು ಆಫ್ ಮಾಡಿ.",
+    items:[["👤","ಹೆಸರು","ನಿಮ್ಮ ಗುರುತಿನಲ್ಲಿ ಮುದ್ರಿಸಿದಂತೆ"],["🎂","ಜನ್ಮ ದಿನಾಂಕ","ದಿನ, ತಿಂಗಳು, ವರ್ಷ"],["🏠","ವಿಳಾಸ","ನಿಮ್ಮ ಪ್ರಸ್ತುತ ವಿಳಾಸ"],["🖼️","ಫೋಟೋ","ನಿಮ್ಮ ಗುರುತಿನ ಫೋಟೋ"]],
+    legal:"ಇದು ಒಂದು ಸಮ್ಮತಿ — ನೀವು ಏನನ್ನು, ಯಾರೊಂದಿಗೆ, ಎಷ್ಟು ಕಾಲ ಹಂಚಿಕೊಳ್ಳಲು ಒಪ್ಪಿದ್ದೀರಿ ಎಂಬ ಕಾನೂನುಬದ್ಧ ದಾಖಲೆ. ಇದು ಕೇವಲ ‘ಒಪ್ಪು’ ಒತ್ತುವುದಲ್ಲ.",
+    review:"ಅನುಮೋದನೆ ಸಕ್ರಿಯಗೊಳಿಸಲು ಎಲ್ಲವನ್ನೂ ನೋಡಿ",
+    approve:"ಸಮ್ಮತಿ ನೀಡಿ", decline:"ಈಗ ಬೇಡ",
+    faceGuide:"ಫೋನ್ ಅನ್ನು ಕಣ್ಣಿನ ಮಟ್ಟದಲ್ಲಿ ಹಿಡಿಯಿರಿ. ನಿಮ್ಮ ಮುಖವನ್ನು ವೃತ್ತದೊಳಗೆ ಇರಿಸಿ.",
+    st_ok:["ಚೆನ್ನಾಗಿದೆ","ಸ್ಥಿರವಾಗಿರಿ — ಸೆರೆಹಿಡಿಯುತ್ತಿದೆ"],
+    st_low:["ಪರಿಶೀಲಿಸಲು ತುಂಬಾ ಕತ್ತಲೆ","ಹೆಚ್ಚು ಬೆಳಕಿಗೆ ಹೋಗಿ ಅಥವಾ ದೀಪ ಹಚ್ಚಿ. ಕತ್ತಲೆಯಲ್ಲಿ ಖಚಿತಪಡಿಸಲಾಗದು."],
+    st_off:["ಮುಖ ಮಧ್ಯದಲ್ಲಿ ಇಲ್ಲ","ನಿಮ್ಮ ಮುಖವನ್ನು ವೃತ್ತದೊಳಗೆ ತಂದು ಫೋನ್ ಅನ್ನು ನೇರವಾಗಿ ಹಿಡಿಯಿರಿ."],
+    st_multi:["ಒಂದಕ್ಕಿಂತ ಹೆಚ್ಚು ಮುಖಗಳು","ಫ್ರೇಮ್‌ನಲ್ಲಿ ನೀವು ಮಾತ್ರ ಇರಬೇಕು. ಇತರರನ್ನು ಪಕ್ಕಕ್ಕೆ ಸರಿಯಲು ಹೇಳಿ."],
+    fb_low:"ಧ್ವನಿ ಮತ್ತು ಕಂಪನ ನಿಮಗೆ ಮಾರ್ಗದರ್ಶನ ನೀಡುತ್ತಿವೆ — ಈ ಬೆಳಕಿನಲ್ಲಿ ಪರದೆ ಓದಲು ಕಷ್ಟ",
+    capture:"ಸೆರೆಹಿಡಿ"
+  },
+  ta:{
+    docTitle:"உங்கள் அடையாளத்தைத் தேர்வுசெய்க", docGuide:"சரிபார்ப்புக்கு பயன்படுத்த விரும்பும் ஆவணத்தைத் தேர்வுசெய்க. பெயரைக் கேட்க ஸ்பீக்கரை அழுத்தவும்.",
+    docs:[["🪪","ஆதார்","12 இலக்க அடையாளம்"],["💳","பான் அட்டை","வரி அடையாளம்"],["🚗","ஓட்டுநர் உரிமம்","RTO வழங்கியது"],["🗳️","வாக்காளர் அடையாளம்","தேர்தல் அட்டை"]],
+    pick:"தொடரவும்",
+    consentTitle:"நீங்கள் பகிர்வது என்ன", consentGuide:"உங்கள் அடையாளத்திலிருந்து இந்த விவரங்களைப் பகிரப் போகிறீர்கள். ஒவ்வொன்றையும் பாருங்கள். பகிர விரும்பாததை அணைக்கவும்.",
+    items:[["👤","பெயர்","உங்கள் அடையாளத்தில் உள்ளபடி"],["🎂","பிறந்த தேதி","நாள், மாதம், ஆண்டு"],["🏠","முகவரி","உங்கள் தற்போதைய முகவரி"],["🖼️","புகைப்படம்","உங்கள் அடையாளப் புகைப்படம்"]],
+    legal:"இது ஒரு சம்மதம் — எதை, யாருடன், எவ்வளவு காலம் பகிர ஒப்புக்கொண்டீர்கள் என்ற சட்டப்பூர்வ பதிவு. ‘ஒப்புக்கொள்’ என்பதை அழுத்துவது போல் அல்ல.",
+    review:"அனுமதியை இயக்க அனைத்தையும் பாருங்கள்",
+    approve:"சம்மதம் அளிக்கவும்", decline:"இப்போது இல்லை",
+    faceGuide:"தொலைபேசியைக் கண் மட்டத்தில் பிடிக்கவும். உங்கள் முகத்தை வட்டத்திற்குள் வைக்கவும்.",
+    st_ok:["நன்றாக உள்ளது","அசையாமல் இருங்கள் — படம் எடுக்கிறது"],
+    st_low:["சரிபார்க்க மிகவும் இருட்டு","அதிக ஒளிக்கு நகருங்கள் அல்லது விளக்கை ஏற்றுங்கள். இருட்டில் உறுதிசெய்ய முடியாது."],
+    st_off:["முகம் நடுவில் இல்லை","உங்கள் முகத்தை வட்டத்திற்குள் கொண்டுவந்து தொலைபேசியை நேராகப் பிடிக்கவும்."],
+    st_multi:["ஒன்றுக்கு மேற்பட்ட முகம்","சட்டகத்தில் நீங்கள் மட்டுமே இருக்க வேண்டும். மற்றவர்களை விலகச் சொல்லுங்கள்."],
+    fb_low:"குரலும் அதிர்வும் வழிகாட்டுகின்றன — இந்த ஒளியில் திரை படிக்க கடினம்",
+    capture:"படம் எடு"
+  }
+};
+const LANGCODE={en:"en-IN",hi:"hi-IN",kn:"kn-IN",ta:"ta-IN"};
+const SPEAKER="anushka"; // locked per session (Bulbul v2 valid speaker)
+
+/* ---------- principle library ---------- */
+const P = {
+ 1:["Channel roles are fixed","Visual is the persistent, re-inspectable record; audio is the transient guide. Anything the user must verify or act on lives on-screen and stays there. Audio never carries load-bearing information alone.","Doc names + consent items are always visible; voice only narrates them."],
+ 2:["Bind the channels, don't stack them","Audio tracks what is visually highlighted, and never plays over unrelated on-screen text — competing streams collide (irrelevant-speech effect).","Caption highlights while the Sarvam clip plays (phrase-level; blob has no word timing)."],
+ 3:["Always random-access","Because audio is sequential and lost on drift, every prompt is replayable and every step re-inspectable. No lossy auto-advance.","Replay button on every guide; scroll back anytime; nothing auto-submits."],
+ 4:["Language is switchable state","Language is first-class and changeable at any point without losing progress. Icons/photos are the constant that survive the switch.","Change language mid-flow — selections and position persist; audio regenerates."],
+ 5:["Spoken-first, visually-anchored","For a large cohort the functional language is oral, not literate script. Audio is a primary comprehension channel — but the actionable target is always an icon/photo/face, not text.","Every card pairs a spoken name with a stable icon."],
+ 6:["Comprehension is the metric","For consent, success = understanding, not tap-through. Chunk, gloss, require an active review signal before the high-stakes action.","Approve stays disabled until every shared item is reviewed."],
+ 7:["Close the perception loop","Show the machine's state — what the camera sees and why it is failing — so the user can correct it, instead of a generic 'try again'.","Live meters + named reason: too dark / off-centre / multiple faces."],
+ 8:["Degrade across channels, never dead-end","When one channel fails under environmental stress, fall back to another. Screen unreadable → voice + haptic take over guidance.","Low light: guidance moves to voice + vibration, not a stuck screen."],
+ 9:["Expect variance, forgive first failure","Environmental variance is the norm. Treat the first miss as expected; guide continuously toward a good capture rather than rejecting.","Face auth nudges in real time; capture arms only when quality clears."],
+ 10:["One decision, thumb-first, offline-tolerant","One choice per screen, large targets, high contrast for daylight/low-vision, tolerant of flaky networks.","Single primary action per screen; big tap zones; browser-TTS fallback when /api/tts is unreachable."]
+};
+const FLOW_P = { doc:[1,2,3,4,5], consent:[1,2,3,6,10], face:[7,8,9,3,10] };
+
+/* ---------- state ---------- */
+let state={flow:"doc",lang:"en",cond:"ok",consent:{},reviewed:new Set(),picked:null};
+
+/* ---------- audio: Sarvam /api/tts via Web Audio, browser fallback ---------- */
+let _actx=null,_curSrc=null;
+function getActx(){ if(!_actx) _actx=new (window.AudioContext||window.webkitAudioContext)(); return _actx; }
+function setMode(m){ const el=document.getElementById('ttsMode'); if(el) el.textContent=m; }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2600); }
+function stopAudio(){
+  try{ if(_curSrc){_curSrc.onended=null;_curSrc.stop();_curSrc=null;} }catch(e){}
+  if(window.speechSynthesis) speechSynthesis.cancel();
+  document.querySelectorAll('.spk.playing').forEach(s=>s.classList.remove('playing'));
+}
+async function playB64(dataUri){
+  const ctx=getActx(); await ctx.resume();
+  const b64=dataUri.split(',')[1]; const bin=atob(b64);
+  const bytes=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+  const buf=await ctx.decodeAudioData(bytes.buffer);
+  return new Promise(res=>{ const src=ctx.createBufferSource(); _curSrc=src; src.buffer=buf; src.connect(ctx.destination); src.onended=()=>{_curSrc=null;res();}; src.start(0); });
+}
+function highlightCaption(capEl,text,on){ if(!capEl) return; capEl.innerHTML = on? `<span class="hl">${text}</span>` : text; }
+function fallbackSpeak(text,capEl,done){
+  setMode("Browser fallback");
+  if(!('speechSynthesis' in window)){ if(done)done(); return; }
+  const u=new SpeechSynthesisUtterance(text); u.lang=LANGCODE[state.lang]; u.rate=.95;
+  u.onend=()=>{ if(done)done(); };
+  speechSynthesis.speak(u);
+}
+async function speak(text, spkEl, capEl){
+  stopAudio();
+  const ctx=getActx(); ctx.resume(); // hold the user-gesture context before any await
+  highlightCaption(capEl,text,true);
+  if(spkEl) spkEl.classList.add('playing');
+  const done=()=>{ if(spkEl) spkEl.classList.remove('playing'); highlightCaption(capEl,text,false); };
+  try{
+    const r=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({text, speaker:SPEAKER, language:LANGCODE[state.lang]})});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const j=await r.json();
+    const uri=j.data_uri||j.dataUri||j.audio;
+    if(!uri) throw new Error('no audio in response');
+    setMode("Sarvam Bulbul v2");
+    await playB64(uri); done();
+  }catch(e){
+    toast('Sarvam /api/tts unavailable — using browser voice ('+e.message+')');
+    fallbackSpeak(text,capEl,done);
+  }
+}
+
+/* ---------- renderers ---------- */
+const screen=document.getElementById('screen');
+function sbar(){return `<div class="sbar"><span>9:41</span><span>▮▮▮ 5G ▮</span></div>`;}
+function ptag(n){return `<span class="ptag p${n}" title="${P[n][0]}: ${P[n][1]}">P${n}</span>`;}
+
+function renderDoc(){
+  const t=T[state.lang];
+  screen.innerHTML = sbar()+`
+  <div class="appbar"><span class="back">‹</span><span class="title">${t.docTitle}</span></div>
+  <div class="body">
+    <div class="audiobar">
+      <button class="spk" id="mainSpk">🔊</button>
+      <div class="caption" id="mainCap">${t.docGuide}</div>
+      <button class="replay" id="mainReplay">↻</button>
+    </div>
+    <div style="margin:-4px 0 10px;font-size:10px;color:#6b7280">Cards: ${ptag(1)}${ptag(5)} · Voice+highlight: ${ptag(2)} · Replay: ${ptag(3)}</div>
+    ${t.docs.map((d,i)=>`
+      <div class="doc ${state.picked===i?'sel':''}" data-i="${i}">
+        <div class="ic">${d[0]}</div>
+        <div><div class="nm">${d[1]}</div><div class="sub">${d[2]}</div></div>
+        <button class="mini" data-say="${d[1]}" data-i="${i}">🔊</button>
+      </div>`).join('')}
+  </div>
+  <div class="foot"><button class="btn primary" id="cont" ${state.picked===null?'disabled':''}>${t.pick}</button></div>`;
+
+  const mainSpk=document.getElementById('mainSpk'), mainCap=document.getElementById('mainCap');
+  mainSpk.onclick=()=>speak(t.docGuide,mainSpk,mainCap);
+  document.getElementById('mainReplay').onclick=()=>speak(t.docGuide,mainSpk,mainCap);
+  document.querySelectorAll('.doc .mini').forEach(b=>b.onclick=(e)=>{
+    e.stopPropagation();
+    document.querySelectorAll('.doc').forEach(d=>d.classList.remove('narrating'));
+    b.closest('.doc').classList.add('narrating');
+    speak(b.dataset.say,b, mainCap);
+  });
+  document.querySelectorAll('.doc').forEach(d=>d.onclick=()=>{ state.picked=+d.dataset.i; renderDoc(); });
+  const c=document.getElementById('cont'); if(c) c.onclick=()=>{ state.flow='consent'; syncFlowUI(); render(); };
+}
+
+function renderConsent(){
+  const t=T[state.lang];
+  screen.innerHTML=sbar()+`
+  <div class="appbar"><span class="back">‹</span><span class="title">${t.consentTitle}</span></div>
+  <div class="body" id="consentBody">
+    <div class="audiobar">
+      <button class="spk" id="cSpk">🔊</button>
+      <div class="caption" id="cCap">${t.consentGuide}</div>
+      <button class="replay" id="cReplay">↻</button>
+    </div>
+    <div class="legalcard">${t.legal} ${ptag(6)}</div>
+    ${t.items.map((it,i)=>`
+      <div class="share-item" data-i="${i}">
+        <div class="ic">${it[0]}</div>
+        <div class="txt"><b>${it[1]}</b><small>${it[2]}</small></div>
+        <button class="mini" data-say="${it[1]}. ${it[2]}" data-i="${i}" style="margin-right:6px;width:28px;height:28px;border-radius:50%;border:1px solid #dbe3ff;background:#eef2ff;color:#3b82f6;display:flex;align-items:center;justify-content:center">🔊</button>
+        <div class="toggle ${state.consent[i]===false?'off':''}" data-i="${i}"></div>
+      </div>`).join('')}
+    <div class="reviewnote" id="revnote">${t.review} — ${state.reviewed.size}/${t.items.length} ${ptag(6)}${ptag(3)}</div>
+  </div>
+  <div class="foot">
+    <button class="btn primary" id="approve" ${state.reviewed.size<t.items.length?'disabled':''}>${t.approve}</button>
+    <button class="btn ghost" id="decline">${t.decline}</button>
+  </div>`;
+
+  const cSpk=document.getElementById('cSpk'), cCap=document.getElementById('cCap');
+  cSpk.onclick=()=>speak(t.consentGuide,cSpk,cCap);
+  document.getElementById('cReplay').onclick=()=>speak(t.consentGuide,cSpk,cCap);
+  document.querySelectorAll('.share-item .mini').forEach(b=>b.onclick=(e)=>{
+    e.stopPropagation();
+    document.querySelectorAll('.share-item').forEach(s=>s.classList.remove('narrating'));
+    b.closest('.share-item').classList.add('narrating');
+    state.reviewed.add(+b.dataset.i);
+    speak(b.dataset.say,b,cCap);
+    updateRev(t);
+  });
+  document.querySelectorAll('.toggle').forEach(tg=>tg.onclick=()=>{
+    const i=+tg.dataset.i; state.consent[i]=(state.consent[i]===false); tg.classList.toggle('off',state.consent[i]===false);
+    state.reviewed.add(i); updateRev(t);
+  });
+  document.getElementById('approve').onclick=()=>{ if(state.reviewed.size>=t.items.length) toast('Consent recorded (demo). A signed consent artefact would be written here.'); };
+  document.getElementById('decline').onclick=()=>{ state.flow='doc'; syncFlowUI(); render(); };
+}
+function updateRev(t){
+  const rn=document.getElementById('revnote'); if(rn) rn.innerHTML=`${t.review} — ${state.reviewed.size}/${t.items.length} ${ptag(6)}${ptag(3)}`;
+  const ap=document.getElementById('approve'); if(ap) ap.disabled=state.reviewed.size<t.items.length;
+}
+
+function renderFace(){
+  const t=T[state.lang];
+  const c=state.cond;
+  const good=c==='ok';
+  const st = c==='ok'?t.st_ok : c==='low'?t.st_low : c==='off'?t.st_off : t.st_multi;
+  const ovalCls = c==='ok'?'' : c==='multi'?'warnc':'bad';
+  const stateCls = c==='ok'?'' : c==='multi'?'warnc':'bad';
+  const light = c==='low'?15 : c==='off'?70 : c==='multi'?75 : 95;
+  const center = c==='off'?35 : c==='multi'?60 : 92;
+  const single = c==='multi'?30 : 95;
+  const mCls=v=> v<40?'bad':v<80?'warn':'';
+  screen.innerHTML=sbar()+`
+  <div class="cam">
+    <div class="camfeed ${c==='low'?'lowlight':''}"></div>
+    <div class="face ${c==='off'?'off':''}"></div>
+    <div class="face2" style="display:${c==='multi'?'block':'none'}"></div>
+    <div class="oval ${ovalCls}"></div>
+
+    <div class="topaudio">
+      <button class="spk" id="fSpk">🔊</button>
+      <div class="caption" id="fCap">${good? t.faceGuide : st[1]}</div>
+    </div>
+
+    <div class="capwrap"><button class="btn primary" id="capBtn" style="width:auto;padding:9px 14px;font-size:12px;${good?'':'opacity:.4;pointer-events:none'}">${t.capture}</button></div>
+
+    <div class="hud">
+      <div class="state ${stateCls}"><span class="badge"></span>${st[0]} ${ptag(7)}</div>
+      <div class="why">${st[1]}</div>
+      <div class="meters">
+        <div class="meter">Light<div class="bar"><i class="${mCls(light)}" style="width:${light}%"></i></div></div>
+        <div class="meter">Centring<div class="bar"><i class="${mCls(center)}" style="width:${center}%"></i></div></div>
+        <div class="meter">Single face<div class="bar"><i class="${mCls(single)}" style="width:${single}%"></i></div></div>
+      </div>
+      ${c==='low'?`<div class="fallback"><span class="haptic"><span class="buzz"></span></span> ${t.fb_low} ${ptag(8)}</div>`:''}
+      <div style="font-size:10px;color:#9ca3af">${ptag(9)} continuous guidance · ${ptag(3)} nothing rejected — corrected in real time</div>
+    </div>
+  </div>`;
+  const fSpk=document.getElementById('fSpk'), fCap=document.getElementById('fCap');
+  const line = good? t.faceGuide : st[1];
+  fSpk.onclick=()=>speak(line,fSpk,fCap);
+  if(!good){ setTimeout(()=>speak(line,fSpk,fCap),250); } // voice fallback fires when screen is stressed
+}
+
+/* ---------- principles panel ---------- */
+function renderPrinciples(){
+  const ids=FLOW_P[state.flow];
+  document.getElementById('principles').innerHTML = ids.map(n=>`
+    <div class="prin">
+      <h4><span class="n">${n}</span>${P[n][0]}</h4>
+      <p>${P[n][1]}</p>
+      <div class="apply">▸ Here: ${P[n][2]}</div>
+    </div>`).join('') + `
+    <div class="hint">Full set is 10 principles; these ${ids.length} are the ones this flow leans on. Switch flows to see the others.</div>`;
+}
+
+/* ---------- wiring ---------- */
+function render(){ stopAudio();
+  if(state.flow==='doc') renderDoc();
+  else if(state.flow==='consent') renderConsent();
+  else renderFace();
+  renderPrinciples();
+}
+function syncFlowUI(){
+  document.querySelectorAll('#flows .segbtn').forEach(b=>b.classList.toggle('active',b.dataset.flow===state.flow));
+  document.getElementById('condwrap').style.display = state.flow==='face'?'block':'none';
+}
+document.querySelectorAll('#flows .segbtn').forEach(b=>b.onclick=()=>{ state.flow=b.dataset.flow; syncFlowUI(); render(); });
+document.querySelectorAll('#langs .lang').forEach(b=>b.onclick=()=>{ state.lang=b.dataset.lang;
+  document.querySelectorAll('#langs .lang').forEach(x=>x.classList.toggle('active',x===b)); render(); });
+document.querySelectorAll('#conds .cond').forEach(b=>b.onclick=()=>{ state.cond=b.dataset.cond;
+  document.querySelectorAll('#conds .cond').forEach(x=>x.classList.toggle('active',x===b)); render(); });
+
+render();
+</script>
+</body>
+</html>
