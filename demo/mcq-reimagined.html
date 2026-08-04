@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QKKSDLY59C"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-QKKSDLY59C');</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reimagining the MCQ — Classic vs Voice-First (Math &amp; Reading)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared/sax-design.css">
+<!--
+  Reimagining the MCQ — one page, two items, two treatments.
+  Folds the math (52-27 borrow) and reading (Annual Haircut Day) mocks into the
+  SAX design system + SAX iPhone mock. Built on the voice-first-demo principles.
+    Subject switch: Math ⇄ Reading
+    Mode toggle:    Classic (single-mode MCQ)  ⇄  Reimagined (voice-first, multimodal)
+    Language:       EN ⇄ हिंदी
+  Math hack ...... "every wrong answer has a right question" (digit-swap reveal + retry).
+  Reading hack ... "comprehension is not memory" (mono-scenic tap-trace; causal-glue reveal;
+                    a middle-order swap earns FULL credit — classic marks it wrong).
+  TTS: POST /api/tts {text,language,speaker:'anushka'} -> {data_uri}; browser-voice fallback.
+-->
+<style>
+  body{margin:0;}
+  .page-head{background:var(--sax-page-ink,#0e0f0c);color:#fff;padding:16px 26px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;border-bottom:3px solid var(--sax-blue);}
+  .page-head h1{font-size:16px;margin:0;font-weight:700;letter-spacing:-.01em;}
+  .page-head .sub{font-size:11px;color:#9aa7b8;}
+  .page-head .tag{font-size:10px;color:#cbd5e1;background:rgba(255,255,255,.08);padding:3px 9px;border-radius:20px;}
+  .page-head .tag b{color:#7dd3fc;}
+  .shell{display:grid;grid-template-columns:290px 1fr 330px;gap:0;min-height:calc(100vh - 58px);}
+  @media(max-width:1120px){.shell{grid-template-columns:1fr;}}
+  aside{padding:20px;}
+  .left{border-right:1px solid var(--sax-page-bd);}
+  .right{border-left:1px solid var(--sax-page-bd);background:#fbfcfe;}
+  .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.9px;color:var(--sax-page-ter);margin:18px 0 9px;font-weight:600;}
+  .lbl:first-child{margin-top:0;}
+  .seg{display:flex;background:#eef1f6;border-radius:var(--sax-r-pill);padding:4px;gap:3px;}
+  .seg.stack{border-radius:14px;}
+  .seg button{flex:1;border:0;background:transparent;color:var(--sax-page-sec);font:600 13px var(--sax-font);padding:9px 8px;border-radius:var(--sax-r-pill);cursor:pointer;transition:.15s;line-height:1.25;}
+  .seg.stack button{border-radius:10px;}
+  .seg button small{display:block;font-size:10px;font-weight:400;margin-top:2px;color:var(--sax-page-ter);}
+  .seg button.on{background:#fff;color:var(--sax-page-ink);box-shadow:var(--sax-shadow-sm);}
+  .seg.mode button.on.reimag{background:linear-gradient(135deg,var(--sax-blue),var(--sax-indigo));color:#fff;}
+  .seg.mode button.on.reimag small{color:rgba(255,255,255,.85);}
+  .seg.mode button.on.classic{background:#374151;color:#fff;}
+  .seg.mode button.on.classic small{color:rgba(255,255,255,.75);}
+  .algo{background:#fff;border:1px solid var(--sax-page-bd);border-radius:14px;padding:12px 13px;font-size:11.5px;color:var(--sax-page-sec);line-height:1.55;}
+  .algo b{color:var(--sax-blue-d);}
+  .algo .rule{margin-top:7px;padding-top:7px;border-top:1px dashed var(--sax-page-bd);}
+  .hint{font-size:11px;color:var(--sax-page-ter);line-height:1.5;margin-top:8px;}
+  .stage{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:26px 18px;gap:12px;}
+  .stagenote{font-size:11px;color:var(--sax-page-ter);}
+
+  /* ===== quiz components (scoped to #screen), rebranded to SAX tokens ===== */
+  #screen{
+    --acc:var(--sax-blue); --acc-d:var(--sax-blue-d); --violet:var(--sax-indigo);
+    --good:#16a34a; --good-bg:#f0fdf4; --good-bd:#bbf7d0;
+    --bad:var(--sax-red); --bad-bg:#fef2f2; --bad-bd:#fecaca;
+    --warn:var(--sax-amber); --warn-bg:#fffbeb; --warn-bd:#fde68a;
+    --ink:#111827; --mut:#6b7280; --line:#e6e9f0; --card:#fff;
+    display:flex;flex-direction:column;height:100%;font-family:var(--sax-font);color:var(--ink);
+  }
+  #screen .appbar{padding:12px 15px 8px;display:flex;align-items:center;gap:8px;flex:0 0 auto;}
+  #screen .appbar .title{font-weight:700;font-size:14px;}
+  #screen .appbar .badge{margin-left:auto;font-size:9.5px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.4px;}
+  #screen .badge.classic{background:#e5e7eb;color:#374151;}
+  #screen .badge.reimag{background:#ede9fe;color:#6d28d9;}
+  #screen .qbody{flex:1;overflow-y:auto;padding:6px 15px 16px;}
+  #screen .qfoot{padding:11px 15px 14px;border-top:1px solid #eef0f4;flex:0 0 auto;}
+  .audiobar{display:flex;align-items:center;gap:10px;background:#eef2ff;border:1px solid #dbe3ff;border-radius:12px;padding:9px 11px;margin-bottom:12px;}
+  .spk{width:34px;height:34px;border-radius:50%;background:var(--acc);color:#fff;border:none;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;flex:0 0 auto;position:relative;}
+  .spk.playing::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid var(--acc);animation:pulse 1s infinite;}
+  @keyframes pulse{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.5);opacity:0}}
+  .caption{font-size:12.5px;color:#1f2937;line-height:1.5;flex:1;}
+  .caption .hl{background:#fde68a;border-radius:4px;padding:0 2px;}
+  .replay{font-size:12px;color:var(--acc);background:none;border:none;cursor:pointer;flex:0 0 auto;}
+  .qtext{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:12px 13px;font-size:14px;line-height:1.5;color:var(--ink);margin-bottom:10px;font-weight:600;}
+  /* math sum */
+  .sumcard{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px 12px;margin-bottom:12px;}
+  .colhead{display:flex;justify-content:center;gap:34px;font-size:10px;letter-spacing:.5px;color:#9ca3af;text-transform:uppercase;margin-bottom:2px;}
+  .sum{font-family:var(--sax-mono);font-size:36px;font-weight:700;color:var(--ink);text-align:right;line-height:1.15;padding-right:22px;}
+  .sum .op{color:#6b7280;} .sum .rule{border-bottom:3px solid var(--ink);margin:4px 0 4px auto;width:150px;} .sum .qm{color:var(--acc);}
+  .digit{display:inline-block;width:26px;text-align:center;}
+  .digit.swap{background:#fde68a;border-radius:5px;}
+  .digit.borrow{position:relative;color:var(--good);}
+  .borrowmark{position:absolute;top:-14px;left:0;right:0;font-size:12px;color:var(--bad);}
+  .opt{display:flex;align-items:center;gap:12px;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:12px 13px;margin-bottom:9px;cursor:pointer;transition:.15s;}
+  .opt:hover{border-color:var(--acc);}
+  .opt .key{width:29px;height:29px;border-radius:8px;background:#eef2ff;color:#3730a3;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:0 0 auto;}
+  .opt .val{flex:1;font-size:19px;font-weight:700;color:var(--ink);font-family:var(--sax-mono);}
+  .opt .mini{width:27px;height:27px;border-radius:50%;border:1px solid #dbe3ff;background:#eef2ff;color:var(--acc);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .opt.correct{border-color:var(--good);background:var(--good-bg);}
+  .opt.wrong{border-color:var(--bad);background:var(--bad-bg);}
+  .opt.dim{opacity:.5;} .opt .fb{font-size:12px;font-weight:700;margin-left:auto;}
+  .opt.correct .fb{color:#15803d;} .opt.wrong .fb{color:#b91c1c;}
+  .modebar{display:flex;gap:8px;margin:8px 0 4px;}
+  .modebtn{flex:1;padding:10px;border-radius:11px;border:1.5px solid var(--line);background:#fff;font:600 12.5px var(--sax-font);cursor:pointer;color:#374151;}
+  .modebtn.on{border-color:var(--acc);background:#eff6ff;color:var(--acc-d);}
+  /* reading sequence */
+  .seqopt{display:flex;align-items:center;gap:11px;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:12px;margin-bottom:9px;cursor:pointer;transition:.15s;}
+  .seqopt:hover{border-color:var(--acc);}
+  .seqopt .key{width:27px;height:27px;border-radius:8px;background:#eef2ff;color:#3730a3;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex:0 0 auto;}
+  .seqopt .seq{flex:1;font-size:12.5px;color:var(--ink);font-weight:600;}
+  .seqopt.correct{border-color:var(--good);background:var(--good-bg);}
+  .seqopt.wrong{border-color:var(--bad);background:var(--bad-bg);}
+  .seqopt.dim{opacity:.5;} .seqopt .fb{font-size:12px;font-weight:700;}
+  .seqopt.correct .fb{color:#15803d;} .seqopt.wrong .fb{color:#b91c1c;}
+  .scenewrap{border:1.5px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:10px;background:#eaf4ff;}
+  .scene{display:block;width:100%;height:auto;}
+  .node{cursor:pointer;} .node .disk{transition:.15s;} .node:hover .disk{stroke:var(--acc-d);stroke-width:3;}
+  .tracepath{stroke:var(--violet);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:6 6;}
+  .hintrow{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+  .hintchip{display:flex;align-items:center;gap:5px;background:#eef2ff;border:1px solid #dbe3ff;color:#3730a3;border-radius:20px;padding:5px 9px;font-size:11px;cursor:pointer;}
+  .hintchip:hover{border-color:var(--acc);}
+  .traceline{font-size:12px;color:#374151;text-align:center;margin:2px 0 8px;min-height:16px;}
+  .traceline b{color:#6d28d9;}
+  /* shared: feedback / reveal / done */
+  .cfb{border-radius:12px;padding:12px 13px;font-size:13px;line-height:1.5;margin-top:6px;}
+  .cfb.ok{background:var(--good-bg);border:1px solid var(--good-bd);color:#14532d;}
+  .cfb.no{background:var(--bad-bg);border:1px solid var(--bad-bd);color:#7f1d1d;}
+  .cfb .t{font-weight:700;font-size:13.5px;display:block;margin-bottom:3px;}
+  .missing{background:#fff;border:1px dashed var(--line);border-radius:10px;padding:10px 11px;margin-top:12px;font-size:11px;color:#6b7280;line-height:1.6;}
+  .missing b{color:#374151;}
+  .reveal{background:var(--warn-bg);border:1.5px solid var(--warn-bd);border-radius:14px;padding:14px;margin-bottom:12px;}
+  .reveal .tophead{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#92400e;margin-bottom:8px;}
+  .reveal .diag{font-size:12.5px;color:#78350f;line-height:1.55;margin-top:8px;}
+  .snippet{background:#fff;border-left:3px solid var(--warn);border-radius:6px;padding:9px 11px;font-size:12.5px;color:#78350f;font-style:italic;line-height:1.55;margin:8px 0;}
+  .qlabel{text-align:center;font-size:12.5px;color:#6b7280;margin-bottom:8px;font-weight:600;}
+  .fitok{text-align:center;font-size:12px;color:#15803d;font-weight:700;margin-top:4px;}
+  .steps{background:var(--good-bg);border:1px solid var(--good-bd);border-radius:12px;padding:12px 13px;margin-bottom:12px;font-size:13px;color:#14532d;line-height:1.7;}
+  .steps b{color:#166534;}
+  .done{background:var(--good-bg);border:1px solid var(--good-bd);border-radius:12px;padding:13px;margin-bottom:12px;font-size:12.5px;color:#14532d;line-height:1.6;}
+  .done b{color:#166534;}
+  .chain{display:flex;flex-wrap:wrap;align-items:center;gap:5px;justify-content:center;margin:8px 0;font-size:12px;}
+  .chain .n{background:#dcfce7;border:1px solid #bbf7d0;border-radius:20px;padding:3px 9px;font-weight:600;color:#166534;}
+  .chain .arr{color:#16a34a;}
+  .affirm{background:#eef2ff;border:1px solid #dbe3ff;border-radius:10px;padding:10px 11px;font-size:12px;color:#3730a3;line-height:1.55;margin-top:8px;}
+  .btn{width:100%;padding:13px;border-radius:12px;border:none;font:600 14px var(--sax-font);cursor:pointer;}
+  .btn.primary{background:var(--acc);color:#fff;} .btn.primary:disabled{background:#c7d2e5;color:#fff;cursor:not-allowed;}
+  .btn.retry{background:linear-gradient(135deg,var(--acc),var(--violet));color:#fff;}
+  .btn.ghost{background:#fff;border:1.5px solid var(--line);color:#374151;margin-top:8px;}
+  .ptag{display:inline-block;font-size:9px;font-weight:700;color:#fff;background:var(--acc);border-radius:5px;padding:1px 5px;margin-left:5px;vertical-align:middle;}
+  .ptag.p3{background:var(--sax-pink)}.ptag.p5{background:#14b8a6}.ptag.p6{background:#0ea5e9}.ptag.p7{background:var(--warn)}.ptag.p9{background:var(--good)}
+  /* right rail */
+  .card{background:#fff;border:1px solid var(--sax-page-bd);border-radius:12px;padding:12px;margin-bottom:12px;}
+  .card h4{margin:0 0 8px;font-size:12px;color:var(--sax-page-ink);}
+  .attempt{font-size:11.5px;color:var(--sax-page-ink);padding:7px 0;border-bottom:1px solid var(--sax-page-bd);line-height:1.5;}
+  .attempt:last-child{border:none;}
+  .attempt .pill{font-size:10px;font-weight:700;padding:1px 6px;border-radius:5px;margin-right:6px;}
+  .attempt .pill.w{background:#fee2e2;color:#b91c1c;} .attempt .pill.c{background:#dcfce7;color:#15803d;} .attempt .pill.p{background:#fef3c7;color:#92400e;}
+  .prin{background:#fff;border:1px solid var(--sax-page-bd);border-radius:11px;padding:10px 11px;margin-bottom:8px;}
+  .prin h4{margin:0 0 4px;font-size:12px;display:flex;align-items:center;gap:7px;color:var(--sax-page-ink);}
+  .prin .n{width:20px;height:20px;border-radius:6px;background:var(--sax-blue);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;font-weight:700;}
+  .prin p{margin:0;font-size:11px;color:var(--sax-page-sec);line-height:1.5;}
+  #toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1c2230;color:#fff;font-size:12px;padding:9px 14px;border-radius:10px;opacity:0;transition:.25s;pointer-events:none;z-index:99;}
+  #toast.show{opacity:1;}
+</style>
+</head>
+<body class="sax-page">
+  <div class="page-head">
+    <h1>Reimagining the MCQ</h1>
+    <span class="sub">Classic vs voice-first · Grade 3 maths &amp; reading · EN / हिंदी</span>
+    <span class="tag">voice: <b id="ttsMode">—</b></span>
+    <span class="tag">item preserved · rhetoric changed</span>
+  </div>
+
+  <div class="shell">
+    <aside class="left">
+      <div class="lbl">Question</div>
+      <div class="seg stack" id="subjSeg">
+        <button class="on" data-subj="math">Maths<small>subtraction · borrowing</small></button>
+        <button data-subj="reading">Reading<small>sequence · inference</small></button>
+      </div>
+      <div class="lbl">Mode — flip to compare</div>
+      <div class="seg stack mode" id="modeSeg">
+        <button class="on classic" data-mode="classic">Classic<small>single mode</small></button>
+        <button class="reimag" data-mode="reimag">Reimagined<small>voice-first</small></button>
+      </div>
+      <div class="lbl">Language</div>
+      <div class="seg" id="langSeg"></div>
+      <div class="lbl">The algorithm on show</div>
+      <div class="algo" id="algoBox"></div>
+      <p class="hint" id="hintBox"></p>
+    </aside>
+
+    <div class="stage">
+      <div class="sax-phone" data-theme="light">
+        <div class="sax-phone-content">
+          <div id="screen"></div>
+        </div>
+      </div>
+      <div class="stagenote" id="stageNote">Tap 🔊, then answer · tap the phone edge for fullscreen</div>
+    </div>
+
+    <aside class="right" id="rail"></aside>
+  </div>
+<div id="toast"></div>
+
+<script>
+const CONFIG = { TTS_ENDPOINT:'/api/tts', SPEAKER:'anushka', LANGS:{en:'en-IN', hi:'hi-IN'} };
+const LANG_LABELS = {en:'EN',hi:'हिंदी'};
+
+/* ================= AUDIO (shared) ================= */
+let _actx=null,_curSrc=null;
+function getActx(){ if(!_actx) _actx=new (window.AudioContext||window.webkitAudioContext)(); return _actx; }
+function setMode(m){ const el=document.getElementById('ttsMode'); if(el) el.textContent=m; }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2600); }
+function stopAudio(){ try{ if(_curSrc){_curSrc.onended=null;_curSrc.stop();_curSrc=null;} }catch(e){}
+  if(window.speechSynthesis) speechSynthesis.cancel();
+  document.querySelectorAll('.spk.playing').forEach(s=>s.classList.remove('playing')); }
+async function playB64(dataUri){
+  const ctx=getActx(); await ctx.resume();
+  const b64=dataUri.split(',')[1]; const bin=atob(b64);
+  const bytes=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+  const buf=await ctx.decodeAudioData(bytes.buffer);
+  return new Promise(res=>{ const src=ctx.createBufferSource(); _curSrc=src; src.buffer=buf; src.connect(ctx.destination); src.onended=()=>{_curSrc=null;res();}; src.start(0); });
+}
+function highlightCaption(capEl,text,on){ if(!capEl) return; capEl.innerHTML = on? `<span class="hl">${text}</span>` : text; }
+function fallbackSpeak(text,capEl,done){
+  setMode("Browser fallback");
+  if(!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance==='undefined'){ if(done)done(); return; }
+  try{ const u=new SpeechSynthesisUtterance(text); u.lang=CONFIG.LANGS[S.lang]; u.rate=.92;
+    u.onend=()=>{ if(done)done(); }; speechSynthesis.speak(u); }catch(e){ if(done)done(); }
+}
+async function speak(text, spkEl, capEl){
+  stopAudio(); const ctx=getActx(); ctx.resume();
+  if(spkEl) spkEl.classList.add('playing');
+  highlightCaption(capEl,text,true);
+  const done=()=>{ if(spkEl) spkEl.classList.remove('playing'); highlightCaption(capEl,text,false); };
+  try{
+    const r=await fetch(CONFIG.TTS_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({text, speaker:CONFIG.SPEAKER, language:CONFIG.LANGS[S.lang]})});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const j=await r.json(); const uri=j.data_uri||j.dataUri||j.audio; if(!uri) throw new Error('no audio');
+    setMode(CONFIG.SPEAKER+" ✓"); await playB64(uri); done();
+  }catch(e){ toast('TTS endpoint unavailable — browser voice'); fallbackSpeak(text,capEl,done); }
+}
+// stop tap-to-fullscreen from firing on quiz interactions
+function guard(e){ if(e) e.stopPropagation(); }
+
+/* ================= STATE ================= */
+const S = { subj:'math', mode:'classic', lang:'en',
+  math:{ cAnswered:null, rPhase:'ask', rReveal:null, attempts:[], spokeCorrect:false },
+  reading:{ cAnswered:null, rPhase:'trace', trace:[], rBreak:null, rMiddleSwap:false, attempts:[], spokeDone:false }
+};
+function resetSubject(){
+  if(S.subj==='math'){ S.math={cAnswered:null,rPhase:'ask',rReveal:null,attempts:[],spokeCorrect:false}; }
+  else { S.reading={cAnswered:null,rPhase:'trace',trace:[],rBreak:null,rMiddleSwap:false,attempts:[],spokeDone:false}; }
+}
+
+/* ================= DATA: MATH ================= */
+const M_OPTS=[
+  {key:'A',val:25,correct:true},
+  {key:'B',val:35,twinTop:57,twinBot:22,slip:'swap'},
+  {key:'C',val:45,twinTop:52,twinBot:7,slip:'dropTens'},
+  {key:'D',val:32,twinTop:52,twinBot:20,slip:'dropUnits'}
+];
+const M_TXT={
+ en:{title:"Maths — Question 1",top:52,bot:27,ans:25,tens:"Tens",units:"Units",
+   guide:"Fifty-two take away twenty-seven. Which is the answer? Tap the blue speaker to hear it again.",
+   stemSpoken:"Fifty-two minus twenty-seven. What is the answer?",
+   classicFB:{ok:{t:"Correct!",body:"52 − 27 = 25. Well done."},35:{t:"Incorrect.",body:"The correct answer is 25. Remember to borrow from the tens."},45:{t:"Incorrect.",body:"The correct answer is 25."},32:{t:"Incorrect.",body:"The correct answer is 25."}},
+   missing:"Single mode loses: no voice for a pre-reader · one attempt only · the same generic “answer is 25” for very different mistakes · the misconception is never named · a lucky guess looks like knowing.",
+   revealHead:"Wait — let's think together", fit:(t,b,v)=>`${t} − ${b} = ${v}  ✓`, morph:"You actually solved:",
+   diag:{swap:"Your answer 35 is right — but for 57 − 22. You swapped the units so you wouldn't have to borrow. In 52 − 27 the top unit (2) is smaller than the bottom (7), so you must borrow a ten.",
+     dropTens:"Your answer 45 is right — but for 52 − 7. You left out the tens in 27. Remember: 27 is 2 tens and 7 units — take away all of it.",
+     dropUnits:"Your answer 32 is right — but for 52 − 20. You left out the units in 27. Remember: 27 is 20 and 7 — don't forget the 7."},
+   retry:"↺ Try 52 − 27 again", again:"Now try the real question again. Take your time.",
+   correctSpoken:"Yes! You borrowed a ten. Twelve minus seven is five. Four minus two is two. The answer is twenty-five.",
+   stepHead:"You borrowed a ten — well done!", steps:["Units: 2 is too small, so borrow a ten → 12.","12 − 7 = 5","Tens: 4 (after borrowing) − 2 = 2","So 52 − 27 = 25"],
+   restart:"Start over", listenWrong:"Listen — this needs some thinking"},
+ hi:{title:"गणित — प्रश्न 1",top:52,bot:27,ans:25,tens:"दहाई",units:"इकाई",
+   guide:"बावन में से सत्ताईस घटाओ। उत्तर कौन-सा है? दोबारा सुनने के लिए नीला स्पीकर दबाओ।",
+   stemSpoken:"बावन में से सत्ताईस घटाओ। उत्तर क्या है?",
+   classicFB:{ok:{t:"सही!",body:"52 − 27 = 25। शाबाश।"},35:{t:"गलत।",body:"सही उत्तर 25 है। दहाई से हासिल लेना याद रखो।"},45:{t:"गलत।",body:"सही उत्तर 25 है।"},32:{t:"गलत।",body:"सही उत्तर 25 है।"}},
+   missing:"एकल मोड में खो जाता है: न पढ़ पाने वाले बच्चे के लिए आवाज़ नहीं · केवल एक प्रयास · अलग-अलग गलतियों के लिए वही “उत्तर 25 है” · गलती का नाम कभी नहीं · तुक्का भी जानने जैसा दिखता है।",
+   revealHead:"रुको — साथ में सोचते हैं", fit:(t,b,v)=>`${t} − ${b} = ${v}  ✓`, morph:"तुमने असल में यह हल किया:",
+   diag:{swap:"तुम्हारा उत्तर 35 सही है — पर 57 − 22 के लिए। तुमने इकाई बदल दी ताकि हासिल न लेना पड़े। 52 − 27 में ऊपर की इकाई (2) नीचे (7) से छोटी है, इसलिए एक दहाई हासिल लेनी होगी।",
+     dropTens:"तुम्हारा उत्तर 45 सही है — पर 52 − 7 के लिए। तुमने 27 की दहाई छोड़ दी। याद रखो: 27 यानी 2 दहाई और 7 इकाई — पूरा घटाओ।",
+     dropUnits:"तुम्हारा उत्तर 32 सही है — पर 52 − 20 के लिए। तुमने 27 की इकाई छोड़ दी। याद रखो: 27 यानी 20 और 7 — 7 मत भूलो।"},
+   retry:"↺ 52 − 27 फिर से करो", again:"अब असली सवाल फिर से करो। जल्दी मत करो।",
+   correctSpoken:"शाबाश! तुमने एक दहाई हासिल ली। बारह में से सात, पाँच। चार में से दो, दो। उत्तर पच्चीस।",
+   stepHead:"तुमने एक दहाई हासिल ली — शाबाश!", steps:["इकाई: 2 बहुत छोटी है, इसलिए एक दहाई हासिल लो → 12।","12 − 7 = 5","दहाई: 4 (हासिल के बाद) − 2 = 2","तो 52 − 27 = 25"],
+   restart:"फिर से शुरू करो", listenWrong:"सुनो — इसमें थोड़ा सोचना है"}
+};
+
+/* ================= DATA: READING ================= */
+const R_NODES={ barber:{emoji:'💈',cx:238,cy:346}, tailor:{emoji:'🧵',cx:66,cy:258}, carpenter:{emoji:'🪚',cx:242,cy:196}, forest:{emoji:'🐯',cx:150,cy:92} };
+const R_ORDER=['barber','tailor','carpenter','forest'];
+const R_HOME={emoji:'🧔',cx:60,cy:388};
+const R_TXT={
+ en:{title:"Reading — Question 1",
+   q:"In what order did Sringeri Srinivas try to get his hair cut?",
+   guide:"Sringeri Srinivas wanted a haircut. Everyone was busy! In what order did he go? Tap the speaker to hear the question again.",
+   qSpoken:"In what order did Sringeri Srinivas try to get his hair cut?",
+   names:{barber:"Barber",tailor:"Tailor",carpenter:"Carpenter",forest:"Forest (tiger!)"},
+   classicOpts:[{key:'A',seq:['barber','tailor','carpenter','forest'],kind:'correct'},{key:'B',seq:['forest','barber','tailor','carpenter'],kind:'forestFirst'},{key:'C',seq:['barber','carpenter','tailor','forest'],kind:'middleSwap'},{key:'D',seq:['tailor','barber','carpenter','forest'],kind:'barberLate'}],
+   classicFB:{correct:{t:"Correct!",body:"Barber – Tailor – Carpenter – Forest."},wrong:{t:"Incorrect.",body:"The correct order is Barber – Tailor – Carpenter – Forest."}},
+   missing:"Single mode loses: it marks a child who understood the story but misremembers whether the tailor or carpenter came first exactly as wrong as a child who didn't understand at all. It tests memory of order, not comprehension. No voice for a pre-reader; one attempt.",
+   traceInstr:"Trace his journey — tap the places in the order he visited them.",
+   nudge:"Need a nudge? Play a moment from the story (it won't give the order away):", tapped:"Your trace:", check:"Check my trace",
+   snippets:{barber:"“Not today!” said the barber. “I have no time to cut such long hair!”",tailor:"The tailor was busy too. “Not today!” he said, and turned away.",carpenter:"The carpenter shook his head. “No time today, come tomorrow!”",forest:"In tears, Sringeri Srinivas walked off by himself, past the village forest…"},
+   reveal:{forestLast:{head:"Wait — let's think, not just remember",snippet:"In tears, Sringeri Srinivas walked off by himself, past the village forest…",diag:"You put the forest early. But listen to when the forest appears: he only walked to the forest <b>after</b> everyone in the village was too busy. The forest is where the story <b>ends</b> — the tiger finishes the job! So which place must come <b>last</b>? Try again."},
+     barberFirst:{head:"Wait — let's think, not just remember",snippet:"“Not today!” said the barber. “I have no time to cut such long hair!”",diag:"You started somewhere else. But it's a <b>haircut</b> — who do you go to <b>first</b> for a haircut? He tried the barber first of all. Start there, then try again."}},
+   donePerfect:{head:"You understood the story! 🎉",body:"You traced his journey by what <b>happened</b>, not by memorising words."},
+   affirm:"You tapped the carpenter before the tailor — and that is completely fine. The story doesn't depend on which busy person came first. What matters is you understood: he tried the village people, and only then the forest. <b>That</b> is comprehension.",
+   restart:"Start over", tryagain:"↺ Trace again", listenWrong:"Listen — this needs thinking, not just remembering"},
+ hi:{title:"पठन — प्रश्न 1",
+   q:"श्रृंगेरी श्रीनिवास ने बाल कटवाने के लिए किस क्रम में कोशिश की?",
+   guide:"श्रृंगेरी श्रीनिवास बाल कटवाना चाहता था। सब व्यस्त थे! वह किस क्रम में गया? प्रश्न दोबारा सुनने के लिए स्पीकर दबाओ।",
+   qSpoken:"श्रृंगेरी श्रीनिवास ने बाल कटवाने के लिए किस क्रम में कोशिश की?",
+   names:{barber:"नाई",tailor:"दर्ज़ी",carpenter:"बढ़ई",forest:"जंगल (बाघ!)"},
+   classicOpts:[{key:'A',seq:['barber','tailor','carpenter','forest'],kind:'correct'},{key:'B',seq:['forest','barber','tailor','carpenter'],kind:'forestFirst'},{key:'C',seq:['barber','carpenter','tailor','forest'],kind:'middleSwap'},{key:'D',seq:['tailor','barber','carpenter','forest'],kind:'barberLate'}],
+   classicFB:{correct:{t:"सही!",body:"नाई – दर्ज़ी – बढ़ई – जंगल।"},wrong:{t:"गलत।",body:"सही क्रम है: नाई – दर्ज़ी – बढ़ई – जंगल।"}},
+   missing:"एकल मोड में खो जाता है: जिस बच्चे ने कहानी समझी पर दर्ज़ी-बढ़ई का क्रम भूल गया, उसे उतना ही गलत मानता है जितना उस बच्चे को जिसने समझा ही नहीं। यह क्रम की याद जाँचता है, समझ नहीं।",
+   traceInstr:"उसकी यात्रा को रेखांकित करो — जिस क्रम में वह गया, उन जगहों को छूओ।",
+   nudge:"थोड़ी मदद चाहिए? कहानी का एक पल सुनो (यह क्रम नहीं बताएगा):", tapped:"तुम्हारा क्रम:", check:"मेरा क्रम जाँचो",
+   snippets:{barber:"“आज नहीं!” नाई ने कहा। “इतने लंबे बाल काटने का समय नहीं!”",tailor:"दर्ज़ी भी व्यस्त था। “आज नहीं!” कहकर मुँह फेर लिया।",carpenter:"बढ़ई ने सिर हिलाया। “आज समय नहीं, कल आना!”",forest:"रोते हुए, श्रृंगेरी श्रीनिवास अकेला गाँव के जंगल की ओर चल पड़ा…"},
+   reveal:{forestLast:{head:"रुको — याद नहीं, सोचो",snippet:"रोते हुए, श्रृंगेरी श्रीनिवास अकेला गाँव के जंगल की ओर चल पड़ा…",diag:"तुमने जंगल को पहले रख दिया। पर सुनो जंगल कब आता है: वह जंगल तब गया <b>जब</b> गाँव में सब व्यस्त थे। जंगल कहानी का <b>अंत</b> है — बाघ बाकी काम कर देता है! तो कौन-सी जगह <b>आखिर</b> में होनी चाहिए? फिर कोशिश करो।"},
+     barberFirst:{head:"रुको — याद नहीं, सोचो",snippet:"“आज नहीं!” नाई ने कहा। “इतने लंबे बाल काटने का समय नहीं!”",diag:"तुमने कहीं और से शुरू किया। पर यह <b>बाल कटवाना</b> है — बाल कटवाने पहले <b>किसके</b> पास जाते हैं? उसने सबसे पहले नाई के पास कोशिश की। वहीं से शुरू करो, फिर कोशिश करो।"}},
+   donePerfect:{head:"तुमने कहानी समझ ली! 🎉",body:"तुमने उसकी यात्रा को <b>जो हुआ</b> उससे रेखांकित किया, शब्द रटकर नहीं।"},
+   affirm:"तुमने बढ़ई को दर्ज़ी से पहले छुआ — और यह बिलकुल ठीक है। कहानी इस पर निर्भर नहीं कि कौन-सा व्यस्त व्यक्ति पहले आया। मायने यह रखता है कि तुम समझे: उसने पहले गाँव के लोगों को, फिर जंगल को। <b>यही</b> समझ है।",
+   restart:"फिर से शुरू", tryagain:"↺ फिर रेखांकित करो", listenWrong:"सुनो — इसमें रटना नहीं, सोचना है"}
+};
+
+/* ================= PRINCIPLES / ALGO copy ================= */
+const P={1:["Channel roles fixed","Options/scene stay on screen; voice guides."],3:["Always random-access","Prompt replayable; restored for another attempt."],5:["Spoken-first, anchored","A pre-reader hears the question; acts on a picture/number."],6:["Comprehension is the metric","Score understanding of structure, not rote order/guessing."],7:["Close the loop","Name the exact slip and play the WHY — not a generic ‘wrong’."],9:["Forgive first failure","A wrong answer is a place to think from; restore and retry."]};
+const ALGO={
+ math:`<b>Every wrong answer has a right question.</b> Each distractor is the correct answer to a <i>different</i> question that names the child's exact place-value slip.
+   <div class="rule">52 − 27 → <b>25</b> ✓ (borrow) · 57 − 22 → 35 · 52 − 7 → 45 · 52 − 20 → 32</div>
+   <div class="rule">In <b>Reimagined</b>, a wrong tap morphs the question into the one the answer fits, a voice prompts thinking, then the original returns for another attempt.</div>`,
+ reading:`<b>Comprehension is not memory.</b> The reading equivalent of the maths hack. The correct order is recoverable from cause → effect:
+   <div class="rule">• <b>Barber first</b> — it's a haircut.<br>• <b>Forest last</b> — he only went there <i>because</i> everyone was busy.<br>• <b>Middle (tailor/carpenter) doesn't matter</b>.</div>
+   <div class="rule">Classic marks a middle-swap <b style="color:#b91c1c">wrong</b>. Reimagined gives it <b style="color:#15803d">full credit</b>; only a broken causal link triggers a voice hint + retry.</div>`
+};
+const HINTS={ math:`Tap the same wrong answer (35) in each mode. Classic: “Incorrect, the answer is 25.” Reimagined: “35 is right — but for 57 − 22…”, then retry.`,
+ reading:`In Classic pick option <b>C</b> (barber–carpenter–tailor–forest): marked wrong. In Reimagined trace that same order: full credit. That gap is the point.` };
+
+/* ================= RENDER ================= */
+const screen=document.getElementById('screen');
+function ptag(n){return `<span class="ptag p${n}" title="${P[n][0]}: ${P[n][1]}">P${n}</span>`;}
+function cleanName(s){ return s.replace(' (tiger!)','').replace(' (बाघ!)',''); }
+
+function render(){
+  stopAudio();
+  document.getElementById('algoBox').innerHTML=ALGO[S.subj];
+  document.getElementById('hintBox').innerHTML=HINTS[S.subj];
+  if(S.subj==='math') mRender(); else rRender();
+  renderRail();
+}
+
+/* ---------- MATH ---------- */
+function mSum(top,bot,ans,o){ o=o||{};
+  const t=String(top),b=String(bot);
+  const dd=(ch,cls)=>`<span class="digit ${cls||''}">${ch}</span>`;
+  let topH;
+  if(o.showBorrow){ topH=`<span class="digit borrow"><span class="borrowmark">4</span>5̶</span><span class="digit borrow"><span class="borrowmark">12</span>2</span>`; }
+  else topH=t.split('').map((ch,i)=>dd(ch,o.topHi&&o.topHi.includes(i)?'swap':'')).join('');
+  const botH=b.split('').map((ch,i)=>dd(ch,o.botHi&&o.botHi.includes(i)?'swap':'')).join('');
+  const ansStr=o.qm?`<span class="qm">?</span>`:`<span style="color:${o.showBorrow?'#16a34a':'#111827'}">${ans}</span>`;
+  return `<div class="sum"><div>${topH}</div><div><span class="op">−</span> ${botH}</div><div class="rule"></div><div>${ansStr}</div></div>`;
+}
+function mRender(){
+  const st=S.math, t=M_TXT[S.lang];
+  if(S.mode==='classic') return mClassic(t,st);
+  if(st.rPhase==='reveal') return mReveal(t,st);
+  if(st.rPhase==='correct') return mCorrect(t,st);
+  screen.innerHTML=`
+  <div class="appbar"><span class="title">${t.title}</span><span class="badge reimag">REIMAGINED</span></div>
+  <div class="qbody">
+    <div class="audiobar"><button class="spk" id="qSpk">🔊</button><div class="caption" id="qCap">${t.guide}</div><button class="replay" id="qReplay">↺</button></div>
+    <div style="font-size:10px;color:#6b7280;margin:-4px 0 8px">Question spoken ${ptag(5)} · scaffold + options on screen · replay ${ptag(3)}</div>
+    <div class="sumcard"><div class="colhead"><span>${t.tens}</span><span>${t.units}</span></div>${mSum(t.top,t.bot,'',{qm:true})}</div>
+    <div id="opts">${M_OPTS.map((o,i)=>`<div class="opt" data-i="${i}"><div class="key">${o.key}</div><div class="val">${o.val}</div><button class="mini" data-say="${o.val}">🔊</button></div>`).join('')}</div>
+  </div>
+  <div class="qfoot" style="text-align:center;font-size:11px;color:#9ca3af">Tap the answer you think is right</div>`;
+  const qSpk=screen.querySelector('#qSpk'),qCap=screen.querySelector('#qCap');
+  qSpk.onclick=e=>{guard(e);speak(t.stemSpoken,qSpk,qCap);}; screen.querySelector('#qReplay').onclick=e=>{guard(e);speak(t.stemSpoken,qSpk,qCap);};
+  screen.querySelectorAll('#opts .mini').forEach(b=>b.onclick=e=>{guard(e);speak(String(b.dataset.say),b.closest('.opt').querySelector('.key'),qCap);});
+  screen.querySelectorAll('#opts .opt').forEach(o=>o.onclick=e=>{guard(e); const i=+o.dataset.i,opt=M_OPTS[i];
+    if(opt.correct){ st.attempts.push({val:opt.val,correct:true}); st.rPhase='correct'; }
+    else { st.attempts.push({val:opt.val,correct:false}); st.rReveal=i; st.rPhase='reveal'; }
+    render(); });
+}
+function mClassic(t,st){
+  const answered=st.cAnswered!==null;
+  screen.innerHTML=`
+  <div class="appbar"><span class="title">${t.title}</span><span class="badge classic">CLASSIC</span></div>
+  <div class="qbody">
+    <div class="sumcard"><div class="colhead"><span>${t.tens}</span><span>${t.units}</span></div>${mSum(t.top,t.bot,'',{qm:true})}</div>
+    <div id="opts">${M_OPTS.map((o,i)=>{let cls='';if(answered){cls=o.correct?'correct':(i===st.cAnswered?'wrong':'dim');}const fb=answered&&(o.correct||i===st.cAnswered)?`<span class="fb">${o.correct?'✓':'✗'}</span>`:'';return `<div class="opt ${cls}" data-i="${i}"><div class="key">${o.key}</div><div class="val">${o.val}</div>${fb}</div>`;}).join('')}</div>
+    ${answered?mClassicFB(t,st):''}
+    ${answered?`<div class="missing"><b>What single-mode loses →</b> ${t.missing}</div>`:''}
+  </div>
+  <div class="qfoot"><button class="btn ghost" id="restart">${t.restart}</button></div>`;
+  if(!answered) screen.querySelectorAll('#opts .opt').forEach(o=>o.onclick=e=>{guard(e); st.cAnswered=+o.dataset.i; render();});
+  screen.querySelector('#restart').onclick=e=>{guard(e); resetSubject(); render();};
+}
+function mClassicFB(t,st){ const o=M_OPTS[st.cAnswered];
+  if(o.correct) return `<div class="cfb ok"><span class="t">${t.classicFB.ok.t}</span>${t.classicFB.ok.body}</div>`;
+  const f=t.classicFB[o.val]; return `<div class="cfb no"><span class="t">${f.t}</span>${f.body}</div>`; }
+function mReveal(t,st){ const o=M_OPTS[st.rReveal], diag=t.diag[o.slip];
+  let topHi=null,botHi=null;
+  if(o.slip==='swap'){topHi=[1];botHi=[1];} if(o.slip==='dropTens'){botHi=[0];} if(o.slip==='dropUnits'){botHi=[1];}
+  screen.innerHTML=`
+  <div class="appbar"><span class="title">${t.title}</span><span class="badge reimag">REIMAGINED</span></div>
+  <div class="qbody">
+    <div class="audiobar"><button class="spk" id="rSpk">🔊</button><div class="caption" id="rCap">${t.listenWrong}</div><button class="replay" id="rReplay">↺</button></div>
+    <div class="reveal"><div class="tophead">💡 ${t.revealHead} ${ptag(7)}</div>
+      <div class="qlabel">${t.morph}</div>
+      <div class="sumcard" style="border-color:#fde68a;background:#fffdf5">${mSum(o.twinTop,o.twinBot,o.val,{topHi,botHi})}</div>
+      <div class="fitok">${t.fit(o.twinTop,o.twinBot,o.val)}</div>
+      <div class="diag">${diag}</div></div>
+    <div style="font-size:10px;color:#9ca3af;text-align:center">Every wrong answer has a right question ${ptag(7)} · another attempt ${ptag(9)}</div>
+  </div>
+  <div class="qfoot"><button class="btn retry" id="retry">${t.retry}</button></div>`;
+  const rSpk=screen.querySelector('#rSpk'),rCap=screen.querySelector('#rCap');
+  rSpk.onclick=e=>{guard(e);speak(diag,rSpk,rCap);}; screen.querySelector('#rReplay').onclick=e=>{guard(e);speak(diag,rSpk,rCap);};
+  setTimeout(()=>speak(diag,rSpk,rCap),300);
+  screen.querySelector('#retry').onclick=e=>{guard(e); st.rPhase='ask'; st.rReveal=null; render();};
+}
+function mCorrect(t,st){
+  screen.innerHTML=`
+  <div class="appbar"><span class="title">${t.title}</span><span class="badge reimag">REIMAGINED</span></div>
+  <div class="qbody">
+    <div class="audiobar"><button class="spk" id="cSpk">🔊</button><div class="caption" id="cCap">${t.stepHead}</div><button class="replay" id="cReplay">↺</button></div>
+    <div class="sumcard" style="border-color:#bbf7d0;background:#f0fdf4"><div class="colhead"><span>${t.tens}</span><span>${t.units}</span></div>${mSum(t.top,t.bot,t.ans,{showBorrow:true})}</div>
+    <div class="steps"><b>${t.stepHead}</b><br>${t.steps.map(s=>`• ${s}`).join('<br>')}</div>
+    <div style="text-align:center;font-size:34px">🎉</div>
+  </div>
+  <div class="qfoot"><button class="btn ghost" id="restart">${t.restart}</button></div>`;
+  const cSpk=screen.querySelector('#cSpk'),cCap=screen.querySelector('#cCap');
+  cSpk.onclick=e=>{guard(e);speak(t.correctSpoken,cSpk,cCap);}; screen.querySelector('#cReplay').onclick=e=>{guard(e);speak(t.correctSpoken,cSpk,cCap);};
+  if(!st.spokeCorrect){ st.spokeCorrect=true; setTimeout(()=>speak(t.correctSpoken,cSpk,cCap),300); }
+  screen.querySelector('#restart').onclick=e=>{guard(e); resetSubject(); render();};
+}
+
+/* ---------- READING ---------- */
+function rSeqStr(t,arr){ return arr.map(k=>cleanName(t.names[k])).join(' – '); }
+function rEvaluate(tr){ const fp=tr.indexOf('forest'),bp=tr.indexOf('barber');
+  if(fp!==tr.length-1) return {ok:false,breakKey:'forestLast'};
+  if(bp!==0) return {ok:false,breakKey:'barberFirst'};
+  return {ok:true,breakKey:null,middleSwap:(tr[1]==='carpenter')}; }
+function rScene(t,o){ o=o||{}; const tr=o.traceNodes||S.reading.trace;
+  let s=`<svg class="scene" viewBox="0 0 300 430" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe3ff"/><stop offset="1" stop-color="#eaf7ff"/></linearGradient>
+      <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cdeeb5"/><stop offset="1" stop-color="#a7d98a"/></linearGradient></defs>
+    <rect width="300" height="430" fill="url(#sky)"/><rect y="120" width="300" height="310" fill="url(#grass)"/>
+    <g opacity="0.9">${[20,55,90,125,180,215,250,278].map(x=>`<circle cx="${x}" cy="70" r="26" fill="#4e9a51"/>`).join('')}</g>
+    <rect width="300" height="8" fill="#3f7d43"/>
+    <path d="M60 388 C 120 380 200 372 238 346 C 150 320 40 300 66 258 C 150 240 260 235 242 196 C 180 170 90 150 150 92" fill="none" stroke="#e8d9a8" stroke-width="14" stroke-linecap="round" opacity="0.7"/>`;
+  if(tr.length>=1){ const pts=[R_HOME].concat(tr.map(k=>R_NODES[k])); const d=pts.map((p,i)=>`${i?'L':'M'} ${p.cx} ${p.cy}`).join(' '); s+=`<path class="tracepath" fill="none" d="${d}"/>`; }
+  s+=`<g><circle class="disk" cx="${R_HOME.cx}" cy="${R_HOME.cy}" r="21" fill="#fff" stroke="#94a3b8" stroke-width="2"/><text x="${R_HOME.cx}" y="${R_HOME.cy+6}" text-anchor="middle" font-size="18">${R_HOME.emoji}</text><text x="${R_HOME.cx}" y="${R_HOME.cy+34}" text-anchor="middle" font-size="9" fill="#334155" font-weight="700">START</text></g>`;
+  R_ORDER.forEach(k=>{ const n=R_NODES[k], idx=tr.indexOf(k), done=idx>=0, brk=o.highlightBreak===k;
+    s+=`<g class="node ${done?'done':''}" data-node="${k}"><circle class="disk" cx="${n.cx}" cy="${n.cy}" r="22" fill="${brk?'#fee2e2':'#fff'}" stroke="${brk?'#ef4444':(done?'#22c55e':'#cbd5e1')}" stroke-width="${brk||done?3:2}"/><text x="${n.cx}" y="${n.cy+7}" text-anchor="middle" font-size="20">${n.emoji}</text><text x="${n.cx}" y="${n.cy+35}" text-anchor="middle" font-size="9" fill="#334155" font-weight="700">${cleanName(t.names[k])}</text>`;
+    if(done) s+=`<g><circle cx="${n.cx+17}" cy="${n.cy-17}" r="9" fill="#6d28d9"/><text x="${n.cx+17}" y="${n.cy-13}" text-anchor="middle" font-size="10" fill="#fff" font-weight="700">${idx+1}</text></g>`;
+    s+=`</g>`; });
+  return s+`</svg>`;
+}
+function rRender(){ const st=S.reading, t=R_TXT[S.lang];
+  if(S.mode==='classic') return rClassic(t,st);
+  if(st.rPhase==='reveal') return rReveal(t,st);
+  if(st.rPhase==='done') return rDone(t,st);
+  const full=st.trace.length===R_ORDER.length;
+  screen.innerHTML=`
+  <div class="appbar"><span class="title">${t.title}</span><span class="badge reimag">REIMAGINED</span></div>
+  <div class="qbody">
+    <div class="audiobar"><button class="spk" id="qSpk">🔊</button><div class="caption" id="qCap">${t.guide}</div><button class="replay" id="qReplay">↺</button></div>
+    <div style="font-size:10px;color:#6b7280;margin:-4px 0 8px">Mono-scenic scene ${ptag(1)} · trace by tap ${ptag(6)} · voice hints ${ptag(5)}</div>
+    <div class="scenewrap">${rScene(t)}</div>
+    <div class="traceline">${t.tapped} ${st.trace.length? st.trace.map((k,i)=>`<b>${i+1}·${cleanName(t.names[k])}</b>`).join(' → '):'<span style="color:#9ca3af">—</span>'}</div>
+    <div style="font-size:10.5px;color:#6b7280;margin-bottom:5px">${t.nudge} ${ptag(3)}</div>
+    <div class="hintrow">${['tailor','forest','barber','carpenter'].map(k=>`<button class="hintchip" data-hint="${k}">🔊 ${cleanName(t.names[k])}</button>`).join('')}</div>
+  </div>
+  <div class="qfoot"><button class="btn primary" id="check" ${full?'':'disabled'}>${t.check}</button><button class="btn ghost" id="clear">↺</button></div>`;
+  const qSpk=screen.querySelector('#qSpk'),qCap=screen.querySelector('#qCap');
+  qSpk.onclick=e=>{guard(e);speak(t.qSpoken,qSpk,qCap);}; screen.querySelector('#qReplay').onclick=e=>{guard(e);speak(t.qSpoken,qSpk,qCap);};
+  screen.querySelectorAll('.node').forEach(g=>g.onclick=e=>{guard(e); const k=g.dataset.node; if(st.trace.includes(k))return; st.trace.push(k); render();});
+  screen.querySelectorAll('.hintchip').forEach(b=>b.onclick=e=>{guard(e);speak(t.snippets[b.dataset.hint],null,qCap);});
+  screen.querySelector('#clear').onclick=e=>{guard(e); st.trace=[]; render();};
+  const chk=screen.querySelector('#check'); chk.onclick=e=>{guard(e); const r=rEvaluate(st.trace);
+    if(r.ok){ st.rMiddleSwap=r.middleSwap; st.attempts.push({trace:st.trace.slice(),ok:true,mid:r.middleSwap}); st.rPhase='done'; }
+    else { st.rBreak=r.breakKey; st.attempts.push({trace:st.trace.slice(),ok:false,breakKey:r.breakKey}); st.rPhase='reveal'; }
+    render(); };
+}
+function rClassic(t,st){ const answered=st.cAnswered!==null;
+  screen.innerHTML=`
+  <div class="appbar"><span class="title">${t.title}</span><span class="badge classic">CLASSIC</span></div>
+  <div class="qbody">
+    <div class="qtext">${t.q}</div>
+    <div id="opts">${t.classicOpts.map((o,i)=>{let cls='';if(answered){cls=o.kind==='correct'?'correct':(i===st.cAnswered?'wrong':'dim');}const fb=answered&&(o.kind==='correct'||i===st.cAnswered)?`<span class="fb">${o.kind==='correct'?'✓':'✗'}</span>`:'';return `<div class="seqopt ${cls}" data-i="${i}"><div class="key">${o.key}</div><div class="seq">${rSeqStr(t,o.seq)}</div>${fb}</div>`;}).join('')}</div>
+    ${answered?rClassicFB(t,st):''}
+    ${answered?`<div class="missing"><b>What single-mode loses →</b> ${t.missing}</div>`:''}
+  </div>
+  <div class="qfoot"><button class="btn ghost" id="restart">${t.restart}</button></div>`;
+  if(!answered) screen.querySelectorAll('#opts .seqopt').forEach(o=>o.onclick=e=>{guard(e); st.cAnswered=+o.dataset.i; render();});
+  screen.querySelector('#restart').onclick=e=>{guard(e); resetSubject(); render();};
+}
+function rClassicFB(t,st){ const o=t.classicOpts[st.cAnswered];
+  if(o.kind==='correct') return `<div class="cfb ok"><span class="t">${t.classicFB.correct.t}</span>${t.classicFB.correct.body}</div>`;
+  return `<div class="cfb no"><span class="t">${t.classicFB.wrong.t}</span>${t.classicFB.wrong.body}</div>`; }
+function rReveal(t,st){ const rv=t.reveal[st.rBreak], brkNode=st.rBreak==='forestLast'?'forest':'barber';
+  screen.innerHTML=`
+  <div class="appbar"><span class="title">${t.title}</span><span class="badge reimag">REIMAGINED</span></div>
+  <div class="qbody">
+    <div class="audiobar"><button class="spk" id="rSpk">🔊</button><div class="caption" id="rCap">${t.listenWrong}</div><button class="replay" id="rReplay">↺</button></div>
+    <div class="scenewrap">${rScene(t,{traceNodes:st.trace,highlightBreak:brkNode})}</div>
+    <div class="reveal"><div class="tophead">💡 ${rv.head} ${ptag(7)}</div>
+      <div style="font-size:11px;color:#92400e;margin-bottom:2px">A moment from the story:</div>
+      <div class="snippet">${rv.snippet}</div><div class="diag">${rv.diag}</div></div>
+    <div style="font-size:10px;color:#9ca3af;text-align:center">Comprehension, not memory ${ptag(6)} · another attempt ${ptag(9)}</div>
+  </div>
+  <div class="qfoot"><button class="btn retry" id="retry">${t.tryagain}</button></div>`;
+  const rSpk=screen.querySelector('#rSpk'),rCap=screen.querySelector('#rCap'); const line=rv.snippet+' … '+rv.diag.replace(/<[^>]+>/g,'');
+  rSpk.onclick=e=>{guard(e);speak(line,rSpk,rCap);}; screen.querySelector('#rReplay').onclick=e=>{guard(e);speak(line,rSpk,rCap);};
+  setTimeout(()=>speak(line,rSpk,rCap),300);
+  screen.querySelector('#retry').onclick=e=>{guard(e); st.trace=[]; st.rBreak=null; st.rPhase='trace'; render();};
+}
+function rDone(t,st){ const seq=st.trace;
+  const chain=seq.map((k,i)=>`<span class="n">${cleanName(t.names[k])}</span>${i<seq.length-1?'<span class="arr">→</span>':''}`).join('');
+  screen.innerHTML=`
+  <div class="appbar"><span class="title">${t.title}</span><span class="badge reimag">REIMAGINED</span></div>
+  <div class="qbody">
+    <div class="audiobar"><button class="spk" id="dSpk">🔊</button><div class="caption" id="dCap">${t.donePerfect.head}</div><button class="replay" id="dReplay">↺</button></div>
+    <div class="scenewrap">${rScene(t,{traceNodes:seq})}</div>
+    <div class="done"><b>${t.donePerfect.head}</b><br>${t.donePerfect.body}<div class="chain">${chain}</div></div>
+    ${st.rMiddleSwap?`<div class="affirm">✅ ${t.affirm} ${ptag(6)}</div>`:''}
+    <div style="text-align:center;font-size:34px">🎉</div>
+  </div>
+  <div class="qfoot"><button class="btn ghost" id="restart">${t.restart}</button></div>`;
+  const dSpk=screen.querySelector('#dSpk'),dCap=screen.querySelector('#dCap'); const line=t.donePerfect.head+' '+t.donePerfect.body.replace(/<[^>]+>/g,'')+(st.rMiddleSwap?' '+t.affirm.replace(/<[^>]+>/g,''):'');
+  dSpk.onclick=e=>{guard(e);speak(line,dSpk,dCap);}; screen.querySelector('#dReplay').onclick=e=>{guard(e);speak(line,dSpk,dCap);};
+  if(!st.spokeDone){ st.spokeDone=true; setTimeout(()=>speak(line,dSpk,dCap),300); }
+  screen.querySelector('#restart').onclick=e=>{guard(e); resetSubject(); render();};
+}
+
+/* ---------- RIGHT RAIL ---------- */
+function renderRail(){ const rail=document.getElementById('rail');
+  if(S.mode==='classic'){
+    const lost = S.subj==='math'? "A tap is scored right/wrong. Different mistakes get the same “answer is 25”. No voice, no retry, guessing hidden."
+      : "Four word-sequences, exact order only. A child who understood but flipped the middle is marked as wrong as one who didn't understand. Memory, not comprehension.";
+    rail.innerHTML=`<div class="lbl">Classic MCQ — single channel</div>
+      <div class="card"><h4>📄 What the child gets</h4><div style="font-size:11.5px;color:var(--sax-page-sec);line-height:1.6">${lost}</div></div>
+      <div class="card"><h4>Reliable, but shallow</h4><div style="font-size:11.5px;color:var(--sax-page-sec);line-height:1.6">Cheap and scalable — and preserved as the canonical item. The reimagined mode keeps it, adding a spoken, diagnostic, second-chance layer.</div></div>`;
+    return;
+  }
+  let att;
+  if(S.subj==='math'){ const a=S.math.attempts;
+    att = a.length? a.map(x=>{ if(x.correct) return `<div class="attempt"><span class="pill c">✓</span>Chose <b>${x.val}</b> — correct, with borrowing.</div>`;
+      const tw=M_OPTS.find(o=>o.val===x.val); return `<div class="attempt"><span class="pill w">✗</span>Chose <b>${x.val}</b> → right question <b>${tw.twinTop} − ${tw.twinBot}</b>. Slip named, retry.</div>`;}).join('')
+      : `<div class="attempt" style="color:var(--sax-page-ter);font-style:italic">No attempts yet — tap 🔊, then an answer.</div>`;
+  } else { const a=S.reading.attempts;
+    att = a.length? a.map(x=>{ if(x.ok&&x.mid) return `<div class="attempt"><span class="pill p">≈✓</span>Middle-swap trace — <b>full credit</b>. Structure understood.</div>`;
+      if(x.ok) return `<div class="attempt"><span class="pill c">✓</span>Correct causal structure — barber first, forest last.</div>`;
+      const why=x.breakKey==='forestLast'?'forest too early — it is the consequence, must be last':'barber not first — it is a haircut, start there';
+      return `<div class="attempt"><span class="pill w">✗</span>Broke cause→effect: ${why}. Snippet played; retry.</div>`;}).join('')
+      : `<div class="attempt" style="color:var(--sax-page-ter);font-style:italic">No trace yet — tap 🔊, play a hint, then trace.</div>`;
+  }
+  const ids = S.subj==='math'? [5,1,6,7,9] : [6,5,1,3,7,9];
+  rail.innerHTML=`<div class="lbl">Response path <span style="text-transform:none;color:#0ea5e9">(recorded)</span></div>
+    <div class="card"><h4>🧭 Attempts</h4>${att}</div>
+    <div class="lbl">Principles in view</div>
+    ${ids.map(n=>`<div class="prin"><h4><span class="n">${n}</span>${P[n][0]}</h4><p>${P[n][1]}</p></div>`).join('')}`;
+}
+
+/* ---------- WIRING ---------- */
+function renderLangs(){ const el=document.getElementById('langSeg');
+  el.innerHTML=Object.keys(CONFIG.LANGS).map(k=>`<button class="${k===S.lang?'on':''}" data-lang="${k}">${LANG_LABELS[k]}</button>`).join('');
+  el.querySelectorAll('button').forEach(b=>b.onclick=()=>{ S.lang=b.dataset.lang; renderLangs(); render(); }); }
+document.querySelectorAll('#subjSeg button').forEach(b=>b.onclick=()=>{ S.subj=b.dataset.subj;
+  document.querySelectorAll('#subjSeg button').forEach(x=>x.classList.toggle('on',x===b)); render(); });
+document.querySelectorAll('#modeSeg button').forEach(b=>b.onclick=()=>{ S.mode=b.dataset.mode;
+  document.querySelectorAll('#modeSeg button').forEach(x=>{x.classList.toggle('on',x===b);}); render(); });
+renderLangs(); render();
+</script>
+<script src="shared/sax-phone.js"></script>
+</body>
+</html>
