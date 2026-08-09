@@ -478,6 +478,94 @@ footer{max-width:1080px;margin:0 auto;padding:40px clamp(16px,4vw,44px) 70px;bor
   header.hero{padding:50px 5vw}
 }
 
+/* ============================================================
+   SARAL MCQ — LIGHT CHROME (Apple HIG)
+   The demo shell was authored for a dark page; these rules
+   re-seat it on the light document. Colour is functional only:
+   accent = current selection, green/red = correctness.
+   Hierarchy: item (filled) > mode (segmented) > language (segmented, small).
+   ============================================================ */
+#mcqdemo{
+  --a-label:#1d1d1f; --a-label2:#636366; --a-label3:#6e6e73;
+  --a-sep:#d2d2d7; --a-fill:rgba(120,120,128,.12); --a-group:#fbfbfd;
+  border:1px solid var(--a-sep); border-radius:14px; background:#fff;
+}
+#mcqdemo .mq-left,#mcqdemo .mq-right{border-color:var(--a-sep)}
+#mcqdemo .mq-left{background:var(--a-group)}
+#mcqdemo .mq-right{background:var(--a-group)}
+
+/* — section labels: tertiary, quiet — */
+#mcqdemo .mq-lbl{color:var(--a-label3);font-size:11px;letter-spacing:.06em;font-weight:600}
+
+/* — LEVEL 2: mode — segmented control — */
+#mcqdemo .mq-toggle{background:var(--a-fill);border:none;border-radius:11px;padding:3px;gap:3px}
+#mcqdemo .mq-toggle button{
+  border-radius:8px;background:transparent;color:var(--a-label2);
+  font-size:13px;font-weight:590;letter-spacing:-.01em;padding:9px 8px;
+  transition:background .18s ease,color .18s ease,box-shadow .18s ease;
+}
+#mcqdemo .mq-toggle button small{color:var(--a-label2);font-size:10.5px;font-weight:400;margin-top:2px}
+#mcqdemo .mq-toggle button:hover:not(.on){color:var(--a-label)}
+#mcqdemo .mq-toggle button.on,
+#mcqdemo .mq-toggle button.on.classic,
+#mcqdemo .mq-toggle button.on.reimag{
+  background:#fff;color:var(--a-label);
+  box-shadow:0 3px 8px rgba(0,0,0,.10), 0 3px 1px rgba(0,0,0,.04), 0 0 0 .5px rgba(0,0,0,.04);
+}
+#mcqdemo .mq-toggle button.on small{color:var(--a-label2)}
+#mcqdemo .mq-toggle button.on.reimag small{color:var(--accent);font-weight:600}
+
+/* — LEVEL 3: language — segmented, smaller — */
+#mcqdemo .mq-row{background:var(--a-fill);border-radius:10px;padding:3px;gap:3px}
+#mcqdemo .mq-lang{
+  background:transparent;border:none;border-radius:7px;color:var(--a-label2);
+  padding:7px 6px;font-size:12.5px;font-weight:590;transition:background .18s ease,color .18s ease;
+}
+#mcqdemo .mq-lang:hover:not(.active){color:var(--a-label)}
+#mcqdemo .mq-lang.active{
+  background:#fff;color:var(--accent);
+  box-shadow:0 2px 6px rgba(0,0,0,.09), 0 2px 1px rgba(0,0,0,.03), 0 0 0 .5px rgba(0,0,0,.04);
+}
+
+/* — grouped cards — */
+#mcqdemo .mq-algo,#mcqdemo .mq-card,#mcqdemo .mq-prin{
+  background:#fff;border:1px solid var(--a-sep);border-radius:12px;
+}
+#mcqdemo .mq-algo{color:var(--a-label2);font-size:12px;line-height:1.55;padding:12px 13px}
+#mcqdemo .mq-algo b,#mcqdemo .mq-hint b,#mcqdemo .mq-rec{color:var(--accent)}
+#mcqdemo .mq-maprow{color:var(--a-label);border-bottom-color:var(--a-sep)}
+#mcqdemo .mq-hint{color:var(--a-label2);font-size:11.5px}
+#mcqdemo .mq-card h4,#mcqdemo .mq-prin h4{color:var(--a-label);font-weight:600}
+#mcqdemo .mq-cardtx,#mcqdemo .mq-prin p{color:var(--a-label2)}
+#mcqdemo .mq-cardtx b{color:var(--a-label)}
+#mcqdemo .mq-attempt{color:var(--a-label);border-bottom-color:var(--a-sep)}
+#mcqdemo .mq-attempt.empty{color:var(--a-label3)}
+#mcqdemo .mq-note{color:var(--a-label2)}
+#mcqdemo .mq-foot{border-top-color:var(--a-sep);color:var(--a-label2)}
+#mcqdemo .mq-foot b{color:var(--a-label)}
+
+/* — status pills: functional colour, legible on white — */
+#mcqdemo .mq-pill{font-weight:600;letter-spacing:.01em}
+#mcqdemo .mq-pill.w{background:#ffe5e3;color:#a3231a}
+#mcqdemo .mq-pill.c{background:#dff3e4;color:#1c6b34}
+
+/* — device — */
+#mcqdemo .mq-phone{box-shadow:0 20px 48px rgba(0,0,0,.16), 0 2px 8px rgba(0,0,0,.06), inset 0 0 0 2px #2b3240}
+
+/* — LEVEL 1: item choice — filled, highest weight — */
+.itemtabs button{
+  background:#fff;border:1px solid #d2d2d7;border-radius:12px;color:#1d1d1f;
+  font-size:15px;font-weight:590;letter-spacing:-.012em;padding:14px 17px;
+  transition:border-color .18s ease,box-shadow .18s ease,background .18s ease;
+}
+.itemtabs button small{color:#636366;font-size:11.5px;font-weight:400;opacity:1}
+.itemtabs button:hover{border-color:#b9b9bf;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.itemtabs button.on{
+  background:var(--accent);border-color:var(--accent);color:#fff;
+  box-shadow:0 4px 14px rgba(15,76,92,.24);
+}
+.itemtabs button.on small{color:rgba(255,255,255,.78)}
+
 /* ---------- ITEM TABS (demo) ---------- */
 .itemtabs{display:flex;gap:8px;margin:0 0 20px;flex-wrap:wrap}
 .itemtabs button{flex:1;min-width:210px;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 16px;color:var(--muted);font-family:var(--sans);font-size:14.5px;font-weight:600;cursor:pointer;line-height:1.3}
@@ -750,7 +838,7 @@ function initDemo(){
   function sbar(){return '<div class="mq-sbar"><span>9:41</span><span>▮▮▮ 5G ▮</span></div>';}
   function bar(t,title,badgeTxt,cls){ return '<div class="mq-appbar"><span class="mq-title">'+title+'</span><span class="mq-badge '+cls+'">'+badgeTxt+'</span></div>'; }
 
-  var S={ item:'number', mode:'classic', lang:'en' };
+  var S={ item:'number', mode:'classic', lang:'hi' };
 
   /* ============================================================
      ITEM 1 — NUMBER  52 − 27
